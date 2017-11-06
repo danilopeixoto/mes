@@ -1,0 +1,154 @@
+/*
+// Copyright (c) 2017, Danilo Peixoto. All rights reserved.
+//
+// Redistribution and use in source and binary forms, with or without
+// modification, are permitted provided that the following conditions are met:
+//
+// * Redistributions of source code must retain the above copyright notice, this
+//   list of conditions and the following disclaimer.
+//
+// * Redistributions in binary form must reproduce the above copyright notice,
+//   this list of conditions and the following disclaimer in the documentation
+//   and/or other materials provided with the distribution.
+//
+// * Neither the name of the copyright holder nor the names of its
+//   contributors may be used to endorse or promote products derived from
+//   this software without specific prior written permission.
+//
+// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+// AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+// IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+// DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+// FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+// DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+// SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+// CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+// OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+// OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+*/
+
+@font-face {
+    font-family: "Source Code Pro";
+    src: url("../fonts/source_code_pro.otf");
+}
+
+* {
+    -fx-font-family: "Segoe UI";
+    -fx-text-fill: black;
+    -fx-font-size: 13px;
+}
+
+.root, .vbox, .scroll-pane {
+    -fx-background: white;
+}
+
+.dialog-pane {
+    -fx-background-color: #f9f9f9;
+}
+
+.dialog-pane .header-panel {
+    -fx-background-color: white;
+    -fx-border-color: lightgrey;
+    -fx-border-width: 0 0 1px 0;
+}
+
+.button {
+    -fx-background-color: white;
+    -fx-background-radius: 5px;
+    -fx-background-insets: 0 0 0 0;
+    -fx-border-color: lightgrey;
+    -fx-border-width: 1px;
+    -fx-border-radius: 5px;
+    -fx-padding: 4px 30px;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.075), 2, 0, 0, 1);
+}
+
+.button:hover {
+    -fx-background-color: #e6f2ff;
+    -fx-border-color: #c1dfff;
+}
+
+.button:pressed {
+    -fx-background-color: #b1d7ff;
+    -fx-border-color: #8bc0f8;
+}
+
+.menu-bar {
+    -fx-background-color: white;
+    -fx-padding: 0;
+}
+
+.menu:hover, .menu:focused, .menu:showing,
+.menu-item:hover, .menu-item:focused, .menu-item:showing {
+    -fx-background-color: #e6f2ff;
+}
+
+.menu:disabled:hover, .menu:disabled:focused, .menu:disabled:showing,
+.menu-item:disabled:hover, .menu-item:disabled:focused, .menu-item:disabled:showing {
+    -fx-background-color: #ececec;
+}
+
+.menu-item:disabled .label,
+.context-menu .menu-item:disabled .label,
+.separator {
+    -fx-opacity: 0.75;
+}
+
+.context-menu {
+    -fx-padding: 1px;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 8, 0, 0, 2);
+}
+
+.command-line {
+    -fx-background-color: white;
+    -fx-background-image: none;
+    -fx-padding: 3px;
+    -fx-font-family: "Source Code Pro";
+    -fx-font-size: 13px;
+}
+
+.command-line:error {
+    -fx-background-color: #ffe5e5;
+    -fx-background-image: none !important;
+    -fx-padding: 3px !important;
+}
+
+.command-line:focused {
+    -fx-background-color: #e6f2ff;
+    -fx-background-image: none !important;
+    -fx-padding: 3px !important;
+}
+
+.command-line:filled {
+    -fx-background-image: url("../images/ellipsis.png");
+    -fx-background-repeat: no-repeat;
+    -fx-background-position: right center;
+    -fx-padding: 3px 25px 3px 3px;
+}
+
+.scroll-bar {
+    -fx-pref-width: 12px;
+}
+
+.scroll-bar, .corner {
+    -fx-background-color: #f6f6f6
+}
+
+.scroll-bar .decrement-button, .scroll-bar .decrement-arrow,
+.scroll-bar .increment-button, .scroll-bar .increment-arrow {
+    -fx-pref-height: 0px;
+    -fx-pref-width: 0px;
+}
+
+.scroll-bar .thumb {
+    -fx-background-color: #c0c0c0;
+    -fx-background-radius: 10px;
+}
+
+.scroll-bar .thumb:hover {
+    -fx-background-color: #909090;
+}
+
+.scroll-bar .thumb:pressed {
+    -fx-background-color: #707070;
+}
