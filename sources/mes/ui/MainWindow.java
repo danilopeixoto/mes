@@ -43,6 +43,7 @@ import javafx.beans.binding.Bindings;
 import javafx.beans.property.ReadOnlyDoubleProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleDoubleProperty;
+import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
@@ -50,6 +51,9 @@ import javafx.css.PseudoClass;
 import javafx.event.ActionEvent;
 import javafx.event.Event;
 import javafx.geometry.Insets;
+import javafx.geometry.Orientation;
+import javafx.geometry.Point2D;
+import javafx.geometry.Pos;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.Node;
 import javafx.stage.Stage;
@@ -59,13 +63,16 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonBar.ButtonData;
 import javafx.scene.control.ButtonType;
+import javafx.scene.control.CheckMenuItem;
 import javafx.scene.control.DialogPane;
 import javafx.scene.control.IndexRange;
 import javafx.scene.control.Label;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
+import javafx.scene.control.PopupControl;
 import javafx.scene.control.ScrollPane;
+import javafx.scene.control.Separator;
 import javafx.scene.control.SeparatorMenuItem;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
@@ -78,29 +85,27 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyCombination;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.input.TransferMode;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.stage.FileChooser;
 import javafx.stage.Modality;
 import javafx.stage.Screen;
+import javafx.stage.Window;
 
 public class MainWindow extends javafx.application.Application {
-    private final String applicationName;
-    private final String fullApplicationName;
-    private final String copyright;
-
-    private final String extension;
-
     private final int width;
     private final int height;
     private final int minimumWidth;
     private final int minimumHeight;
 
-    private final String stylesheet;
+    private final String fileExtension;
+
     private final String[] icons;
-    private final String confirmationIcon;
-    private final String errorIcon;
+    private final String confirmation;
+    private final String error;
+    private final String typeCheck;
 
     private Stage primaryStage;
     FXRobot robot;
@@ -114,6 +119,7 @@ public class MainWindow extends javafx.application.Application {
     private SimpleBooleanProperty primaryStageBlockedProperty;
 
     private static PseudoClass ERROR_PSEUDO_CLASS = PseudoClass.getPseudoClass("error");
+    private static PseudoClass TYPECHECK_PSEUDO_CLASS = PseudoClass.getPseudoClass("type-checked");
     private static PseudoClass FILLED_PSEUDO_CLASS = PseudoClass.getPseudoClass("filled");
 
     private class CommandLine extends TextField {
@@ -122,36 +128,31 @@ public class MainWindow extends javafx.application.Application {
         private javafx.scene.control.ContextMenu defaultContextMenu;
         private ContextMenu customContextMenu;
 
+        TypeCheckPopup typeCheckPopup;
+
         public CommandLine() {
-            super();
-            initialize(false);
+            this("", false);
         }
 
         public CommandLine(boolean error) {
-            super();
-            initialize(error);
+            this("", error);
         }
 
         public CommandLine(String text, boolean error) {
             super(text);
-            initialize(error);
-        }
-
-        public boolean isError() {
-            return error;
-        }
-
-        private void initialize(boolean error) {
             this.error = error;
 
             defaultContextMenu = getContextMenu();
             customContextMenu = new ContextMenu(this);
 
-            getStyleClass().clear();
-            getStyleClass().add("command-line");
+            typeCheckPopup = new TypeCheckPopup(this);
+
+            getStyleClass().setAll("command-line");
 
             setOnKeyPressed(MainWindow.this::editCommandLineEvent);
             setOnKeyTyped(MainWindow.this::typedCharacterEvent);
+            setOnMouseEntered(this::showTypeCheckEvent);
+            setOnMouseExited(this::hideTypeCheckEvent);
 
             lengthProperty().addListener(this::updateErrorPseudoClassListener);
             widthProperty().addListener(this::updateErrorPseudoClassListener);
@@ -160,6 +161,7 @@ public class MainWindow extends javafx.application.Application {
                     -> focusCommandLineListener(observable, previousValue, currentValue, this));
             selectionProperty().addListener(this::selectionListener);
             textProperty().addListener(this::textListener);
+            caretPositionProperty().addListener(this::caretPositionListener);
 
             if (error) {
                 setEditable(false);
@@ -167,17 +169,24 @@ public class MainWindow extends javafx.application.Application {
             }
         }
 
+        public boolean isError() {
+            return error;
+        }
+
         private void updateErrorPseudoClassListener(ObservableValue<? extends Number> observable,
                 Number previousValue, Number currentValue) {
-            pseudoClassStateChanged(FILLED_PSEUDO_CLASS, getLength() * 8.5 > getWidth());
+            pseudoClassStateChanged(FILLED_PSEUDO_CLASS, getLength() * 7.9 > getWidth());
         }
 
         private void editableListener(ObservableValue<? extends Boolean> observable,
                 Boolean previousValue, Boolean currentValue) {
             if (currentValue)
                 setContextMenu(defaultContextMenu);
-            else
+            else {
                 setContextMenu(customContextMenu);
+                typeCheckPopup.hide();
+                pseudoClassStateChanged(TYPECHECK_PSEUDO_CLASS, false);
+            }
         }
 
         private void selectionListener(ObservableValue<? extends IndexRange> observable,
@@ -195,6 +204,123 @@ public class MainWindow extends javafx.application.Application {
                 String previousValue, String currentValue) {
             if (!currentValue.equals(previousValue))
                 saveProperty.set(false);
+
+            typeCheckPopup.setErrorMessage("Error: invalid expression.");
+            pseudoClassStateChanged(TYPECHECK_PSEUDO_CLASS, true);
+        }
+
+        private void caretPositionListener(ObservableValue<? extends Number> observable,
+                Number previousValue, Number currentValue) {
+            VBox rootLayout = (VBox)primaryStage.getScene().getRoot();
+            StatusBar statusBar = (StatusBar)rootLayout.getChildren().get(2);
+
+            if (isEditable())
+                statusBar.columnNumberProperty().set(currentValue.intValue() + 1);
+            else
+                statusBar.columnNumberProperty().set(1);
+        }
+
+        private void showTypeCheckEvent(MouseEvent mouseEvent) {
+            typeCheckPopup.show(primaryStage);
+            mouseEvent.consume();
+        }
+
+        private void hideTypeCheckEvent(MouseEvent mouseEvent) {
+            typeCheckPopup.hide();
+            mouseEvent.consume();
+        }
+    }
+
+    private class TypeCheckPopup extends PopupControl {
+        private CommandLine commandLine;
+        private Label errorMessageLabel;
+
+        public TypeCheckPopup(CommandLine commandLine) {
+            super();
+
+            this.commandLine = commandLine;
+
+            errorMessageLabel = new Label();
+            errorMessageLabel.setMaxWidth(minimumWidth);
+            errorMessageLabel.setWrapText(true);
+
+            Image image = new Image(typeCheck);
+            ImageView imageView = new ImageView(image);
+
+            HBox rootLayout = new HBox();
+            rootLayout.setSpacing(10.0);
+            rootLayout.setAlignment(Pos.CENTER_LEFT);
+            rootLayout.getChildren().addAll(imageView, errorMessageLabel);
+            rootLayout.getStyleClass().setAll("type-check-popup");
+
+            getScene().setRoot(rootLayout);
+            setAutoFix(true);
+        }
+
+        public void setErrorMessage(String errorMessage) {
+            errorMessageLabel.setText(errorMessage != null ? errorMessage : "");
+        }
+
+        public String getErrorMessage() {
+            return errorMessageLabel.getText();
+        }
+
+        public boolean hasErrorMessage() {
+            return !errorMessageLabel.getText().isEmpty();
+        }
+
+        @Override
+        public void show(Window window) {
+            if (commandLine.isEditable() && hasErrorMessage()) {
+                Point2D offset = commandLine.localToScene(Point2D.ZERO);
+
+                setX(primaryStage.getX() + offset.getX() + 20);
+
+                if (offset.getY() < primaryStage.getHeight() - 130)
+                    setY(primaryStage.getY() + offset.getY() + 65);
+                else
+                    setY(primaryStage.getY() + offset.getY() - 2);
+
+                super.show(primaryStage);
+            }
+        }
+    }
+
+    private class StatusBar extends HBox {
+        private SimpleIntegerProperty lineNumber;
+        private SimpleIntegerProperty columnNumber;
+
+        public StatusBar() {
+            super();
+
+            lineNumber = new SimpleIntegerProperty(1);
+            columnNumber = new SimpleIntegerProperty(1);
+
+            Binding lineNumberBinding = Bindings.createStringBinding(
+                    () -> "Line " + lineNumber.get(), lineNumber);
+            Binding columnNumberBinding = Bindings.createStringBinding(
+                    () -> "Column " + columnNumber.get(), columnNumber);
+
+            Label lineLabel = new Label();
+            lineLabel.setMinWidth(100);
+            lineLabel.textProperty().bind(lineNumberBinding);
+
+            Label columnLabel = new Label();
+            columnLabel.setMinWidth(100);
+            columnLabel.textProperty().bind(columnNumberBinding);
+            
+            setSpacing(10.0);
+            setAlignment(Pos.CENTER_RIGHT);
+            getChildren().addAll(lineLabel, columnLabel);
+            getStyleClass().setAll("status-bar");
+        }
+
+        public SimpleIntegerProperty lineNumberProperty() {
+            return lineNumber;
+        }
+
+        public SimpleIntegerProperty columnNumberProperty() {
+            return columnNumber;
         }
     }
 
@@ -213,7 +339,7 @@ public class MainWindow extends javafx.application.Application {
             setResizable(false);
             setHeaderText("Do you want to save changes to document?");
 
-            Image image = new Image(confirmationIcon);
+            Image image = new Image(confirmation);
             ImageView imageView = new ImageView(image);
 
             setGraphic(imageView);
@@ -239,7 +365,7 @@ public class MainWindow extends javafx.application.Application {
             setResizable(false);
             setHeaderText(message);
 
-            Image image = new Image(errorIcon);
+            Image image = new Image(error);
             ImageView imageView = new ImageView(image);
 
             setGraphic(imageView);
@@ -260,10 +386,10 @@ public class MainWindow extends javafx.application.Application {
             Image image = new Image(icons[2]);
             ImageView imageView = new ImageView(image);
 
-            Label titleLabel = new Label(fullApplicationName);
-            titleLabel.setStyle("-fx-font-weight: bold");
+            Label titleLabel = new Label(Application.fullName);
+            titleLabel.getStyleClass().add("title-label");
 
-            Label copyrightLabel = new Label(copyright);
+            Label copyrightLabel = new Label(Application.copyright);
 
             VBox boxLayout = new VBox();
             boxLayout.setSpacing(5.0);
@@ -362,27 +488,23 @@ public class MainWindow extends javafx.application.Application {
     }
 
     public MainWindow() {
-        applicationName = "MES";
-        fullApplicationName = "Mathematical Expression Solver";
-        copyright = "Copyright © 2017, Danilo Peixoto. All rights reserved.";
-
-        extension = "*.mes";
-
         width = 600;
         height = 600;
         minimumWidth = 250;
         minimumHeight = 250;
 
-        stylesheet = "styles/general.css";
+        fileExtension = '.' + Application.name.toLowerCase();
 
-        icons = new String[4];
+        icons = new String[5];
         icons[0] = "images/icon_16.png";
         icons[1] = "images/icon_32.png";
         icons[2] = "images/icon_48.png";
-        icons[3] = "images/icon_256.png";
+        icons[3] = "images/icon_96.png";
+        icons[4] = "images/icon_256.png";
 
-        confirmationIcon = "images/confirmation_icon.png";
-        errorIcon = "images/error_icon.png";
+        confirmation = "images/confirmation.png";
+        error = "images/error.png";
+        typeCheck = "images/type_check.png";
 
         Locale.setDefault(Locale.US);
 
@@ -459,6 +581,15 @@ public class MainWindow extends javafx.application.Application {
         editMenu.getItems().addAll(copyMenuItem, separatorEditMenu,
                 deleteMenuItem, deleteAllMenuItem);
 
+        StatusBar statusBar = (StatusBar)rootLayout.getChildren().get(1);
+
+        CheckMenuItem statusBarMenuItem = new CheckMenuItem("Status Bar");
+        statusBarMenuItem.setSelected(true);
+        statusBar.visibleProperty().bind(statusBarMenuItem.selectedProperty());
+
+        Menu viewMenu = new Menu("_View");
+        viewMenu.getItems().add(statusBarMenuItem);
+
         MenuItem aboutMenuItem = new MenuItem("About");
         aboutMenuItem.setOnAction(this::showAboutDialogAction);
 
@@ -466,9 +597,9 @@ public class MainWindow extends javafx.application.Application {
         helpMenu.getItems().add(aboutMenuItem);
 
         MenuBar menuBar = new MenuBar();
-        menuBar.getMenus().addAll(fileMenu, editMenu, helpMenu);
+        menuBar.getMenus().addAll(fileMenu, editMenu, viewMenu, helpMenu);
 
-        rootLayout.getChildren().add(menuBar);
+        rootLayout.getChildren().add(0, menuBar);
     }
 
     private void centerWindowOnScreen(Stage stage) {
@@ -522,8 +653,10 @@ public class MainWindow extends javafx.application.Application {
     }
 
     private boolean requestOpen() {
+        String extensionPattern = '*' + fileExtension;
+
         FileChooser.ExtensionFilter extensionFilter = new FileChooser.ExtensionFilter(
-                fullApplicationName + " (" + extension + ")", extension);
+                Application.fullName + " (" + extensionPattern + ")", extensionPattern);
 
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Open");
@@ -550,8 +683,10 @@ public class MainWindow extends javafx.application.Application {
     }
 
     private boolean requestSave() {
+        String extensionPattern = '*' + fileExtension;
+
         FileChooser.ExtensionFilter extensionFilter = new FileChooser.ExtensionFilter(
-                fullApplicationName + " (" + extension + ")", extension);
+                Application.fullName + " (" + extensionPattern + ")", extensionPattern);
 
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Save As");
@@ -800,6 +935,7 @@ public class MainWindow extends javafx.application.Application {
             if (text.length() == 1)
                 character = text.charAt(0);
         } catch (UnsupportedEncodingException exception) {
+            exception.printStackTrace();
         }
 
         if (character > 32 && character < 127 && !keyEvent.isShortcutDown()) {
@@ -912,9 +1048,14 @@ public class MainWindow extends javafx.application.Application {
 
     private void sceneCommandLineListener(ObservableValue<? extends Node> observable,
             Node previousValue, Node currentValue) {
-        if (currentValue instanceof CommandLine)
-            disableProperty.set(currentValue.equals(getCommandLineOnStack(0)));
-        else
+        if (currentValue instanceof CommandLine) {
+            VBox rootLayout = (VBox)primaryStage.getScene().getRoot();
+            StatusBar statusBar = (StatusBar)rootLayout.getChildren().get(2);
+            CommandLine commandLine = (CommandLine)currentValue;
+
+            statusBar.lineNumberProperty().set(commandLines.indexOf(commandLine) + 1);
+            disableProperty.set(commandLine.equals(getCommandLineOnStack(0)));
+        } else
             disableProperty.set(true);
     }
 
@@ -931,7 +1072,7 @@ public class MainWindow extends javafx.application.Application {
             List<java.io.File> files = dragboard.getFiles();
             String filepath = files.get(0).getPath();
 
-            if (files.size() == 1 && filepath.endsWith(extension.substring(1)))
+            if (files.size() == 1 && filepath.endsWith(fileExtension))
                 dragEvent.acceptTransferModes(TransferMode.COPY);
         }
 
@@ -998,7 +1139,7 @@ public class MainWindow extends javafx.application.Application {
 
         ReadOnlyDoubleProperty heightProperty = stage.heightProperty();
         Binding binding = Bindings.createObjectBinding(()
-                -> new Insets(0, 0, heightProperty.doubleValue() * 0.25, 0), heightProperty);
+                -> new Insets(0, 0, heightProperty.doubleValue() * 0.3, 0), heightProperty);
 
         boxLayout.paddingProperty().bind(binding);
 
@@ -1011,28 +1152,29 @@ public class MainWindow extends javafx.application.Application {
         scrollPanel.vvalueProperty().bindBidirectional(scrollProperty);
         scrollPanel.focusedProperty().addListener(this::focusScrollPanelListener);
 
+        StatusBar statusBar = new StatusBar();
+
         VBox rootLayout = new VBox();
-
-        createMenuBar(rootLayout);
-
-        rootLayout.getChildren().add(scrollPanel);
         VBox.setVgrow(scrollPanel, Priority.ALWAYS);
 
+        rootLayout.getChildren().addAll(scrollPanel, statusBar);
+        createMenuBar(rootLayout);
+
         Scene scene = new Scene(rootLayout, width, height);
-        scene.getStylesheets().add(stylesheet);
+        scene.getStylesheets().add(Application.styleSheet);
         scene.focusOwnerProperty().addListener(this::sceneCommandLineListener);
 
         robot = FXRobotFactory.createRobot(scene);
 
-        stage.setTitle(applicationName);
+        stage.setTitle(Application.name);
         stage.setMinWidth(minimumWidth);
         stage.setMinHeight(minimumHeight);
         stage.setScene(scene);
         stage.setOnCloseRequest(this::exitAction);
 
-        Image[] images = new Image[4];
+        Image[] images = new Image[5];
 
-        for (int i = 0; i < 4; i++) {
+        for (int i = 0; i < 5; i++) {
             images[i] = new Image(icons[i]);
             stage.getIcons().add(images[i]);
         }

@@ -42,7 +42,7 @@ public class SplashScreen extends Preloader {
     private final int width;
     private final int height;
 
-    private final String splashScreen;
+    private final String icon;
 
     private Stage primaryStage;
 
@@ -50,7 +50,7 @@ public class SplashScreen extends Preloader {
         width = 600;
         height = 600;
 
-        splashScreen = "images/splash_screen.png";
+        icon = "images/icon_96.png";
     }
 
     private void centerWindowOnScreen(Stage stage) {
@@ -63,14 +63,17 @@ public class SplashScreen extends Preloader {
     public void start(Stage stage) {
         primaryStage = stage;
 
-        Image image = new Image(splashScreen);
+        Image image = new Image(icon);
         ImageView imageView = new ImageView(image);
 
         VBox rootLayout = new VBox();
+        rootLayout.setSpacing(15.0);
         rootLayout.setAlignment(Pos.CENTER);
         rootLayout.getChildren().add(imageView);
+        rootLayout.getStyleClass().setAll("splash-screen");
 
         Scene scene = new Scene(rootLayout, width, height);
+        scene.getStylesheets().add(Application.styleSheet);
 
         stage.setResizable(false);
         stage.setScene(scene);

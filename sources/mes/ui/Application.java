@@ -30,6 +30,12 @@ package mes.ui;
 import com.sun.javafx.application.LauncherImpl;
 
 public class Application {
+    public static final String name = "MES";
+    public static final String fullName = "Mathematical Expression Solver";
+    public static final String copyright = "Copyright © 2017, Danilo Peixoto. All rights reserved.";
+    
+    public static final String styleSheet = "styles/general.css";
+    
     public static void main(String[] args) {
         LauncherImpl.launchApplication(MainWindow.class, SplashScreen.class, args);
     }
