@@ -48,10 +48,34 @@
     -fx-padding: 4px 10px;
 }
 
+.auto-complete-popup * {
+    -fx-font-family: "Source Code Pro";
+}
+
+.auto-complete-popup, .list-view, .list-cell {
+    -fx-background-color: white;
+}
+
+.list-view, .list-view:focused {
+    -fx-background-radius: 0;
+    -fx-background-insets: 0;
+    -fx-focus-color: transparent;
+    -fx-faint-focus-color: transparent;
+    -fx-border-color: lightgrey;
+    -fx-border-width: 1px;
+    -fx-padding: 0;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.1), 8, 0, 0, 2);
+}
+
+.list-cell:filled:selected:focused, .list-cell:filled:selected {
+    -fx-background-color: #e6f2ff;
+    -fx-text-fill: black;
+}
+
 .status-bar {
     -fx-border-color: lightgrey;
     -fx-border-width: 1px 0 0 0;
-    -fx-padding: 4px;
+    -fx-padding: 4px 10px;
 }
 
 .title-label {
@@ -86,7 +110,7 @@
     -fx-border-width: 1px;
     -fx-border-radius: 5px;
     -fx-padding: 4px 30px;
-    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.075), 2, 0, 0, 1);
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.05), 2, 0, 0, 1);
 }
 
 .button:hover {
@@ -104,6 +128,18 @@
     -fx-border-color: lightgrey;
     -fx-border-width: 0 0 1px 0;
     -fx-padding: 0;
+}
+
+.menu {
+    -fx-padding: 2px 2px 2px 6px;
+}
+
+.menu-item {
+    -fx-padding: 4px 5px;
+}
+
+.separator {
+    -fx-pref-height: 1px;
 }
 
 .menu:hover, .menu:focused, .menu:showing,
@@ -134,9 +170,10 @@
 .command-line {
     -fx-background-color: white;
     -fx-background-image: none;
+    -fx-border-color: transparent;
+    -fx-border-width: 0 0 1px 0;
     -fx-padding: 4px;
     -fx-font-family: "Source Code Pro";
-    -fx-font-size: 13px;
 }
 
 .command-line:error {
@@ -160,8 +197,7 @@
 
 .command-line:type-checked {
     -fx-border-color: #ff5151;
-    -fx-border-width: 0 0 2px 0;
-    -fx-border-style: dotted;
+    -fx-border-style: dashed;
 }
 
 .scroll-bar {
@@ -174,8 +210,8 @@
 
 .scroll-bar .decrement-button, .scroll-bar .decrement-arrow,
 .scroll-bar .increment-button, .scroll-bar .increment-arrow {
-    -fx-pref-height: 0px;
-    -fx-pref-width: 0px;
+    -fx-pref-height: 0;
+    -fx-pref-width: 0;
 }
 
 .scroll-bar .thumb {

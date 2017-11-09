@@ -45,6 +45,14 @@ public class FileContent implements Serializable {
             this.error = error;
             this.text = text;
         }
+        
+        public void setError(boolean error) {
+            this.error = error;
+        }
+        
+        public void setText(String text) {
+            this.text = text;
+        }
 
         public boolean isError() {
             return error;
