@@ -31,7 +31,7 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.ArrayList;
 
-public class FileContent implements Serializable {
+public class Document implements Serializable {
     public class CommandLineData implements Serializable {
         private boolean error;
         private String text;
@@ -45,11 +45,11 @@ public class FileContent implements Serializable {
             this.error = error;
             this.text = text;
         }
-        
+
         public void setError(boolean error) {
             this.error = error;
         }
-        
+
         public void setText(String text) {
             this.text = text;
         }
@@ -65,11 +65,11 @@ public class FileContent implements Serializable {
 
     private List<CommandLineData> commandLineDataStream;
 
-    public FileContent() {
+    public Document() {
         commandLineDataStream = new ArrayList<>();
     }
 
-    public FileContent(ArrayList<CommandLineData> commandLineDataStream) {
+    public Document(ArrayList<CommandLineData> commandLineDataStream) {
         this.commandLineDataStream = commandLineDataStream;
     }
 

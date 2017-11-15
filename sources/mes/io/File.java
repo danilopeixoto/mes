@@ -27,22 +27,28 @@
 
 package mes.io;
 
+import mes.ui.Application;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.IOException;
+import java.util.logging.Level;
 
 public class File {
     private boolean exceptions;
     private java.io.File file;
 
     public File() {
-        open(null);
+        open((java.io.File)null);
     }
 
     public File(java.io.File file) {
         open(file);
+    }
+
+    public File(String filename) {
+        open(filename);
     }
 
     public void open(java.io.File file) {
@@ -58,6 +64,10 @@ public class File {
             }
     }
 
+    public void open(String filename) {
+        open(new java.io.File(filename));
+    }
+
     public void close() {
         file = null;
     }
@@ -70,35 +80,35 @@ public class File {
         return exceptions;
     }
 
-    public FileContent read() {
+    public Object read() {
         try {
             FileInputStream fileReader = new FileInputStream(file);
             ObjectInputStream objectReader = new ObjectInputStream(fileReader);
 
-            FileContent content = (FileContent)objectReader.readObject();
+            Object object = objectReader.readObject();
 
             objectReader.close();
             fileReader.close();
 
-            return content;
+            return object;
         } catch (IOException | ClassNotFoundException exception) {
-            exception.printStackTrace();
+            Application.logger.log(Level.WARNING, "cannot read data from file.");
         }
 
         return null;
     }
 
-    public void write(FileContent content) {
+    public void write(Object object) {
         try {
             FileOutputStream fileWriter = new FileOutputStream(file);
             ObjectOutputStream objectWriter = new ObjectOutputStream(fileWriter);
 
-            objectWriter.writeObject(content);
+            objectWriter.writeObject(object);
 
             objectWriter.close();
             fileWriter.close();
         } catch (IOException exception) {
-            exception.printStackTrace();
+            Application.logger.log(Level.WARNING, "cannot write data to file.");
         }
     }
 }

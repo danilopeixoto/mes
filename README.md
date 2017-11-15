@@ -5,4 +5,4 @@ Copyright and License
 ---------------------
 Copyright (c) 2017, Danilo Peixoto. All rights reserved.
 
-Project developed under the [BSD-3-Clause license](LICENSE).
+Project has been developed under the [BSD-3-Clause license](LICENSE).

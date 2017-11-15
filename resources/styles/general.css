@@ -38,6 +38,16 @@
     -fx-font-size: 13px;
 }
 
+.root, .vbox {
+    -fx-background: white;
+}
+
+.scroll-pane {
+    -fx-background-color: transparent;
+    -fx-background-insets: 0;
+    -fx-padding: 0;
+}
+
 .splash-screen {
     -fx-background-color: #25204f;
 }
@@ -78,18 +88,41 @@
     -fx-padding: 4px 10px;
 }
 
-.title-label {
+.title-text {
     -fx-font-weight: bold;
 }
 
-.root, .vbox {
-    -fx-background: white;
+.command-line {
+    -fx-background-color: white;
+    -fx-background-image: none;
+    -fx-border-color: transparent;
+    -fx-border-width: 0 0 1px 0;
+    -fx-padding: 4px;
+    -fx-font-family: "Source Code Pro";
 }
 
-.scroll-pane {
-    -fx-background-color: transparent;
-    -fx-background-insets: 0;
-    -fx-padding: 0;
+.command-line:error {
+    -fx-background-color: #ffe5e5;
+    -fx-background-image: none !important;
+    -fx-padding: 4px !important;
+}
+
+.command-line:focused {
+    -fx-background-color: #e6f2ff;
+    -fx-background-image: none !important;
+    -fx-padding: 4px !important;
+}
+
+.command-line:filled {
+    -fx-background-image: url("../images/ellipsis.png");
+    -fx-background-repeat: no-repeat;
+    -fx-background-position: right center;
+    -fx-padding: 4px 25px 4px 4px;
+}
+
+.command-line:type-checked {
+    -fx-border-color: #ff5151;
+    -fx-border-style: dashed;
 }
 
 .dialog-pane {
@@ -102,6 +135,24 @@
     -fx-border-width: 0 0 1px 0;
 }
 
+.dialog-pane .content, .text, .hyperlink {
+    -fx-padding: 0;
+}
+
+.hyperlink, .hyperlink:visited {
+    -fx-text-fill: #5995ff;
+    -fx-border-width: 0;
+    -fx-underline: false;
+}
+
+.hyperlink:hover {
+    -fx-text-fill: #76a8ff;
+}
+
+.hyperlink:pressed {
+    -fx-text-fill: #457ad7;
+}
+
 .button {
     -fx-background-color: white;
     -fx-background-radius: 5px;
@@ -110,7 +161,7 @@
     -fx-border-width: 1px;
     -fx-border-radius: 5px;
     -fx-padding: 4px 30px;
-    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.05), 2, 0, 0, 1);
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.075), 2, 0, 0, 1);
 }
 
 .button:hover {
@@ -165,39 +216,6 @@
 .context-menu {
     -fx-padding: 1px;
     -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.1), 8, 0, 0, 2);
-}
-
-.command-line {
-    -fx-background-color: white;
-    -fx-background-image: none;
-    -fx-border-color: transparent;
-    -fx-border-width: 0 0 1px 0;
-    -fx-padding: 4px;
-    -fx-font-family: "Source Code Pro";
-}
-
-.command-line:error {
-    -fx-background-color: #ffe5e5;
-    -fx-background-image: none !important;
-    -fx-padding: 4px !important;
-}
-
-.command-line:focused {
-    -fx-background-color: #e6f2ff;
-    -fx-background-image: none !important;
-    -fx-padding: 4px !important;
-}
-
-.command-line:filled {
-    -fx-background-image: url("../images/ellipsis.png");
-    -fx-background-repeat: no-repeat;
-    -fx-background-position: right center;
-    -fx-padding: 4px 25px 4px 4px;
-}
-
-.command-line:type-checked {
-    -fx-border-color: #ff5151;
-    -fx-border-style: dashed;
 }
 
 .scroll-bar {

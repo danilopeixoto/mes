@@ -28,16 +28,17 @@
 package mes.ui;
 
 import mes.io.File;
-import mes.io.FileContent;
-import mes.io.FileContent.CommandLineData;
-import com.sun.javafx.robot.FXRobot;
-import com.sun.javafx.robot.FXRobotFactory;
+import mes.io.Document;
+import mes.io.Document.CommandLineData;
+import mes.lang.MathUtils;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
+import java.util.logging.Handler;
+import java.util.logging.Level;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javafx.application.Platform;
@@ -69,6 +70,7 @@ import javafx.scene.control.ButtonBar.ButtonData;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.CheckMenuItem;
 import javafx.scene.control.DialogPane;
+import javafx.scene.control.Hyperlink;
 import javafx.scene.control.IndexRange;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
@@ -89,18 +91,23 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyCombination;
 import javafx.scene.input.KeyEvent;
-import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.TransferMode;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
+import javafx.scene.text.Text;
+import javafx.scene.text.TextFlow;
 import javafx.stage.FileChooser;
 import javafx.stage.Modality;
 import javafx.stage.Screen;
 import javafx.stage.Window;
+import com.sun.javafx.robot.FXRobot;
+import com.sun.javafx.robot.FXRobotFactory;
+import javafx.scene.input.InputEvent;
+import mes.io.Preferences;
 
 public class MainWindow extends javafx.application.Application {
-    private List<AutoCompleteData> test = new ArrayList<>();
+    private List<AutocompleteData> test = new ArrayList<>();
 
     private final int width;
     private final int height;
@@ -130,6 +137,8 @@ public class MainWindow extends javafx.application.Application {
     private SimpleBooleanProperty disableMenuItemProperty;
     private SimpleBooleanProperty primaryStageBlockedProperty;
     private SimpleBooleanProperty messageVisibleProperty;
+    private SimpleBooleanProperty enableTypeCheckingProperty;
+    private SimpleBooleanProperty enableAutocompleteProperty;
 
     private SimpleIntegerProperty lineNumberProperty;
     private SimpleIntegerProperty columnNumberProperty;
@@ -145,7 +154,7 @@ public class MainWindow extends javafx.application.Application {
         private ContextMenu customContextMenu;
 
         TypeCheckPopup typeCheckPopup;
-        AutoCompletePopup autoCompletePopup;
+        AutocompletePopup autocompletePopup;
 
         public CommandLine() {
             this("", false);
@@ -163,14 +172,13 @@ public class MainWindow extends javafx.application.Application {
             customContextMenu = new ContextMenu(this);
 
             typeCheckPopup = new TypeCheckPopup(this);
-            autoCompletePopup = new AutoCompletePopup(this);
+            autocompletePopup = new AutocompletePopup(this);
 
             getStyleClass().setAll("command-line");
 
             setOnKeyPressed(MainWindow.this::editCommandLineEvent);
-            setOnKeyPressed(event -> showAutoCompleteEvent(event, this));
             setOnKeyTyped(MainWindow.this::typedCharacterEvent);
-            setOnMouseClicked(event -> focusCommandLine(this));
+            setOnMouseClicked(actionEvent -> focusCommandLine(this));
             setOnMouseEntered(this::showTypeCheckEvent);
             setOnMouseExited(this::hideTypeCheckEvent);
 
@@ -192,8 +200,8 @@ public class MainWindow extends javafx.application.Application {
             return typeCheckPopup;
         }
 
-        public AutoCompletePopup getAutoCompletePopup() {
-            return autoCompletePopup;
+        public AutocompletePopup getAutocompletePopup() {
+            return autocompletePopup;
         }
 
         public boolean isError() {
@@ -251,47 +259,56 @@ public class MainWindow extends javafx.application.Application {
 
             typeCheckPopup.hide();
 
-            typeCheckPopup.setErrorMessage("Error: invalid expression.");
-            pseudoClassStateChanged(TYPECHECK_PSEUDO_CLASS, true);
+            if (enableTypeCheckingProperty.get()) {
+                typeCheckPopup.setErrorMessage("Error: invalid expression.");
+                pseudoClassStateChanged(TYPECHECK_PSEUDO_CLASS, true);
+            }
 
-            autoCompletePopup.hide();
+            autocompletePopup.hide();
 
-            if (currentValue.isEmpty())
-                return;
+            if (enableAutocompleteProperty.get()) {
+                if (currentValue.isEmpty())
+                    return;
 
-            int endIndex = getCaretPosition();
-            endIndex += currentValue.length() > previousValue.length() ? 1 : -1;
+                int endIndex = getCaretPosition();
+                endIndex += currentValue.length() > previousValue.length() ? 1 : -1;
 
-            int beginIndex = currentValue.lastIndexOf(' ', endIndex - 1) + 1;
+                int beginIndex = currentValue.lastIndexOf(' ', endIndex - 1) + 1;
 
-            if (beginIndex >= endIndex)
-                return;
+                if (beginIndex >= endIndex)
+                    return;
 
-            String word = currentValue.substring(beginIndex, endIndex).toLowerCase();
-            Stream<AutoCompleteData> stream = test.stream().filter(
-                    data -> data.getPrototype().startsWith(word));
+                try {
+                    String word = currentValue.substring(beginIndex, endIndex).toLowerCase();
+                    Stream<AutocompleteData> stream = test.stream().filter(
+                            data -> data.getPrototype().startsWith(word));
 
-            ObservableList<AutoCompleteData> results = stream.collect(
-                    Collectors.toCollection(FXCollections::observableArrayList));
+                    ObservableList<AutocompleteData> results = stream.collect(
+                            Collectors.toCollection(FXCollections::observableArrayList));
 
-            if (!results.isEmpty()) {
-                autoCompletePopup.setList(results);
-                autoCompletePopup.show(primaryStage);
+                    if (!results.isEmpty()) {
+                        autocompletePopup.setList(results);
+                        autocompletePopup.show(primaryStage);
+                    }
+                } catch (StringIndexOutOfBoundsException exception) {
+                    Application.logger.log(Level.INFO, "cannot evaluate text autocomplete.");
+                }
             }
         }
 
         private void showTypeCheckEvent(MouseEvent mouseEvent) {
-            if (isEditable())
+            if (isEditable() && enableTypeCheckingProperty.get()
+                    && !autocompletePopup.isShowing()) {
                 typeCheckPopup.show(primaryStage);
-
-            mouseEvent.consume();
+                mouseEvent.consume();
+            }
         }
 
         private void hideTypeCheckEvent(MouseEvent mouseEvent) {
-            if (isEditable())
+            if (isEditable()) {
                 typeCheckPopup.hide();
-
-            mouseEvent.consume();
+                mouseEvent.consume();
+            }
         }
     }
 
@@ -359,16 +376,16 @@ public class MainWindow extends javafx.application.Application {
         }
     }
 
-    public class AutoCompleteData implements Comparable<AutoCompleteData> {
+    public class AutocompleteData implements Comparable<AutocompleteData> {
         private boolean variable;
         private String prototype;
 
-        public AutoCompleteData() {
+        public AutocompleteData() {
             variable = true;
             prototype = null;
         }
 
-        public AutoCompleteData(String prototype, boolean variable) {
+        public AutocompleteData(String prototype, boolean variable) {
             this.variable = variable;
             this.prototype = prototype;
         }
@@ -390,29 +407,29 @@ public class MainWindow extends javafx.application.Application {
         }
 
         @Override
-        public int compareTo(AutoCompleteData other) {
+        public int compareTo(AutocompleteData other) {
             return prototype.compareTo(other.getPrototype());
         }
     }
 
-    private class AutoCompleteItem extends ListCell<AutoCompleteData> {
-        public AutoCompleteItem() {
+    private class AutocompleteItem extends ListCell<AutocompleteData> {
+        public AutocompleteItem() {
             super();
             setGraphicTextGap(10.0);
             setPrefWidth(minimumWidth * 0.5);
         }
 
         @Override
-        public void updateItem(AutoCompleteData autoCompleteData, boolean empty) {
-            super.updateItem(autoCompleteData, empty);
+        public void updateItem(AutocompleteData autocompleteData, boolean empty) {
+            super.updateItem(autocompleteData, empty);
 
-            if (autoCompleteData == null || empty) {
+            if (autocompleteData == null || empty) {
                 setText(null);
                 setGraphic(null);
             } else {
-                setText(autoCompleteData.getPrototype());
+                setText(autocompleteData.getPrototype());
 
-                Image image = new Image(autoCompleteData.isVariable()
+                Image image = new Image(autocompleteData.isVariable()
                         ? variableIcon : functionIcon);
                 ImageView imageView = new ImageView(image);
 
@@ -421,28 +438,30 @@ public class MainWindow extends javafx.application.Application {
         }
     }
 
-    private class AutoCompletePopup extends PopupControl {
+    private class AutocompletePopup extends PopupControl {
         private final double rowHeight;
 
         private CommandLine commandLine;
-        private ListView<AutoCompleteData> listView;
+        private boolean forced;
 
-        public AutoCompletePopup(CommandLine commandLine) {
+        private ListView<AutocompleteData> listView;
+
+        public AutocompletePopup(CommandLine commandLine) {
             super();
 
             rowHeight = 24.0;
 
             this.commandLine = commandLine;
+            this.forced = false;
 
             listView = new ListView<>();
             listView.setFixedCellSize(rowHeight);
-            listView.setCellFactory(item -> new AutoCompleteItem());
-            listView.addEventFilter(KeyEvent.KEY_PRESSED,
-                    event -> showAutoCompleteEvent(event, commandLine));
+            listView.setCellFactory(item -> new AutocompleteItem());
 
             listView.setOnKeyPressed(this::insertTextEvent);
             listView.setOnMouseClicked(this::insertTextEvent);
 
+            listView.getSelectionModel().selectedIndexProperty().addListener(this::selectionListener);
             listView.prefWidthProperty().bind(commandLine.widthProperty());
 
             VBox rootLayout = new VBox();
@@ -455,27 +474,65 @@ public class MainWindow extends javafx.application.Application {
             getScene().setRoot(rootLayout);
         }
 
-        private void insertTextEvent(Event event) {
-            if (event instanceof KeyEvent) {
-                KeyEvent keyEvent = (KeyEvent)event;
+        private void selectionListener(ObservableValue<? extends Number> observable,
+                Number previousValue, Number currentValue) {
+            if (currentValue.intValue() == -1)
+                listView.getSelectionModel().select(previousValue.intValue());
+        }
 
-                if (keyEvent.getCode() != KeyCode.ENTER)
+        private void insertTextEvent(InputEvent inputEvent) {
+            if (inputEvent instanceof KeyEvent) {
+                KeyEvent keyEvent = (KeyEvent)inputEvent;
+
+                KeyCombination autocompleteShortcut = new KeyCodeCombination(KeyCode.SPACE,
+                        KeyCombination.CONTROL_DOWN);
+
+                KeyCombination selectAllShortcut = new KeyCodeCombination(KeyCode.A,
+                        KeyCombination.CONTROL_DOWN);
+
+                if (autocompleteShortcut.match(keyEvent)) {
+                    showAutocompletePopup(commandLine);
+
+                    keyEvent.consume();
                     return;
-            } else if (event instanceof MouseEvent) {
-                MouseEvent mouseEvent = (MouseEvent)event;
+                } else if (selectAllShortcut.match(keyEvent)) {
+                    hide();
+                    commandLine.selectAll();
 
-                if (mouseEvent.getButton() != MouseButton.PRIMARY
-                        || mouseEvent.getClickCount() != 2)
+                    keyEvent.consume();
+                    return;
+                } else if (keyEvent.getCode() == KeyCode.ESCAPE) {
+                    hide();
+
+                    keyEvent.consume();
+                    return;
+                } else if (keyEvent.getCode() != KeyCode.ENTER)
+                    return;
+            } else if (inputEvent instanceof MouseEvent) {
+                MouseEvent mouseEvent = (MouseEvent)inputEvent;
+
+                if (mouseEvent.getClickCount() != 2)
                     return;
             }
 
-            AutoCompleteData autoCompleteData = listView.getSelectionModel().getSelectedItem();
+            AutocompleteData autocompleteData = listView.getSelectionModel().getSelectedItem();
 
-            String prototype = autoCompleteData.getPrototype();
+            String prototype = autocompleteData.getPrototype();
             String text = commandLine.getText();
 
-            int endIndex = commandLine.getCaretPosition();
-            int beginIndex = text.lastIndexOf(' ', endIndex - 1) + 1;
+            int endIndex, beginIndex;
+            IndexRange selectionRange = commandLine.getSelection();
+
+            if (selectionRange.getLength() != 0) {
+                beginIndex = selectionRange.getStart();
+                endIndex = selectionRange.getEnd();
+            } else if (forced) {
+                beginIndex = commandLine.getCaretPosition();
+                endIndex = beginIndex;
+            } else {
+                endIndex = commandLine.getCaretPosition();
+                beginIndex = text.lastIndexOf(' ', endIndex - 1) + 1;
+            }
 
             String newText = text.substring(0, beginIndex) + prototype
                     + text.substring(endIndex, text.length());
@@ -485,30 +542,32 @@ public class MainWindow extends javafx.application.Application {
 
             hide();
 
-            event.consume();
+            inputEvent.consume();
         }
 
         public CommandLine getCommandLine() {
             return commandLine;
         }
 
-        public void setList(ObservableList<AutoCompleteData> list) {
+        public void setList(ObservableList<AutocompleteData> list) {
             listView.setItems(list);
 
-            listView.setPrefHeight(Math.min(minimumHeight * 0.5, list.size() * rowHeight + 5));
+            listView.setPrefHeight(MathUtils.min(minimumHeight * 0.5,
+                    list.size() * rowHeight + 5));
 
             if (!list.isEmpty()) {
-                listView.getSelectionModel().select(0);
+                listView.getSelectionModel().selectFirst();
                 listView.scrollTo(0);
             }
         }
 
-        public ObservableList<AutoCompleteData> getList() {
+        public ObservableList<AutocompleteData> getList() {
             return listView.getItems();
         }
 
-        @Override
-        public void show(Window window) {
+        public void show(Window window, boolean forced) {
+            this.forced = forced;
+
             Point2D offset = commandLine.localToScene(Point2D.ZERO);
 
             double listHeight = listView.getPrefHeight();
@@ -522,6 +581,17 @@ public class MainWindow extends javafx.application.Application {
                 setY(primaryStage.getY() + offset.getY() + 50);
 
             super.show(window);
+        }
+
+        @Override
+        public void show(Window window) {
+            show(window, false);
+        }
+
+        @Override
+        public void hide() {
+            this.forced = false;
+            super.hide();
         }
     }
 
@@ -581,7 +651,7 @@ public class MainWindow extends javafx.application.Application {
             copyMenuItem.setAccelerator(new KeyCodeCombination(KeyCode.C,
                     KeyCombination.CONTROL_DOWN));
 
-            SeparatorMenuItem separatorEditMenu = new SeparatorMenuItem();
+            SeparatorMenuItem separatorEditMenu1 = new SeparatorMenuItem();
 
             MenuItem deleteMenuItem = new MenuItem("Delete");
             deleteMenuItem.setOnAction(MainWindow.this::deleteAction);
@@ -592,9 +662,20 @@ public class MainWindow extends javafx.application.Application {
             deleteAllMenuItem.setOnAction(MainWindow.this::deleteAllAction);
             deleteAllMenuItem.disableProperty().bind(binding);
 
+            SeparatorMenuItem separatorEditMenu2 = new SeparatorMenuItem();
+
+            CheckMenuItem typeCheckingMenuItem = new CheckMenuItem("Type Checking");
+            typeCheckingMenuItem.setSelected(true);
+            enableTypeCheckingProperty.bindBidirectional(typeCheckingMenuItem.selectedProperty());
+
+            CheckMenuItem autocompleteMenuItem = new CheckMenuItem("Autocomplete");
+            autocompleteMenuItem.setSelected(true);
+            enableAutocompleteProperty.bindBidirectional(autocompleteMenuItem.selectedProperty());
+
             Menu editMenu = new Menu("_Edit");
-            editMenu.getItems().addAll(copyMenuItem, separatorEditMenu,
-                    deleteMenuItem, deleteAllMenuItem);
+            editMenu.getItems().addAll(copyMenuItem, separatorEditMenu1,
+                    deleteMenuItem, deleteAllMenuItem, separatorEditMenu2,
+                    typeCheckingMenuItem, autocompleteMenuItem);
 
             CheckMenuItem statusBarMenuItem = new CheckMenuItem("Status Bar");
             statusBarVisible.bindBidirectional(statusBarMenuItem.selectedProperty());
@@ -619,7 +700,7 @@ public class MainWindow extends javafx.application.Application {
             statusBarVisible.set(visible);
         }
 
-        public boolean getStatusBarVisible() {
+        public boolean isStatusBarVisible() {
             return statusBarVisible.get();
         }
     }
@@ -709,7 +790,7 @@ public class MainWindow extends javafx.application.Application {
             return messageLabel.getText();
         }
 
-        public boolean getMessageVisible() {
+        public boolean isMessageVisible() {
             return messageVisible.get();
         }
 
@@ -729,12 +810,23 @@ public class MainWindow extends javafx.application.Application {
     private static final ButtonType CANCEL_BUTTON = new ButtonType("Cancel",
             ButtonData.CANCEL_CLOSE);
 
-    private class FileSaveDialog extends Alert {
+    private class Dialog extends Alert {
+        public Dialog(AlertType type) {
+            super(type);
+
+            setResizable(false);
+            initOwner(primaryStage);
+            initModality(Modality.APPLICATION_MODAL);
+
+            showingProperty().addListener(MainWindow.this::parentStageShowingListener);
+        }
+    }
+
+    private class FileSaveDialog extends Dialog {
         public FileSaveDialog() {
             super(AlertType.CONFIRMATION);
 
             setTitle("Save");
-            setResizable(false);
             setHeaderText("Do you want to save changes to document?");
 
             Image image = new Image(confirmationIcon);
@@ -747,73 +839,69 @@ public class MainWindow extends javafx.application.Application {
             ButtonType cancelButton = CANCEL_BUTTON;
 
             getButtonTypes().setAll(saveButton, discardButton, cancelButton);
-
-            initOwner(primaryStage);
-            initModality(Modality.APPLICATION_MODAL);
-
-            showingProperty().addListener(MainWindow.this::parentStageShowingListener);
         }
     }
 
-    private class FileErrorDialog extends Alert {
+    private class FileErrorDialog extends Dialog {
         public FileErrorDialog(String message) {
             super(Alert.AlertType.ERROR);
 
             setTitle("File Error");
-            setResizable(false);
             setHeaderText(message);
 
             Image image = new Image(errorIcon);
             ImageView imageView = new ImageView(image);
 
             setGraphic(imageView);
-
             getButtonTypes().setAll(ButtonType.OK);
-
-            initOwner(primaryStage);
-            initModality(Modality.APPLICATION_MODAL);
-
-            showingProperty().addListener(MainWindow.this::parentStageShowingListener);
         }
     }
 
-    private class AboutDialog extends Alert {
+    private class AboutDialog extends Dialog {
         public AboutDialog() {
             super(Alert.AlertType.INFORMATION);
 
             Image image = new Image(icons[2]);
             ImageView imageView = new ImageView(image);
 
-            Label titleLabel = new Label(Application.fullName);
-            titleLabel.getStyleClass().add("title-label");
+            Text titleText = new Text(Application.fullName + ' ');
+            titleText.getStyleClass().setAll("title-text");
 
-            Label copyrightLabel = new Label(Application.copyright);
+            Text versionText = new Text(Application.version);
+            Text licenseText = new Text(Application.name + " has been licensed under the ");
+
+            Hyperlink licenseLink = new Hyperlink(Application.license);
+            licenseLink.setOnAction(actionEvent
+                    -> getHostServices().showDocument(Application.licenseLink));
+
+            Text licenseEndLineText = new Text('.' + System.lineSeparator());
+            Text copyrightText = new Text(Application.copyright);
+
+            TextFlow titleTextFlow = new TextFlow(titleText, versionText);
+            TextFlow descriptionTextFlow = new TextFlow(licenseText, licenseLink,
+                    licenseEndLineText, copyrightText);
 
             VBox boxLayout = new VBox();
             boxLayout.setSpacing(5.0);
-            boxLayout.getChildren().addAll(titleLabel, copyrightLabel);
+            boxLayout.setAlignment(Pos.CENTER_LEFT);
+            boxLayout.getChildren().addAll(titleTextFlow, descriptionTextFlow);
 
             HBox rootLayout = new HBox();
             rootLayout.setSpacing(10.0);
+            rootLayout.setAlignment(Pos.CENTER_LEFT);
             rootLayout.getStyleClass().add("header-panel");
             rootLayout.getChildren().addAll(imageView, boxLayout);
 
-            DialogPane dialogPane = getDialogPane();
-            dialogPane.setHeader(rootLayout);
+            DialogPane dialogPanel = getDialogPane();
+            dialogPanel.setHeader(rootLayout);
 
             setTitle("About");
-            setResizable(false);
 
             ButtonType closeButton = new ButtonType("Close", ButtonData.CANCEL_CLOSE);
             getButtonTypes().setAll(closeButton);
 
-            Button closeButtonLookup = (Button)dialogPane.lookupButton(closeButton);
+            Button closeButtonLookup = (Button)dialogPanel.lookupButton(closeButton);
             closeButtonLookup.setDefaultButton(true);
-
-            initOwner(primaryStage);
-            initModality(Modality.APPLICATION_MODAL);
-
-            showingProperty().addListener(MainWindow.this::parentStageShowingListener);
         }
     }
 
@@ -882,18 +970,18 @@ public class MainWindow extends javafx.application.Application {
     }
 
     public MainWindow() {
-        test.add(new AutoCompleteData("maria", true));
-        test.add(new AutoCompleteData("mine", false));
-        test.add(new AutoCompleteData("magnificent", false));
-        test.add(new AutoCompleteData("morango", true));
-        test.add(new AutoCompleteData("too much", false));
-        test.add(new AutoCompleteData("tomato", true));
-        test.add(new AutoCompleteData("maria", true));
-        test.add(new AutoCompleteData("mine", false));
-        test.add(new AutoCompleteData("magnificent", false));
-        test.add(new AutoCompleteData("morango", true));
-        test.add(new AutoCompleteData("too much", false));
-        test.add(new AutoCompleteData("tomato", true));
+        test.add(new AutocompleteData("maria", true));
+        test.add(new AutocompleteData("mine", false));
+        test.add(new AutocompleteData("magnificent", false));
+        test.add(new AutocompleteData("morango", true));
+        test.add(new AutocompleteData("too much", false));
+        test.add(new AutocompleteData("tomato", true));
+        test.add(new AutocompleteData("maria", true));
+        test.add(new AutocompleteData("mine", false));
+        test.add(new AutocompleteData("magnificent", false));
+        test.add(new AutocompleteData("morango", true));
+        test.add(new AutocompleteData("too much", false));
+        test.add(new AutocompleteData("tomato", true));
         Collections.sort(test);
 
         width = 600;
@@ -927,6 +1015,8 @@ public class MainWindow extends javafx.application.Application {
         disableMenuItemProperty = new SimpleBooleanProperty(true);
         primaryStageBlockedProperty = new SimpleBooleanProperty(false);
         messageVisibleProperty = new SimpleBooleanProperty(true);
+        enableTypeCheckingProperty = new SimpleBooleanProperty(true);
+        enableAutocompleteProperty = new SimpleBooleanProperty(true);
 
         lineNumberProperty = new SimpleIntegerProperty(1);
         columnNumberProperty = new SimpleIntegerProperty(1);
@@ -955,14 +1045,14 @@ public class MainWindow extends javafx.application.Application {
     }
 
     private void readFile() {
-        FileContent content = file.read();
+        Document document = (Document)file.read();
 
-        if (content != null) {
+        if (document != null) {
             commandLines.clear();
             CommandLine commandLine = null;
 
-            for (int i = 0; i < content.getCommandLineDataCount(); i++) {
-                CommandLineData commandLineData = content.getCommandLineData(i);
+            for (int i = 0; i < document.getCommandLineDataCount(); i++) {
+                CommandLineData commandLineData = document.getCommandLineData(i);
 
                 commandLine = createCommandLine(commandLineData.isError(),
                         commandLineData.getText());
@@ -984,17 +1074,17 @@ public class MainWindow extends javafx.application.Application {
     }
 
     private void writeFile() {
-        FileContent content = new FileContent();
+        Document document = new Document();
 
         for (int i = 0; i < commandLines.size(); i++) {
             CommandLine commandLine = commandLines.get(i);
-            CommandLineData commandLineData = content.new CommandLineData(
+            CommandLineData commandLineData = document.new CommandLineData(
                     commandLine.isError(), commandLine.getText());
 
-            content.addCommandLineData(commandLineData);
+            document.addCommandLineData(commandLineData);
         }
 
-        file.write(content);
+        file.write(document);
         fileWasSavedProperty.set(true);
     }
 
@@ -1069,6 +1159,25 @@ public class MainWindow extends javafx.application.Application {
 
     private void closeApplication() {
         file.close();
+
+        Handler[] handlers = Application.logger.getHandlers();
+
+        if (handlers != null)
+            for (Handler handler : handlers)
+                handler.close();
+
+        file = new File("mes.pref");
+
+        if (file.isOpen()) {
+            VBox rootLayout = (VBox)primaryStage.getScene().getRoot();
+            MenuBar menuBar = (MenuBar)rootLayout.getChildren().get(0);
+
+            Preferences preferences = new Preferences(enableTypeCheckingProperty.get(),
+                    enableAutocompleteProperty.get(), menuBar.isStatusBarVisible());
+
+            file.write(preferences);
+            file.close();
+        }
 
         Platform.exit();
         System.exit(0);
@@ -1235,6 +1344,18 @@ public class MainWindow extends javafx.application.Application {
             focusCommandLine(getCommandLineOnStack(0));
     }
 
+    private void updateTypeCheckingListener(ObservableValue<? extends Boolean> observable,
+            Boolean previousValue, Boolean currentValue) {
+        CommandLine commandLine = getCommandLineOnStack(0);
+        TypeCheckPopup typeCheckPopup = commandLine.getTypeCheckPopup();
+
+        if (currentValue) {
+            typeCheckPopup.setErrorMessage("teste");
+            commandLine.pseudoClassStateChanged(TYPECHECK_PSEUDO_CLASS, true);
+        } else
+            commandLine.pseudoClassStateChanged(TYPECHECK_PSEUDO_CLASS, false);
+    }
+
     private CommandLine createCommandLine(boolean error, String text) {
         CommandLine commandLine = new CommandLine(error);
 
@@ -1272,7 +1393,7 @@ public class MainWindow extends javafx.application.Application {
             if (text.length() == 1)
                 character = text.charAt(0);
         } catch (UnsupportedEncodingException exception) {
-            exception.printStackTrace();
+            Application.logger.log(Level.INFO, "cannot decode pressed key.");
         }
 
         if (character > 32 && character < 127 && !keyEvent.isShortcutDown()) {
@@ -1287,25 +1408,17 @@ public class MainWindow extends javafx.application.Application {
         }
     }
 
-    private void showAutoCompleteEvent(KeyEvent keyEvent, CommandLine commandLine) {
-        if (!commandLine.isEditable())
-            return;
+    private void showAutocompletePopup(CommandLine commandLine) {
+        if (commandLine.isEditable() && enableAutocompleteProperty.get()) {
+            AutocompletePopup autocompletePopup = commandLine.getAutocompletePopup();
+            autocompletePopup.hide();
 
-        AutoCompletePopup autoCompletePopup = commandLine.getAutoCompletePopup();
-        KeyCombination autoCompleteShortcut = new KeyCodeCombination(KeyCode.SPACE,
-                KeyCombination.CONTROL_DOWN);
-
-        if (autoCompleteShortcut.match(keyEvent)) {
-            ObservableList<AutoCompleteData> data = FXCollections.observableList(test);
-
-            autoCompletePopup.hide();
+            ObservableList<AutocompleteData> data = FXCollections.observableList(test);
 
             if (!data.isEmpty()) {
-                autoCompletePopup.setList(data);
-                autoCompletePopup.show(primaryStage);
+                autocompletePopup.setList(data);
+                autocompletePopup.show(primaryStage, true);
             }
-
-            keyEvent.consume();
         }
     }
 
@@ -1317,11 +1430,16 @@ public class MainWindow extends javafx.application.Application {
 
         KeyCombination copyShortcut = new KeyCodeCombination(KeyCode.C,
                 KeyCombination.CONTROL_DOWN);
+        KeyCombination autocompleteShortcut = new KeyCodeCombination(KeyCode.SPACE,
+                KeyCombination.CONTROL_DOWN);
 
         if (sourceCommandLine != currentCommandLine && code == KeyCode.ENTER) {
             focusCommandLine(currentCommandLine);
             scrollPositionProperty.set(1.0);
 
+            keyEvent.consume();
+        } else if (autocompleteShortcut.match(keyEvent)) {
+            showAutocompletePopup(sourceCommandLine);
             keyEvent.consume();
         } else if (code == KeyCode.DOWN) {
             robot.keyPress(KeyCode.TAB);
@@ -1426,6 +1544,39 @@ public class MainWindow extends javafx.application.Application {
         primaryStageBlockedProperty.set(currentValue);
     }
 
+    private void openFile(File newFile) {
+        if (newFile.isOpen())
+            if (fileWasSavedProperty.get()) {
+                file.close();
+                file = newFile;
+
+                readFile();
+            } else {
+                FileSaveDialog fileSaveDialog = new FileSaveDialog();
+                Optional<ButtonType> option = fileSaveDialog.showAndWait();
+
+                if (option.isPresent()) {
+                    if (option.get() == SAVE_BUTTON)
+                        if (file.isOpen())
+                            writeFile();
+                        else if (!requestSave())
+                            return;
+
+                    if (option.get() != CANCEL_BUTTON) {
+                        file.close();
+                        file = newFile;
+
+                        readFile();
+                    }
+                }
+            }
+        else {
+            FileErrorDialog fileAccessErrorDialog = new FileErrorDialog(
+                    "Cannot access file already in use or corrupted.");
+            fileAccessErrorDialog.showAndWait();
+        }
+    }
+
     private void validateDraggedFileEvent(DragEvent dragEvent) {
         Dragboard dragboard = dragEvent.getDragboard();
 
@@ -1452,40 +1603,7 @@ public class MainWindow extends javafx.application.Application {
         } else
             dragEvent.setDropCompleted(false);
 
-        Platform.runLater(() -> {
-            if (temporaryFile.isOpen())
-                if (fileWasSavedProperty.get()) {
-                    file.close();
-                    file = temporaryFile;
-
-                    readFile();
-                } else {
-                    FileSaveDialog fileSaveDialog = new FileSaveDialog();
-                    Optional<ButtonType> option = fileSaveDialog.showAndWait();
-
-                    if (option.isPresent()) {
-                        if (option.get() == SAVE_BUTTON)
-                            if (file.isOpen())
-                                writeFile();
-                            else if (!requestSave()) {
-                                dragEvent.consume();
-                                return;
-                            }
-
-                        if (option.get() != CANCEL_BUTTON) {
-                            file.close();
-                            file = temporaryFile;
-
-                            readFile();
-                        }
-                    }
-                }
-            else {
-                FileErrorDialog fileAccessErrorDialog = new FileErrorDialog(
-                        "Cannot access file already in use or corrupted.");
-                fileAccessErrorDialog.showAndWait();
-            }
-        });
+        Platform.runLater(() -> openFile(temporaryFile));
 
         dragEvent.consume();
     }
@@ -1543,6 +1661,31 @@ public class MainWindow extends javafx.application.Application {
         menuBar.setStatusBarVisible(true);
 
         createCommandLine(false);
+
+        Parameters parameters = getParameters();
+
+        if (!parameters.getRaw().isEmpty()) {
+            File temporaryFile = new File(parameters.getRaw().get(0));
+            openFile(temporaryFile);
+        }
+
+        file.open(Application.name.toLowerCase() + ".pref");
+
+        if (file.isOpen()) {
+            Preferences preferences = (Preferences)file.read();
+
+            if (preferences != null) {
+                enableTypeCheckingProperty.set(preferences.isEnableTypeChecking());
+                enableAutocompleteProperty.set(preferences.isEnableAutocomplete());
+                menuBar.setStatusBarVisible(preferences.isStatusBarVisible());
+            }
+
+            file.close();
+        }
+
+        file = new File();
+        enableTypeCheckingProperty.addListener(this::updateTypeCheckingListener);
+
         stage.show();
 
         centerWindowOnScreen(stage);
