@@ -27,13 +27,9 @@
 
 package mes.ui;
 
-import mes.io.File;
-import mes.io.Document;
-import mes.io.Document.CommandLineData;
-import mes.lang.MathUtils;
-import java.io.UnsupportedEncodingException;
-import java.util.ArrayList;
-import java.util.Collections;
+import com.sun.javafx.robot.FXRobot;
+import com.sun.javafx.robot.FXRobotFactory;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
@@ -50,7 +46,6 @@ import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.value.ObservableValue;
-import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.css.PseudoClass;
@@ -61,8 +56,6 @@ import javafx.geometry.Point2D;
 import javafx.geometry.Pos;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.Node;
-import javafx.stage.Stage;
-import javafx.scene.layout.VBox;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
@@ -77,7 +70,6 @@ import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
-import javafx.scene.control.PopupControl;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.SeparatorMenuItem;
 import javafx.scene.control.TextField;
@@ -87,6 +79,7 @@ import javafx.scene.input.Clipboard;
 import javafx.scene.input.ClipboardContent;
 import javafx.scene.input.DragEvent;
 import javafx.scene.input.Dragboard;
+import javafx.scene.input.InputEvent;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyCombination;
@@ -95,20 +88,30 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.input.TransferMode;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
+import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
 import javafx.stage.FileChooser;
 import javafx.stage.Modality;
+import javafx.stage.Popup;
 import javafx.stage.Screen;
+import javafx.stage.Stage;
 import javafx.stage.Window;
-import com.sun.javafx.robot.FXRobot;
-import com.sun.javafx.robot.FXRobotFactory;
-import javafx.scene.input.InputEvent;
+import mes.io.Document;
+import mes.io.Document.CommandLineData;
+import mes.io.File;
 import mes.io.Preferences;
+import mes.lang.ExceptionContent;
+import mes.lang.FunctionLiteralSymbol;
+import mes.lang.IdentifierLiteralSymbol;
+import mes.lang.Interpreter;
+import mes.lang.LiteralSymbol;
+import mes.lang.MathUtils;
+import mes.lang.Statement;
+import mes.lang.Symbol.SymbolType;
+import mes.lang.SymbolTable;
 
 public class MainWindow extends javafx.application.Application {
-    private List<AutocompleteData> test = new ArrayList<>();
-
     private final int width;
     private final int height;
     private final int minimumWidth;
@@ -123,6 +126,10 @@ public class MainWindow extends javafx.application.Application {
     private final String informationIcon;
     private final String variableIcon;
     private final String functionIcon;
+
+    private final String autocompleteSeparators;
+
+    private Interpreter interpreter;
 
     private Stage primaryStage;
     FXRobot robot;
@@ -260,37 +267,62 @@ public class MainWindow extends javafx.application.Application {
             typeCheckPopup.hide();
 
             if (enableTypeCheckingProperty.get()) {
-                typeCheckPopup.setErrorMessage("Error: invalid expression.");
-                pseudoClassStateChanged(TYPECHECK_PSEUDO_CLASS, true);
+                Statement statement = interpreter.run(currentValue, true);
+
+                if (statement.hasException()) {
+                    ExceptionContent exception = statement.getException();
+
+                    typeCheckPopup.setErrorMessage(exception.getMessage());
+                    pseudoClassStateChanged(TYPECHECK_PSEUDO_CLASS, true);
+                } else {
+                    typeCheckPopup.setErrorMessage(null);
+                    pseudoClassStateChanged(TYPECHECK_PSEUDO_CLASS, false);
+                }
             }
 
             autocompletePopup.hide();
 
             if (enableAutocompleteProperty.get()) {
-                if (currentValue.isEmpty())
+                if (currentValue.isEmpty()) {
+                    autocompletePopup.setForced(false);
                     return;
+                }
 
-                int endIndex = getCaretPosition();
-                endIndex += currentValue.length() > previousValue.length() ? 1 : -1;
+                int offset = currentValue.length() > previousValue.length() ? 1 : -1;
+                int endIndex = getCaretPosition() + offset;
 
-                int beginIndex = currentValue.lastIndexOf(' ', endIndex - 1) + 1;
+                Optional<Integer> maxIndex = autocompleteSeparators.chars().mapToObj(
+                        c -> currentValue.lastIndexOf(c, endIndex - 1)).max(Comparator.naturalOrder());
 
-                if (beginIndex >= endIndex)
+                int beginIndex;
+
+                try {
+                    beginIndex = maxIndex.get() + 1;
+                } catch (Exception exception) {
+                    beginIndex = 0;
+                }
+
+                if (beginIndex >= endIndex) {
+                    autocompletePopup.setForced(false);
                     return;
+                }
+
+                if (autocompletePopup.isForced())
+                    beginIndex = autocompletePopup.getAnchor();
+
+                if (beginIndex >= endIndex) {
+                    autocompletePopup.setForced(false);
+                    return;
+                }
 
                 try {
                     String word = currentValue.substring(beginIndex, endIndex).toLowerCase();
-                    Stream<AutocompleteData> stream = test.stream().filter(
-                            data -> data.getPrototype().startsWith(word));
 
-                    ObservableList<AutocompleteData> results = stream.collect(
-                            Collectors.toCollection(FXCollections::observableArrayList));
-
-                    if (!results.isEmpty()) {
-                        autocompletePopup.setList(results);
+                    if (!word.isEmpty()) {
+                        autocompletePopup.computeList(word, interpreter.getSymbolTable());
                         autocompletePopup.show(primaryStage);
                     }
-                } catch (StringIndexOutOfBoundsException exception) {
+                } catch (Exception exception) {
                     Application.logger.log(Level.INFO, "cannot evaluate text autocomplete.");
                 }
             }
@@ -312,7 +344,7 @@ public class MainWindow extends javafx.application.Application {
         }
     }
 
-    private class TypeCheckPopup extends PopupControl {
+    private class TypeCheckPopup extends Popup {
         private CommandLine commandLine;
         private Label errorMessageLabel;
 
@@ -377,38 +409,56 @@ public class MainWindow extends javafx.application.Application {
     }
 
     public class AutocompleteData implements Comparable<AutocompleteData> {
-        private boolean variable;
-        private String prototype;
+        private IdentifierLiteralSymbol identifierSymbol;
 
         public AutocompleteData() {
-            variable = true;
-            prototype = null;
+            this(null);
         }
 
-        public AutocompleteData(String prototype, boolean variable) {
-            this.variable = variable;
-            this.prototype = prototype;
+        public AutocompleteData(IdentifierLiteralSymbol identifierSymbol) {
+            this.identifierSymbol = identifierSymbol;
         }
 
-        public void setVariable(boolean variable) {
-            this.variable = variable;
+        public void setIdentifierSymbol(IdentifierLiteralSymbol identifierSymbol) {
+            this.identifierSymbol = identifierSymbol;
         }
 
-        public void setPrototype(String prototype) {
-            this.prototype = prototype;
+        public IdentifierLiteralSymbol getIdentifierSymbol() {
+            return identifierSymbol;
+        }
+
+        public String getLabelText() {
+            return identifierSymbol == null ? "No results" : getSymbolPrototype();
+        }
+
+        public String getAutocompleteText() {
+            String prototype = getSymbolPrototype();
+            return prototype.substring(0, prototype.indexOf(':'));
+        }
+
+        public String getSymbolName() {
+            return identifierSymbol.getName();
+        }
+
+        public String getSymbolPrototype() {
+            return identifierSymbol.getPrototype();
+        }
+
+        public int getArgumentCount() {
+            if (isVariable())
+                return 0;
+
+            FunctionLiteralSymbol functionSymbol = (FunctionLiteralSymbol)identifierSymbol;
+            return functionSymbol.getArguments().size();
         }
 
         public boolean isVariable() {
-            return variable;
-        }
-
-        public String getPrototype() {
-            return prototype;
+            return identifierSymbol.getType() == SymbolType.Variable;
         }
 
         @Override
         public int compareTo(AutocompleteData other) {
-            return prototype.compareTo(other.getPrototype());
+            return getLabelText().compareTo(other.getLabelText());
         }
     }
 
@@ -426,8 +476,11 @@ public class MainWindow extends javafx.application.Application {
             if (autocompleteData == null || empty) {
                 setText(null);
                 setGraphic(null);
+            } else if (autocompleteData.getIdentifierSymbol() == null) {
+                setText(autocompleteData.getLabelText());
+                setGraphic(null);
             } else {
-                setText(autocompleteData.getPrototype());
+                setText(autocompleteData.getLabelText());
 
                 Image image = new Image(autocompleteData.isVariable()
                         ? variableIcon : functionIcon);
@@ -438,12 +491,14 @@ public class MainWindow extends javafx.application.Application {
         }
     }
 
-    private class AutocompletePopup extends PopupControl {
+    private class AutocompletePopup extends Popup {
         private final double rowHeight;
 
         private CommandLine commandLine;
         private boolean forced;
+        private int anchor;
 
+        private VBox rootLayout;
         private ListView<AutocompleteData> listView;
 
         public AutocompletePopup(CommandLine commandLine) {
@@ -453,6 +508,7 @@ public class MainWindow extends javafx.application.Application {
 
             this.commandLine = commandLine;
             this.forced = false;
+            this.anchor = 0;
 
             listView = new ListView<>();
             listView.setFixedCellSize(rowHeight);
@@ -464,7 +520,7 @@ public class MainWindow extends javafx.application.Application {
             listView.getSelectionModel().selectedIndexProperty().addListener(this::selectionListener);
             listView.prefWidthProperty().bind(commandLine.widthProperty());
 
-            VBox rootLayout = new VBox();
+            rootLayout = new VBox();
             rootLayout.getChildren().add(listView);
             rootLayout.getStyleClass().setAll("auto-complete-popup");
 
@@ -517,48 +573,104 @@ public class MainWindow extends javafx.application.Application {
 
             AutocompleteData autocompleteData = listView.getSelectionModel().getSelectedItem();
 
-            String prototype = autocompleteData.getPrototype();
-            String text = commandLine.getText();
+            if (autocompleteData.getIdentifierSymbol() != null) {
+                String autocompleteText = autocompleteData.getAutocompleteText();
+                String text = commandLine.getText();
 
-            int endIndex, beginIndex;
-            IndexRange selectionRange = commandLine.getSelection();
+                int endIndex, beginIndex;
+                IndexRange selectionRange = commandLine.getSelection();
 
-            if (selectionRange.getLength() != 0) {
-                beginIndex = selectionRange.getStart();
-                endIndex = selectionRange.getEnd();
-            } else if (forced) {
-                beginIndex = commandLine.getCaretPosition();
-                endIndex = beginIndex;
-            } else {
-                endIndex = commandLine.getCaretPosition();
-                beginIndex = text.lastIndexOf(' ', endIndex - 1) + 1;
+                if (selectionRange.getLength() != 0) {
+                    beginIndex = selectionRange.getStart();
+                    endIndex = selectionRange.getEnd();
+                } else if (forced) {
+                    beginIndex = anchor;
+                    endIndex = commandLine.getCaretPosition();
+                } else {
+                    endIndex = commandLine.getCaretPosition();
+
+                    Optional<Integer> maxIndex = autocompleteSeparators.chars().mapToObj(
+                            c -> text.lastIndexOf(c, endIndex - 1)).max(Comparator.naturalOrder());
+
+                    try {
+                        beginIndex = maxIndex.get() + 1;
+                    } catch (Exception exception) {
+                        beginIndex = 0;
+                    }
+                }
+
+                String newText = text.substring(0, beginIndex) + autocompleteText
+                        + text.substring(endIndex, text.length());
+
+                commandLine.setText(newText);
+
+                int argumentCount = autocompleteData.getArgumentCount();
+
+                if (!autocompleteData.isVariable() && argumentCount != 0) {
+                    int selectionBegin = beginIndex + autocompleteText.indexOf('(') + 1;
+                    int selectionEnd = beginIndex;
+
+                    if (argumentCount == 1)
+                        selectionEnd += autocompleteText.indexOf(')');
+                    else
+                        selectionEnd += autocompleteText.indexOf(',');
+
+                    commandLine.selectRange(selectionBegin, selectionEnd);
+                } else
+                    commandLine.positionCaret(beginIndex + autocompleteText.length());
             }
 
-            String newText = text.substring(0, beginIndex) + prototype
-                    + text.substring(endIndex, text.length());
-
-            commandLine.setText(newText);
-            commandLine.positionCaret(beginIndex + prototype.length());
+            this.forced = false;
 
             hide();
-
             inputEvent.consume();
+        }
+
+        private boolean filterSymbols(String word, LiteralSymbol symbol) {
+            IdentifierLiteralSymbol identifierSymbol = (IdentifierLiteralSymbol)symbol;
+            return identifierSymbol.getName().toLowerCase().startsWith(word);
+        }
+
+        public void setForced(boolean forced) {
+            this.forced = forced;
         }
 
         public CommandLine getCommandLine() {
             return commandLine;
         }
 
-        public void setList(ObservableList<AutocompleteData> list) {
-            listView.setItems(list);
+        public boolean isForced() {
+            return forced;
+        }
+
+        public int getAnchor() {
+            return anchor;
+        }
+
+        public void setList(SymbolTable symbolTable) {
+            ObservableList<AutocompleteData> items = listView.getItems();
+            items.clear();
+
+            if (symbolTable.isEmpty())
+                items.add(new AutocompleteData());
+            else {
+                symbolTable.forEach(symbol -> items.add(
+                        new AutocompleteData((IdentifierLiteralSymbol)symbol)));
+                items.sort(null);
+            }
 
             listView.setPrefHeight(MathUtils.min(minimumHeight * 0.5,
-                    list.size() * rowHeight + 5));
+                    items.size() * rowHeight + 5));
 
-            if (!list.isEmpty()) {
-                listView.getSelectionModel().selectFirst();
-                listView.scrollTo(0);
-            }
+            listView.getSelectionModel().selectFirst();
+            listView.scrollTo(0);
+        }
+
+        public void computeList(String word, SymbolTable symbolTable) {
+            Stream<LiteralSymbol> stream = symbolTable.stream().filter(
+                    symbol -> filterSymbols(word, symbol));
+
+            setList(stream.collect(Collectors.toCollection(SymbolTable::new)));
         }
 
         public ObservableList<AutocompleteData> getList() {
@@ -566,16 +678,29 @@ public class MainWindow extends javafx.application.Application {
         }
 
         public void show(Window window, boolean forced) {
-            this.forced = forced;
+            if (!this.forced)
+                this.forced = forced;
+
+            if (forced)
+                anchor = commandLine.getCaretPosition();
+
+            ObservableList<AutocompleteData> items = listView.getItems();
+
+            if (!items.isEmpty() && items.get(0).getIdentifierSymbol() == null && !this.forced)
+                return;
 
             Point2D offset = commandLine.localToScene(Point2D.ZERO);
+            Point2D positionOnScreen = commandLine.localToScreen(Point2D.ZERO);
+
+            Rectangle2D bounds = Screen.getPrimary().getVisualBounds();
 
             double listHeight = listView.getPrefHeight();
             double sceneHeight = primaryStage.getScene().getHeight() - 50;
 
             setX(primaryStage.getX() + offset.getX());
 
-            if (offset.getY() > sceneHeight * 0.5 && listHeight > sceneHeight - offset.getY())
+            if ((offset.getY() > sceneHeight * 0.5 && listHeight > sceneHeight - offset.getY())
+                    || listHeight > bounds.getHeight() - positionOnScreen.getY() - 30)
                 setY(primaryStage.getY() + offset.getY() - listHeight + 25);
             else
                 setY(primaryStage.getY() + offset.getY() + 50);
@@ -590,7 +715,6 @@ public class MainWindow extends javafx.application.Application {
 
         @Override
         public void hide() {
-            this.forced = false;
             super.hide();
         }
     }
@@ -952,7 +1076,7 @@ public class MainWindow extends javafx.application.Application {
         private void deleteAction(ActionEvent actionEvent, CommandLine commandLine) {
             int index = commandLines.indexOf(commandLine);
 
-            if (index % 2 != 0)
+            if (MathUtils.isodd(index))
                 index--;
 
             commandLines.remove(index);
@@ -970,20 +1094,6 @@ public class MainWindow extends javafx.application.Application {
     }
 
     public MainWindow() {
-        test.add(new AutocompleteData("maria", true));
-        test.add(new AutocompleteData("mine", false));
-        test.add(new AutocompleteData("magnificent", false));
-        test.add(new AutocompleteData("morango", true));
-        test.add(new AutocompleteData("too much", false));
-        test.add(new AutocompleteData("tomato", true));
-        test.add(new AutocompleteData("maria", true));
-        test.add(new AutocompleteData("mine", false));
-        test.add(new AutocompleteData("magnificent", false));
-        test.add(new AutocompleteData("morango", true));
-        test.add(new AutocompleteData("too much", false));
-        test.add(new AutocompleteData("tomato", true));
-        Collections.sort(test);
-
         width = 600;
         height = 600;
         minimumWidth = 250;
@@ -1005,7 +1115,14 @@ public class MainWindow extends javafx.application.Application {
         variableIcon = "images/variable.png";
         functionIcon = "images/function.png";
 
+        autocompleteSeparators = " ,()";
+
         Locale.setDefault(Locale.US);
+
+        interpreter = new Interpreter();
+
+        if (!interpreter.hasDefaultSymbols())
+            Application.logger.log(Level.INFO, "cannot import default symbols.");
 
         file = new File();
         fileWasSavedProperty = new SimpleBooleanProperty(false);
@@ -1313,7 +1430,7 @@ public class MainWindow extends javafx.application.Application {
 
         int index = commandLines.indexOf(commandLine);
 
-        if (index % 2 != 0)
+        if (MathUtils.isodd(index))
             index--;
 
         commandLines.remove(index);
@@ -1350,10 +1467,19 @@ public class MainWindow extends javafx.application.Application {
         TypeCheckPopup typeCheckPopup = commandLine.getTypeCheckPopup();
 
         if (currentValue) {
-            typeCheckPopup.setErrorMessage("teste");
-            commandLine.pseudoClassStateChanged(TYPECHECK_PSEUDO_CLASS, true);
-        } else
-            commandLine.pseudoClassStateChanged(TYPECHECK_PSEUDO_CLASS, false);
+            Statement statement = interpreter.run(commandLine.getText(), true);
+
+            if (statement.hasException()) {
+                ExceptionContent exception = statement.getException();
+
+                typeCheckPopup.setErrorMessage(exception.getMessage());
+                commandLine.pseudoClassStateChanged(TYPECHECK_PSEUDO_CLASS, true);
+
+                return;
+            }
+        }
+
+        commandLine.pseudoClassStateChanged(TYPECHECK_PSEUDO_CLASS, false);
     }
 
     private CommandLine createCommandLine(boolean error, String text) {
@@ -1392,7 +1518,7 @@ public class MainWindow extends javafx.application.Application {
 
             if (text.length() == 1)
                 character = text.charAt(0);
-        } catch (UnsupportedEncodingException exception) {
+        } catch (Exception exception) {
             Application.logger.log(Level.INFO, "cannot decode pressed key.");
         }
 
@@ -1413,12 +1539,8 @@ public class MainWindow extends javafx.application.Application {
             AutocompletePopup autocompletePopup = commandLine.getAutocompletePopup();
             autocompletePopup.hide();
 
-            ObservableList<AutocompleteData> data = FXCollections.observableList(test);
-
-            if (!data.isEmpty()) {
-                autocompletePopup.setList(data);
-                autocompletePopup.show(primaryStage, true);
-            }
+            autocompletePopup.setList(interpreter.getSymbolTable());
+            autocompletePopup.show(primaryStage, true);
         }
     }
 
@@ -1477,7 +1599,26 @@ public class MainWindow extends javafx.application.Application {
             if (currentCommandLine.lengthProperty().get() != 0) {
                 currentCommandLine.setEditable(false);
 
-                CommandLine commandLine = createCommandLine(false, "Error: this is a test.");
+                Statement statement = interpreter.run(currentCommandLine.getText());
+                CommandLine commandLine;
+
+                if (statement.hasException()) {
+                    ExceptionContent exception = statement.getException();
+                    commandLine = createCommandLine(true, ">> " + exception.getMessage());
+                } else {
+                    LiteralSymbol result = statement.getResult();
+                    String output;
+
+                    if (result.getType() == SymbolType.Number)
+                        output = String.valueOf(result.getDoubleValue());
+                    else {
+                        IdentifierLiteralSymbol identifierResult = (IdentifierLiteralSymbol)result;
+                        output = identifierResult.getPrototype();
+                    }
+
+                    commandLine = createCommandLine(false, ">> " + output);
+                }
+
                 commandLine.setEditable(false);
 
                 createCommandLine(false);
@@ -1495,7 +1636,7 @@ public class MainWindow extends javafx.application.Application {
                     if (keyEvent.getCode() == KeyCode.BACK_SPACE)
                         index -= 2;
 
-                    if (index % 2 != 0)
+                    if (MathUtils.isodd(index))
                         index--;
 
                     if (index >= 0) {
@@ -1650,9 +1791,9 @@ public class MainWindow extends javafx.application.Application {
         stage.setScene(scene);
         stage.setOnCloseRequest(this::exitAction);
 
-        Image[] images = new Image[5];
+        Image[] images = new Image[icons.length];
 
-        for (int i = 0; i < 5; i++) {
+        for (int i = 0; i < icons.length; i++) {
             images[i] = new Image(icons[i]);
             stage.getIcons().add(images[i]);
         }

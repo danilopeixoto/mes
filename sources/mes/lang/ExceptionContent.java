@@ -29,17 +29,29 @@ package mes.lang;
 
 public class ExceptionContent extends RuntimeException {
     public interface ExceptionMessage {
-        public static final String InvalidExpression = "invalid expression.";
-        public static final String UnknownToken = "unknown token.";
-        public static final String UndefinedSymbol = "undefined symbol.";
-        public static final String InvalidArguments = "invalid number of arguments.";
-        public static final String DivisionByZero = "division by zero.";
-        public static final String UnknownException = "unknown.";
+        public static final String InvalidExpression = "invalid expression";
+        public static final String UnknownToken = "unknown token";
+        public static final String UndefinedSymbol = "undefined symbol";
+        public static final String InvalidSymbolRedefinition = "invalid symbol redefinition";
+        public static final String InvalidNumberArguments = "invalid number of arguments";
+        public static final String UnknownException = "unknown";
+
+        public static String custom(String message) {
+            return message;
+        }
+
+        public static String expect(String element) {
+            return custom("expected " + element + "symbol");
+        }
+
+        public static String unexpect(String element) {
+            return custom("unexpected " + element + "symbol");
+        }
     }
 
     private String message;
     private int position;
-    
+
     public ExceptionContent(String message) {
         this(message, 0);
     }
@@ -49,8 +61,9 @@ public class ExceptionContent extends RuntimeException {
         this.position = position;
     }
 
+    @Override
     public String getMessage() {
-        return message;
+        return String.format("Error: %s at column %d.", message, position + 1);
     }
 
     public int getPosition() {

@@ -27,8 +27,8 @@
 
 package mes.lang;
 
-import mes.lang.Token.TokenType;
 import mes.lang.ExceptionContent.ExceptionMessage;
+import mes.lang.Token.TokenType;
 
 public abstract class Lexer {
     public static TokenStream tokenize(String source) {
@@ -77,6 +77,9 @@ public abstract class Lexer {
                     case '%':
                         tokens.add(new Token(TokenType.Modulo, i));
                         break;
+                    case '^':
+                        tokens.add(new Token(TokenType.Exponentiation, i));
+                        break;
                     case '<':
                         tokens.add(new Token(TokenType.Less, i));
                         break;
@@ -85,9 +88,6 @@ public abstract class Lexer {
                         break;
                     case '!':
                         tokens.add(new Token(TokenType.Not, i));
-                        break;
-                    case '^':
-                        tokens.add(new Token(TokenType.Xor, i));
                         break;
                     case '=':
                         tokens.add(new Token(TokenType.Assignment, i));
@@ -148,17 +148,17 @@ public abstract class Lexer {
             while (i < source.length() && Character.isDigit(c))
                 c = source.charAt(++i);
         }
-        
+
         if (i < source.length() - 1 && c == 'e') {
             c = source.charAt(++i);
-            
+
             if (i < source.length() - 1 && (c == '+' || c == '-')) {
                 c = source.charAt(++i);
-                
+
                 if (!Character.isDigit(c))
                     return i - 2;
             }
-            
+
             if (!Character.isDigit(c))
                 return i - 1;
 

@@ -27,48 +27,12 @@
 
 package mes.lang;
 
-public abstract class IdentifierLiteralSymbol extends LiteralSymbol {
-    protected String name;
-    protected boolean empty;
+import static java.lang.annotation.ElementType.FIELD;
+import static java.lang.annotation.ElementType.METHOD;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
-    public IdentifierLiteralSymbol(String name, boolean empty,
-            SymbolType type, int position) {
-        super(type, position);
-        this.name = name;
-        this.empty = empty;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public void setEmpty(boolean empty) {
-        this.empty = empty;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public boolean isEmpty() {
-        return empty;
-    }
-
-    public boolean isRedefinitionOf(IdentifierLiteralSymbol other) {
-        if (type != other.getType() || !name.equals(other.getName()))
-            return false;
-
-        if (type != SymbolType.Variable) {
-            FunctionLiteralSymbol functionSymbol = (FunctionLiteralSymbol)this;
-            FunctionLiteralSymbol otherFunctionSymbol = (FunctionLiteralSymbol)other;
-
-            if (functionSymbol.getArguments().size()
-                    != otherFunctionSymbol.getArguments().size())
-                return false;
-        }
-
-        return true;
-    }
-
-    public abstract String getPrototype();
-}
+@Retention(RetentionPolicy.RUNTIME)
+@Target(value = {FIELD, METHOD})
+public @interface ExportSymbol {}

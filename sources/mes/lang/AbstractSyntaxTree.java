@@ -27,14 +27,13 @@
 
 package mes.lang;
 
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
 public class AbstractSyntaxTree {
     public abstract class AbstractSyntaxNode {
         protected AbstractSyntaxNode left;
         protected AbstractSyntaxNode right;
-        
+
         public AbstractSyntaxNode() {
             left = null;
             right = null;
@@ -55,21 +54,22 @@ public class AbstractSyntaxTree {
         public AbstractSyntaxNode getRight() {
             return right;
         }
-        
+
         public boolean isLeaf() {
             return left == null && right == null;
         }
-        
+
         public boolean isBinaryRoot() {
             return left != null && right != null;
         }
     }
-    
+
     private AbstractSyntaxNode root;
-    
+
     public AbstractSyntaxTree() {
         this(null);
     }
+
     public AbstractSyntaxTree(AbstractSyntaxNode root) {
         this.root = root;
     }
@@ -81,39 +81,45 @@ public class AbstractSyntaxTree {
     public AbstractSyntaxNode getRoot() {
         return root;
     }
-    
+
     public int getNodeCount() {
         return computeNodeCount(root);
     }
-    
+
     public boolean isEmpty() {
         return root == null;
     }
-    
+
     public void clear() {
         root = null;
     }
-    
-    public Object traverse(Method function, Object[] arguments)
-            throws IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+
+    public Object traverse(Method function, Object[] arguments) {
         return traverse(root, function, arguments);
     }
-    
+
     private int computeNodeCount(AbstractSyntaxNode node) {
         if (node == null)
             return 0;
-        
+
         return 1 + computeNodeCount(node.getLeft()) + computeNodeCount(node.getRight());
     }
-    
-    private Object traverse(AbstractSyntaxNode node, Method function, Object[] arguments)
-            throws IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+
+    private Object traverse(AbstractSyntaxNode node, Method function, Object[] arguments) {
         if (node == null)
             return null;
-        
+
         Object left = traverse(node.getLeft(), function, arguments);
         Object right = traverse(node.getRight(), function, arguments);
-        
-        return function.invoke(null, node, left, right, arguments);
+
+        Object output;
+
+        try {
+            output = function.invoke(null, node, left, right, arguments);
+        } catch (Exception exception) {
+            output = null;
+        }
+
+        return output;
     }
 }

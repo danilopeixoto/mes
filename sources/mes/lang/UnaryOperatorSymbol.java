@@ -27,10 +27,10 @@
 
 package mes.lang;
 
-public abstract class UnaryOperatorSymbol extends Symbol {
+public abstract class UnaryOperatorSymbol extends OperatorSymbol {
     public UnaryOperatorSymbol(SymbolType type, int position) {
-        super(type, position);
+        super(7, Associativity.Right, type, position);
     }
-    
-    public abstract Symbol compute(Symbol input);
+
+    public abstract LiteralSymbol compute(LiteralSymbol input);
 }

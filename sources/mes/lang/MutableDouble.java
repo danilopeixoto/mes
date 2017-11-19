@@ -52,11 +52,11 @@ public class MutableDouble extends Number implements Comparable<MutableDouble> {
         value = other.get();
         other.set(temp);
     }
-    
+
     public boolean equals(MutableDouble other) {
         return value == other.get();
     }
-    
+
     @Override
     public int compareTo(MutableDouble other) {
         if (value < other.get())

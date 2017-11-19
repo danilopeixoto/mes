@@ -27,10 +27,11 @@
 
 package mes.lang;
 
-public abstract class BinaryOperatorSymbol extends Symbol {
-    public BinaryOperatorSymbol(SymbolType type, int position) {
-        super(type, position);
+public abstract class BinaryOperatorSymbol extends OperatorSymbol {
+    public BinaryOperatorSymbol(int precedence, Associativity associativity,
+            SymbolType type, int position) {
+        super(precedence, associativity, type, position);
     }
-    
-    public abstract Symbol compute(Symbol left, Symbol right);
+
+    public abstract LiteralSymbol compute(LiteralSymbol left, LiteralSymbol right);
 }

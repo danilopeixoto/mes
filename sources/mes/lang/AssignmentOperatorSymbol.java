@@ -31,13 +31,27 @@ public class AssignmentOperatorSymbol extends BinaryOperatorSymbol {
     public AssignmentOperatorSymbol() {
         this(0);
     }
-    
+
     public AssignmentOperatorSymbol(int position) {
-        super(SymbolType.Assignment, position);
+        super(0, Associativity.Right, SymbolType.Assignment, position);
     }
-    
+
     @Override
-    public Symbol compute(Symbol left, Symbol right) {
-        Symbol
+    public LiteralSymbol compute(LiteralSymbol left, LiteralSymbol right) {
+        if (left.getType() == SymbolType.Variable) {
+            VariableLiteralSymbol variableSymbol = (VariableLiteralSymbol)left;
+            variableSymbol.setValue(right.getDoubleValue());
+            variableSymbol.setEmpty(false);
+        } else {
+            AbstractSyntaxTree closure = new AbstractSyntaxTree(right);
+
+            FunctionLiteralSymbol functionSymbol = (FunctionLiteralSymbol)left;
+            functionSymbol.setClosure(closure);
+            functionSymbol.setEmpty(false);
+        }
+
+        left.setPosition(position);
+
+        return left;
     }
 }

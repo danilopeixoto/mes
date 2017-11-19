@@ -29,27 +29,41 @@ package mes.lang;
 
 public class VariableLiteralSymbol extends IdentifierLiteralSymbol {
     private double value;
-    
+
     public VariableLiteralSymbol() {
         this("", 0, true, 0);
     }
-    
+
+    public VariableLiteralSymbol(String name, int position) {
+        this(name, 0, true, position);
+    }
+
+    public VariableLiteralSymbol(String name, double value, int position) {
+        this(name, value, false, position);
+    }
+
     public VariableLiteralSymbol(String name, double value, boolean empty, int position) {
         super(name, empty, SymbolType.Variable, position);
         this.value = value;
     }
-    
+
     public void setValue(double value) {
         this.value = value;
     }
-    
+
     @Override
-    public double getValue() {
+    public double getDoubleValue() {
         return value;
     }
-    
+
+    @Override
+    public boolean getBooleanValue() {
+        return MathUtils.bool(getDoubleValue());
+    }
+
     @Override
     public String getPrototype() {
-        return String.format("%s: %f", name, value);
+        return String.format(value == 0 || (value >= 0.1 && value < 10)
+                ? "%s: %.5f" : "%s: %1.5e", name, value);
     }
 }

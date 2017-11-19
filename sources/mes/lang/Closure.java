@@ -27,48 +27,51 @@
 
 package mes.lang;
 
-public abstract class IdentifierLiteralSymbol extends LiteralSymbol {
-    protected String name;
-    protected boolean empty;
+import java.lang.reflect.Method;
 
-    public IdentifierLiteralSymbol(String name, boolean empty,
-            SymbolType type, int position) {
-        super(type, position);
-        this.name = name;
-        this.empty = empty;
+public class Closure {
+    public enum ClosureType {
+        AbstractSyntaxTree,
+        Runnable,
+        Empty
     }
 
-    public void setName(String name) {
-        this.name = name;
+    private Object closureObject;
+
+    public Closure() {
+        closureObject = null;
     }
 
-    public void setEmpty(boolean empty) {
-        this.empty = empty;
+    public Closure(AbstractSyntaxTree abstractSyntaxTree) {
+        closureObject = abstractSyntaxTree;
     }
 
-    public String getName() {
-        return name;
+    public Closure(Method runnable) {
+        closureObject = runnable;
     }
 
-    public boolean isEmpty() {
-        return empty;
+    public void setAbstractSyntaxTree(AbstractSyntaxTree abstractSyntaxTree) {
+        closureObject = abstractSyntaxTree;
     }
 
-    public boolean isRedefinitionOf(IdentifierLiteralSymbol other) {
-        if (type != other.getType() || !name.equals(other.getName()))
-            return false;
-
-        if (type != SymbolType.Variable) {
-            FunctionLiteralSymbol functionSymbol = (FunctionLiteralSymbol)this;
-            FunctionLiteralSymbol otherFunctionSymbol = (FunctionLiteralSymbol)other;
-
-            if (functionSymbol.getArguments().size()
-                    != otherFunctionSymbol.getArguments().size())
-                return false;
-        }
-
-        return true;
+    public void setRunnable(Method runnable) {
+        closureObject = runnable;
     }
 
-    public abstract String getPrototype();
+    public AbstractSyntaxTree getAbstractSyntaxTree() {
+        return (AbstractSyntaxTree)closureObject;
+    }
+
+    public Method getRunnable() {
+        return (Method)closureObject;
+    }
+
+    public ClosureType getType() {
+        if (closureObject instanceof AbstractSyntaxTree)
+            return ClosureType.AbstractSyntaxTree;
+        else if (closureObject instanceof Method)
+            return ClosureType.Runnable;
+
+        return ClosureType.Empty;
+    }
 }

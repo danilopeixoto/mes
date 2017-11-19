@@ -27,13 +27,12 @@
 
 package mes.io;
 
-import mes.ui.Application;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.io.IOException;
 import java.util.logging.Level;
+import mes.ui.Application;
 
 public class File {
     private boolean exceptions;
@@ -58,7 +57,7 @@ public class File {
         if (file != null && !file.exists())
             try {
                 file.createNewFile();
-            } catch (IOException exception) {
+            } catch (Exception exception) {
                 exceptions = true;
                 file = null;
             }
@@ -91,7 +90,7 @@ public class File {
             fileReader.close();
 
             return object;
-        } catch (IOException | ClassNotFoundException exception) {
+        } catch (Exception exception) {
             Application.logger.log(Level.WARNING, "cannot read data from file.");
         }
 
@@ -107,7 +106,7 @@ public class File {
 
             objectWriter.close();
             fileWriter.close();
-        } catch (IOException exception) {
+        } catch (Exception exception) {
             Application.logger.log(Level.WARNING, "cannot write data to file.");
         }
     }

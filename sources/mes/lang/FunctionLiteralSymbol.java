@@ -27,63 +27,110 @@
 
 package mes.lang;
 
+import java.lang.reflect.Method;
+import java.util.stream.Stream;
+
 public class FunctionLiteralSymbol extends IdentifierLiteralSymbol {
     private SymbolTable arguments;
-    private AbstractSyntaxTree closure;
-    
+    private Closure closure;
+
     public FunctionLiteralSymbol() {
         this("", true, 0);
     }
+
     public FunctionLiteralSymbol(String name, boolean empty, int position) {
         super(name, empty, SymbolType.Function, position);
+
+        arguments = new SymbolTable();
+        closure = new Closure();
     }
-    
+
     public void setArguments(SymbolTable arguments) {
         this.arguments = arguments;
     }
-    
-    public void setClosure(AbstractSyntaxTree closure) {
+
+    public void setClosure(Closure closure) {
         this.closure = closure;
     }
-    
+
     public SymbolTable getArguments() {
         return arguments;
     }
-    
-    public AbstractSyntaxTree getClosure() {
+
+    public Closure getClosure() {
         return closure;
     }
-    
+
     @Override
-    public double getValue() {
-        NumberLiteralSymbol result = closure.traverse(this::evaluate, arguments);
-        return result.getValue();
+    public double getDoubleValue() {
+        double value;
+
+        switch (closure.getType()) {
+            case AbstractSyntaxTree:
+                AbstractSyntaxTree ast = closure.getAbstractSyntaxTree();
+
+                NumberLiteralSymbol result = ast.traverse(this::evaluate, arguments);
+                value = result.getDoubleValue();
+
+                break;
+            case Runnable:
+                try {
+                    Stream<Object> parameters = arguments.stream().map(
+                            literalSymbol -> literalSymbol.getDoubleValue());
+
+                    Method runnable = closure.getRunnable();
+                    Object output = runnable.invoke(null, parameters.toArray());
+
+                    if (output instanceof Number) {
+                        Number number = (Number)output;
+                        value = number.doubleValue();
+                    } else {
+                        Boolean bool = (Boolean)output;
+                        value = MathUtils.number(bool);
+                    }
+                } catch (Exception exception) {
+                    value = 0;
+                }
+
+                break;
+            default:
+                value = 0;
+        }
+
+        return value;
     }
-    
+
+    @Override
+    public boolean getBooleanValue() {
+        return MathUtils.bool(getDoubleValue());
+    }
+
     @Override
     public String getPrototype() {
         StringBuilder stringBuilder = new StringBuilder();
-        
+
         stringBuilder.append(name);
         stringBuilder.append('(');
-        
-        int i = 0;
-        
-        while (i < arguments.size() - 1) {
-            IdentifierLiteralSymbol identifierLiteralSymbol =
-                    (IdentifierLiteralSymbol)arguments.get(i++);
-            
+
+        int argumentCount = arguments.size();
+
+        for (int i = 0; i < argumentCount; i++) {
+            IdentifierLiteralSymbol identifierLiteralSymbol
+                    = (IdentifierLiteralSymbol)arguments.get(i);
+
             stringBuilder.append(identifierLiteralSymbol.getName());
-            stringBuilder.append(", ");
+
+            if (i != argumentCount - 1)
+                stringBuilder.append(", ");
         }
-        
-        stringBuilder.append(arguments.get(i));
-        stringBuilder.append(')');
-        
+
+        stringBuilder.append("): number");
+
         return stringBuilder.toString();
     }
-    
+
     private static NumberLiteralSymbol evaluate(Symbol node, Symbol left, Symbol right,
             Object[] arguments) {
+
     }
 }

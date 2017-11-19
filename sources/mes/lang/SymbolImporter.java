@@ -29,63 +29,44 @@ package mes.lang;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
 import java.lang.reflect.Parameter;
 
-public class DefaultSymbols {
-    private Interpreter interpreter;
-
+public class SymbolImporter {
     private SymbolTable constants;
     private SymbolTable functions;
 
-    public DefaultSymbols(Interpreter interpreter, Class container)
-            throws IllegalArgumentException, IllegalAccessException {
-        this.interpreter = interpreter;
-
+    private SymbolImporter() {
         constants = new SymbolTable();
         functions = new SymbolTable();
-
-        importDefaultSymbols(container);
     }
 
-    public void setInterpreter(Interpreter interpreter) {
-        this.interpreter = interpreter;
+    public SymbolTable getConstants() {
+        return constants;
     }
 
-    public Interpreter getInterpreter() {
-        return interpreter;
+    public SymbolTable getFunctions() {
+        return functions;
     }
 
-    public void load() {
-        loadConstants();
-        loadFunctions();
+    public static SymbolImporter importFrom(Class container) {
+        try {
+            SymbolImporter instance = new SymbolImporter();
+            instance.importSymbols(container);
+
+            return instance;
+        } catch (Exception exception) {
+            return null;
+        }
     }
 
-    public void loadConstants() {
-        interpreter.getSymbolTable().addAll(constants);
-    }
-
-    public void loadFunctions() {
-        interpreter.getSymbolTable().addAll(functions);
-    }
-
-    private void importDefaultSymbols(Class container)
-            throws IllegalArgumentException, IllegalAccessException {
+    private void importSymbols(Class container) throws Exception {
         Field[] fields = container.getDeclaredFields();
         Method[] methods = container.getDeclaredMethods();
 
         if (fields != null)
-            for (Field field : fields) {
-                int modifiers = field.getModifiers();
-                Class type = field.getType();
-
-                if (Modifier.isPublic(modifiers) && Modifier.isStatic(modifiers)
-                        && Modifier.isFinal(modifiers) && (type == Number.class
-                        || type == Boolean.class)) {
+            for (Field field : fields)
+                if (field.isAnnotationPresent(ExportSymbol.class)) {
                     VariableLiteralSymbol constant = new VariableLiteralSymbol();
-                    constant.setName(field.getName());
-                    constant.setEmpty(false);
-
                     Object value = field.get(null);
 
                     if (value instanceof Number) {
@@ -93,52 +74,35 @@ public class DefaultSymbols {
                         constant.setValue(number.doubleValue());
                     } else if (value instanceof Boolean) {
                         Boolean bool = (Boolean)value;
-                        constant.setValue(bool.booleanValue() ? 1.0 : 0);
+                        constant.setValue(MathUtils.number(bool));
                     }
+
+                    constant.setName(field.getName());
+                    constant.setEmpty(false);
 
                     constants.add(constant);
                 }
-            }
 
         if (methods != null)
-            for (Method method : methods) {
-                int modifiers = method.getModifiers();
-                Class type = method.getReturnType();
-
-                if (Modifier.isPublic(modifiers) && Modifier.isStatic(modifiers)
-                        && (type == Number.class || type == Boolean.class)) {
+            for (Method method : methods)
+                if (method.isAnnotationPresent(ExportSymbol.class)) {
                     SymbolTable arguments = new SymbolTable();
-
-                    boolean invalidParameterFound = false;
                     Parameter[] parameters = method.getParameters();
 
                     if (parameters != null)
                         for (Parameter parameter : parameters) {
-                            if (parameter.getType() != Number.class
-                                    && parameter.getType() != Boolean.class) {
-                                invalidParameterFound = true;
-                                break;
-                            }
-
                             VariableLiteralSymbol argument = new VariableLiteralSymbol();
                             argument.setName(parameter.getName());
-
                             arguments.add(argument);
                         }
-
-                    if (invalidParameterFound)
-                        continue;
-
-                    AbstractSyntaxTree closure = new AbstractSyntaxTree();
 
                     FunctionLiteralSymbol function = new FunctionLiteralSymbol();
                     function.setName(method.getName());
                     function.setArguments(arguments);
-                    function.setClosure(closure);
+                    function.setClosure(new Closure(method));
                     function.setEmpty(false);
 
                     functions.add(function);
                 }
-            }
     }
 }

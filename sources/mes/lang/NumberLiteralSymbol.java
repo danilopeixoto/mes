@@ -29,10 +29,11 @@ package mes.lang;
 
 public class NumberLiteralSymbol extends LiteralSymbol {
     private double value;
-    
+
     public NumberLiteralSymbol() {
         this(0, 0);
     }
+
     public NumberLiteralSymbol(double value, int position) {
         super(SymbolType.Number, position);
         this.value = value;
@@ -41,9 +42,14 @@ public class NumberLiteralSymbol extends LiteralSymbol {
     public void setValue(double value) {
         this.value = value;
     }
-    
+
     @Override
-    public double getValue() {
+    public double getDoubleValue() {
         return value;
+    }
+
+    @Override
+    public boolean getBooleanValue() {
+        return MathUtils.bool(getDoubleValue());
     }
 }

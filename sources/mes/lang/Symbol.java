@@ -41,6 +41,7 @@ public abstract class Symbol extends AbstractSyntaxNode {
         Multiplication,
         Division,
         Modulo,
+        Exponentiation,
         GreaterEqual,
         Greater,
         LessEqual,
@@ -48,30 +49,29 @@ public abstract class Symbol extends AbstractSyntaxNode {
         Equal,
         NotEqual,
         Not,
-        Xor,
         And,
         Or,
         Assignment
     }
-    
+
     protected SymbolType type;
     protected int position;
-    
+
     public Symbol(SymbolType type, int position) {
         new AbstractSyntaxTree().super();
-        
+
         this.type = type;
         this.position = position;
     }
-    
+
     public void setPosition(int position) {
         this.position = position;
     }
-    
+
     public SymbolType getType() {
         return type;
     }
-    
+
     public int getPosition() {
         return position;
     }

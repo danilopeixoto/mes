@@ -36,6 +36,7 @@ public class Token {
         Multiplication,
         Division,
         Modulo,
+        Exponentiation,
         Equal,
         NotEqual,
         LessEqual,
@@ -43,7 +44,6 @@ public class Token {
         GreaterEqual,
         Greater,
         Not,
-        Xor,
         And,
         Or,
         Assignment,
@@ -52,16 +52,19 @@ public class Token {
         Comma,
         EOL
     }
-    
+
     private TokenType type;
     private String value;
     private int position;
-    
-    public Token() {}
+
+    public Token() {
+    }
+
     public Token(TokenType type, int position) {
         this.type = type;
         this.position = position;
     }
+
     public Token(TokenType type, String value, int position) {
         this.type = type;
         this.value = value;

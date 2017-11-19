@@ -28,24 +28,22 @@
 package mes.lang;
 
 import mes.lang.ExceptionContent.ExceptionMessage;
+import mes.lang.Symbol.SymbolType;
 
 public class Interpreter {
     private SymbolTable symbolTable;
+    private SymbolImporter defaultSymbols;
 
-    public Interpreter() throws IllegalArgumentException, IllegalAccessException {
-        this(true);
-    }
-
-    public Interpreter(boolean importDefaultSymbols)
-            throws IllegalArgumentException, IllegalAccessException {
+    public Interpreter() {
         symbolTable = new SymbolTable();
-        
-        if (importDefaultSymbols) {
-            DefaultSymbols defaultSymbols = new DefaultSymbols(this, MathUtils.class);
-            defaultSymbols.load();
+        defaultSymbols = SymbolImporter.importFrom(MathUtils.class);
+
+        if (defaultSymbols != null) {
+            symbolTable.addAll(defaultSymbols.getConstants());
+            symbolTable.addAll(defaultSymbols.getFunctions());
         }
     }
-    
+
     public Statement run(String source) {
         return run(source, false);
     }
@@ -53,26 +51,32 @@ public class Interpreter {
     public Statement run(String source, boolean typeChecking) {
         LiteralSymbol result;
         ExceptionContent exceptionContent;
-        
+
         try {
             TokenStream tokens = Lexer.tokenize(source);
             AbstractSyntaxTree ast = Parser.parse(tokens);
-            
+
             result = ast.traverse(this::evaluate, null);
             exceptionContent = null;
-        }
-        catch(Exception exception) {
+
+            if (result.getType() != SymbolType.Number) {
+                IdentifierLiteralSymbol identifierSymbol = (IdentifierLiteralSymbol)result;
+
+                if (isDefaultSymbol(identifierSymbol))
+                    throw new ExceptionContent(
+                            ExceptionMessage.InvalidSymbolRedefinition, result.getPosition());
+                else
+                    symbolTable.add(identifierSymbol);
+            }
+        } catch (Exception exception) {
             result = null;
-            
+
             if (exception instanceof ExceptionContent)
                 exceptionContent = (ExceptionContent)exception;
             else
                 exceptionContent = new ExceptionContent(ExceptionMessage.UnknownException);
         }
-        
-        if (result instanceof IdentifierLiteralSymbol && !typeChecking)
-            symbolTable.add((IdentifierLiteralSymbol)result);
-        
+
         return new Statement(result, exceptionContent);
     }
 
@@ -80,6 +84,29 @@ public class Interpreter {
         return symbolTable;
     }
 
+    public boolean hasDefaultSymbols() {
+        return defaultSymbols != null;
+    }
+
+    private boolean isDefaultSymbol(IdentifierLiteralSymbol identifierSymbol) {
+        if (!hasDefaultSymbols())
+            return false;
+
+        for (LiteralSymbol literalSymbol : defaultSymbols.getConstants())
+            if (literalSymbol.getType() != SymbolType.Number
+                    && identifierSymbol.isRedefinitionOf((IdentifierLiteralSymbol)literalSymbol))
+                return true;
+
+        for (LiteralSymbol literalSymbol : defaultSymbols.getFunctions())
+            if (literalSymbol.getType() != SymbolType.Number
+                    && identifierSymbol.isRedefinitionOf((IdentifierLiteralSymbol)literalSymbol))
+                return true;
+
+        return false;
+    }
+
     private static Symbol evaluate(Symbol node, Symbol left, Symbol right,
-            Object[] arguments) {}
+            Object[] arguments) {
+        return null;
+    }
 }

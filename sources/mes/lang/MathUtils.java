@@ -32,72 +32,116 @@ import java.util.Random;
 public abstract class MathUtils {
     private static final Random random = new Random();
 
+    @ExportSymbol
     public static final double E = Math.E;
+
+    @ExportSymbol
     public static final double PI = Math.PI;
+
+    @ExportSymbol
     public static final double EPSILON = Math.ulp(1.0);
-    public static final double INFINITY = Double.MAX_VALUE;
+
+    @ExportSymbol
+    public static final double LARGEST = Double.MAX_VALUE;
+
+    @ExportSymbol
+    public static final double INFINITY = Double.POSITIVE_INFINITY;
+
+    @ExportSymbol
     public static final double UNDEFINED = Double.NaN;
 
+    @ExportSymbol
+    public static final double FALSE = 0;
+
+    @ExportSymbol
+    public static final double TRUE = 1.0;
+
+    @ExportSymbol
     public static double abs(double x) {
         return Math.abs(x);
     }
 
+    @ExportSymbol
     public static double frac(double x) {
         return x - floor(x);
     }
 
+    @ExportSymbol
     public static double floor(double x) {
         return Math.floor(x);
     }
 
+    @ExportSymbol
     public static double ceil(double x) {
         return Math.ceil(x);
     }
 
+    @ExportSymbol
     public static double round(double x) {
         return Math.round(x);
     }
 
+    @ExportSymbol
     public static double trunc(double x) {
         return x < 0 ? ceil(x) : floor(x);
     }
 
+    @ExportSymbol
     public static double sign(double x) {
         return Math.signum(x);
     }
 
+    @ExportSymbol
+    public static double copysign(double a, double b) {
+        return Math.copySign(a, b);
+    }
+
+    @ExportSymbol
     public static double clamp(double x, double a, double b) {
         return max(a, min(b, x));
     }
 
+    @ExportSymbol
     public static double remap(double x, double a0, double b0, double a1, double b1) {
         return a1 + (x - a0) * (b1 - a1) / (b0 - a0);
     }
 
+    @ExportSymbol
     public static double pow(double a, double b) {
         return Math.pow(a, b);
     }
 
+    @ExportSymbol
     public static double sqrt(double x) {
         return Math.sqrt(x);
     }
 
+    @ExportSymbol
     public static double cbrt(double x) {
         return Math.cbrt(x);
     }
 
+    @ExportSymbol
     public static double exp(double x) {
         return Math.exp(x);
     }
 
+    @ExportSymbol
     public static double log(double x) {
         return Math.log(x);
     }
 
+    @ExportSymbol
     public static double log(double a, double b) {
         return log(a) / log(b);
     }
 
+    @ExportSymbol
+    public static double mod(double a, double b) {
+        return a % b;
+    }
+
+    @ExportSymbol
     public static double erf(double x) {
         double t = 1.0 / (1.0 + 0.5 * abs(x));
         double e = 1.0 - t * Math.exp(-x * x - 1.26551223
@@ -114,93 +158,134 @@ public abstract class MathUtils {
         return x < 0 ? -e : e;
     }
 
+    @ExportSymbol
     public static double hypot(double a, double b) {
         return Math.hypot(a, b);
     }
 
+    @ExportSymbol
     public static double lerp(double x, double a, double b) {
         return a + x * (b - a);
     }
 
+    @ExportSymbol
     public static double smoothstep(double x, double a, double b) {
         double t = clamp((x - a) / (b - a), 0, 1.0);
         return t * t * (3.0 - (t * 2.0));
     }
 
+    @ExportSymbol
     public static double sin(double x) {
         return Math.sin(x);
     }
 
+    @ExportSymbol
     public static double cos(double x) {
         return Math.cos(x);
     }
 
+    @ExportSymbol
     public static double tan(double x) {
         return Math.tan(x);
     }
 
+    @ExportSymbol
     public static double asin(double x) {
         return Math.asin(x);
     }
 
+    @ExportSymbol
     public static double acos(double x) {
         return Math.acos(x);
     }
 
+    @ExportSymbol
     public static double atan(double x) {
         return Math.atan(x);
     }
 
+    @ExportSymbol
     public static double atan(double a, double b) {
         return Math.atan2(a, b);
     }
 
+    @ExportSymbol
     public static double sinh(double x) {
         return Math.sinh(x);
     }
 
+    @ExportSymbol
     public static double cosh(double x) {
         return Math.cosh(x);
     }
 
+    @ExportSymbol
     public static double tanh(double x) {
         return Math.tanh(x);
     }
 
-    public static double deg(double x) {
+    @ExportSymbol
+    public static double degrees(double x) {
         return Math.toDegrees(x);
     }
 
-    public static double rad(double x) {
+    @ExportSymbol
+    public static double radians(double x) {
         return Math.toRadians(x);
     }
 
+    @ExportSymbol
+    public static boolean bool(double x) {
+        return x != 0;
+    }
+
+    public static double number(boolean x) {
+        return x ? 1.0 : 0;
+    }
+
+    @ExportSymbol
     public static double min(double a, double b) {
         return Math.min(a, b);
     }
 
+    @ExportSymbol
     public static double max(double a, double b) {
         return Math.max(a, b);
     }
 
+    @ExportSymbol
     public static double rand() {
         return random.nextDouble();
     }
 
+    @ExportSymbol
     public static int seed() {
         return random.nextInt(Integer.MAX_VALUE);
     }
 
+    @ExportSymbol
     public static boolean isfinite(double x) {
         return Double.isFinite(x);
     }
 
+    @ExportSymbol
     public static boolean isinf(double x) {
         return Double.isInfinite(x);
     }
 
+    @ExportSymbol
     public static boolean isnan(double x) {
         return Double.isNaN(x);
+    }
+
+    @ExportSymbol
+    public static boolean iseven(double x) {
+        return x % 2 == 0;
+    }
+
+    @ExportSymbol
+    public static boolean isodd(double x) {
+        return x % 2 != 0;
     }
 
     public static int linear(double a, double b, MutableDouble x) {
@@ -295,6 +380,7 @@ public abstract class MathUtils {
         return 1;
     }
 
+    @ExportSymbol
     public static double newton(double a, double b, double c, double d, double x0,
             int maxi, double eps) {
         for (int i = 0; i < maxi; i++) {

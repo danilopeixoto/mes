@@ -27,48 +27,18 @@
 
 package mes.lang;
 
-public abstract class IdentifierLiteralSymbol extends LiteralSymbol {
-    protected String name;
-    protected boolean empty;
-
-    public IdentifierLiteralSymbol(String name, boolean empty,
-            SymbolType type, int position) {
-        super(type, position);
-        this.name = name;
-        this.empty = empty;
+public class NotEqualOperatorSymbol extends BinaryOperatorSymbol {
+    public NotEqualOperatorSymbol() {
+        this(0);
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public NotEqualOperatorSymbol(int position) {
+        super(3, Associativity.Left, SymbolType.NotEqual, position);
     }
 
-    public void setEmpty(boolean empty) {
-        this.empty = empty;
+    @Override
+    public LiteralSymbol compute(LiteralSymbol left, LiteralSymbol right) {
+        return new NumberLiteralSymbol(MathUtils.number(
+                left.getBooleanValue() != right.getBooleanValue()), position);
     }
-
-    public String getName() {
-        return name;
-    }
-
-    public boolean isEmpty() {
-        return empty;
-    }
-
-    public boolean isRedefinitionOf(IdentifierLiteralSymbol other) {
-        if (type != other.getType() || !name.equals(other.getName()))
-            return false;
-
-        if (type != SymbolType.Variable) {
-            FunctionLiteralSymbol functionSymbol = (FunctionLiteralSymbol)this;
-            FunctionLiteralSymbol otherFunctionSymbol = (FunctionLiteralSymbol)other;
-
-            if (functionSymbol.getArguments().size()
-                    != otherFunctionSymbol.getArguments().size())
-                return false;
-        }
-
-        return true;
-    }
-
-    public abstract String getPrototype();
 }

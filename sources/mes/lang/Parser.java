@@ -39,26 +39,69 @@ public abstract class Parser {
 
     public static Symbol parseStatement(TokenIterator token) {
         Symbol symbol;
-        
+
         if ((symbol = parseExpression(token)) != null) {
-            
-        }
-        else if (symbol = parseDefinition(token) != null) {
-            
-        }
-        else
-            throw ExceptionContent(ExceptionMessage.InvalidExpression, );
-            
+
+        } else if (symbol = parseDefinition(token) != null) {
+
+        } else
+            throw ExceptionContent(ExceptionMessage.InvalidExpression, 0);
+
     }
 
     public static Symbol parseDefinition(TokenIterator token) {
+
     }
 
     public static Symbol parseDeclaration(TokenIterator token) {
     }
 
-    public static Symbol parseExpression(TokenIterator token) {
-        return null;
+    public static Symbol parseExpression(TokenIterator tokenIterator) {
+        Token token = tokenIterator.get();
+        TokenType type = token.getType();
+
+        checkUnexpectedEOL(token);
+
+        Symbol leftTermSymbol;
+
+        if ((leftTermSymbol = parseTerm(tokenIterator)) != null) {
+            tokenIterator.next();
+
+            token = tokenIterator.get();
+            type = token.getType();
+
+            try {
+                checkUnexpectedEOL(token);
+            } catch (ExceptionContent exception) {
+                return leftTermSymbol;
+            }
+
+            if (isBooleanBinaryOperator(type)) {
+                Symbol rightTermSymbol, operatorSymbol;
+
+                if (type == TokenType.And)
+                    operatorSymbol = new AndOperatorSymbol(token.getPosition());
+                else
+                    operatorSymbol = new OrOperatorSymbol(token.getPosition());
+
+                tokenIterator.next();
+                token = tokenIterator.get();
+
+                if ((rightTermSymbol = parseTerm(tokenIterator)) != null) {
+                    operatorSymbol.setLeft(leftTermSymbol);
+                    operatorSymbol.setRight(rightTermSymbol);
+
+                    tokenIterator.next();
+
+                    return operatorSymbol;
+                } else
+                    expectedLiteral(token);
+            }
+        } else
+            throw new ExceptionContent(ExceptionMessage.InvalidExpression,
+                    token.getPosition());
+
+        return leftTermSymbol;
     }
 
     public static Symbol parseTerm(TokenIterator token) {
@@ -79,12 +122,50 @@ public abstract class Parser {
     public static Symbol parseFunctionPrototypeArguments(TokenIterator token) {
     }
 
-    public static Symbol parseLiteral(TokenIterator token) {
+    public static Symbol parseLiteral(TokenIterator tokenIterator) {
+        Token token = tokenIterator.get();
+        TokenType type = token.getType();
+
+        checkUnexpectedEOL(token);
+
+        Symbol literalSymbol;
+
+        if ((literalSymbol = parseFunctionCall(tokenIterator)) != null)
+            tokenIterator.next();
+        else if ((literalSymbol = parseExpression(tokenIterator)) != null)
+            tokenIterator.next();
+        else {
+            switch (type) {
+                case Identifier:
+                    literalSymbol = new VariableLiteralSymbol(
+                            token.getValue(), token.getPosition());
+                    break;
+                case Number:
+                    literalSymbol = new NumberLiteralSymbol(
+                            Double.parseDouble(token.getValue()), token.getPosition());
+                    break;
+                default:
+                    expectedLiteral(token);
+            }
+
+            tokenIterator.next();
+        }
+
+        return literalSymbol;
     }
 
-    public static Token expect(TokenType type) {
+    private static boolean isBooleanBinaryOperator(TokenType type) {
+        return type == TokenType.And || type == TokenType.Or;
     }
 
-    public static void next(TokenIterator token) {
+    private static void expectedLiteral(Token token) {
+        throw new ExceptionContent(ExceptionMessage.unexpect("end of line"),
+                token.getPosition());
+    }
+
+    private static void checkUnexpectedEOL(Token token) {
+        if (token.getType() == TokenType.EOL)
+            throw new ExceptionContent(ExceptionMessage.unexpect("end of line"),
+                    token.getPosition());
     }
 }

@@ -31,6 +31,8 @@ public abstract class LiteralSymbol extends Symbol {
     public LiteralSymbol(SymbolType type, int position) {
         super(type, position);
     }
-    
-    public abstract double getValue();
+
+    public abstract double getDoubleValue();
+
+    public abstract boolean getBooleanValue();
 }

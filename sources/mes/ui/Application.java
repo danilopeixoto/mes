@@ -27,14 +27,13 @@
 
 package mes.ui;
 
-import java.io.IOException;
+import com.sun.javafx.application.LauncherImpl;
 import java.util.Date;
 import java.util.logging.FileHandler;
-import java.util.logging.Logger;
 import java.util.logging.Formatter;
-import java.util.logging.LogRecord;
 import java.util.logging.Level;
-import com.sun.javafx.application.LauncherImpl;
+import java.util.logging.LogRecord;
+import java.util.logging.Logger;
 
 public class Application {
     public static final String name = "MES";
@@ -82,7 +81,7 @@ public class Application {
                 fileHandler.setFormatter(formatter);
 
                 logger.addHandler(fileHandler);
-            } catch (IOException exception) {
+            } catch (Exception exception) {
                 logger.log(Level.WARNING, "cannot write log to file.");
             }
 

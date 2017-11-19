@@ -30,7 +30,7 @@ package mes.lang;
 public class Statement {
     private LiteralSymbol result;
     private ExceptionContent exception;
-    
+
     public Statement(LiteralSymbol result, ExceptionContent exception) {
         this.result = result;
         this.exception = exception;
@@ -43,7 +43,7 @@ public class Statement {
     public ExceptionContent getException() {
         return exception;
     }
-    
+
     public boolean hasException() {
         return exception != null;
     }

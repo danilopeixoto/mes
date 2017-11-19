@@ -33,36 +33,36 @@ import java.util.Iterator;
 public class SymbolTable extends ArrayList<LiteralSymbol> {
     public class SymbolIterator implements Iterator<LiteralSymbol> {
         private int index;
-        
+
         public SymbolIterator() {
             this(0);
         }
-        
+
         public SymbolIterator(int index) {
             this.index = index;
         }
-        
+
         public void set(LiteralSymbol token) {
             SymbolTable.this.set(index, token);
         }
-        
+
         public LiteralSymbol get() {
             return SymbolTable.this.get(index);
         }
-        
+
         public void setIndex(int index) {
             this.index = index;
         }
-        
+
         public int getIndex() {
             return index;
         }
-        
+
         @Override
         public boolean hasNext() {
-           return index < size();
+            return index < size();
         }
-        
+
         public boolean hasPrevious() {
             return index >= 0;
         }
@@ -71,24 +71,24 @@ public class SymbolTable extends ArrayList<LiteralSymbol> {
         public LiteralSymbol next() {
             return hasNext() ? SymbolTable.this.get(index++) : null;
         }
-        
+
         public LiteralSymbol previous() {
             return hasPrevious() ? SymbolTable.this.get(index--) : null;
         }
-        
+
         public void reset() {
             index = 0;
         }
     }
-    
+
     public SymbolTable() {
         super();
     }
-    
+
     public SymbolTable(int size) {
         super(size);
     }
-    
+
     @Override
     public SymbolIterator iterator() {
         return new SymbolIterator();
