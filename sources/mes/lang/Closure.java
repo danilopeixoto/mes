@@ -1,4 +1,5 @@
-// Copyright (c) 2017, Danilo Peixoto. All rights reserved.
+// Copyright (c) 2017, Danilo Ferreira, João de Oliveira and Lucas Alves.
+// All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
 // modification, are permitted provided that the following conditions are met:
@@ -32,7 +33,7 @@ import java.lang.reflect.Method;
 public class Closure {
     public enum ClosureType {
         AbstractSyntaxTree,
-        Runnable,
+        Method,
         Empty
     }
 
@@ -46,23 +47,23 @@ public class Closure {
         closureObject = abstractSyntaxTree;
     }
 
-    public Closure(Method runnable) {
-        closureObject = runnable;
+    public Closure(Method method) {
+        closureObject = method;
     }
 
     public void setAbstractSyntaxTree(AbstractSyntaxTree abstractSyntaxTree) {
         closureObject = abstractSyntaxTree;
     }
 
-    public void setRunnable(Method runnable) {
-        closureObject = runnable;
+    public void setMethod(Method method) {
+        closureObject = method;
     }
 
     public AbstractSyntaxTree getAbstractSyntaxTree() {
         return (AbstractSyntaxTree)closureObject;
     }
 
-    public Method getRunnable() {
+    public Method getMethod() {
         return (Method)closureObject;
     }
 
@@ -70,7 +71,7 @@ public class Closure {
         if (closureObject instanceof AbstractSyntaxTree)
             return ClosureType.AbstractSyntaxTree;
         else if (closureObject instanceof Method)
-            return ClosureType.Runnable;
+            return ClosureType.Method;
 
         return ClosureType.Empty;
     }

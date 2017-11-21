@@ -1,4 +1,5 @@
-// Copyright (c) 2017, Danilo Peixoto. All rights reserved.
+// Copyright (c) 2017, Danilo Ferreira, João de Oliveira and Lucas Alves.
+// All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
 // modification, are permitted provided that the following conditions are met:
@@ -43,10 +44,10 @@ public class AssignmentOperatorSymbol extends BinaryOperatorSymbol {
             variableSymbol.setValue(right.getDoubleValue());
             variableSymbol.setEmpty(false);
         } else {
-            AbstractSyntaxTree closure = new AbstractSyntaxTree(right);
+            AbstractSyntaxTree abstractSyntaxTree = new AbstractSyntaxTree(right);
 
             FunctionLiteralSymbol functionSymbol = (FunctionLiteralSymbol)left;
-            functionSymbol.setClosure(closure);
+            functionSymbol.setClosure(new Closure(abstractSyntaxTree));
             functionSymbol.setEmpty(false);
         }
 

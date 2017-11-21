@@ -1,4 +1,5 @@
-// Copyright (c) 2017, Danilo Peixoto. All rights reserved.
+// Copyright (c) 2017, Danilo Ferreira, João de Oliveira and Lucas Alves.
+// All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
 // modification, are permitted provided that the following conditions are met:
@@ -31,9 +32,13 @@ import com.sun.javafx.application.LauncherImpl;
 import java.util.Date;
 import java.util.logging.FileHandler;
 import java.util.logging.Formatter;
+import java.util.logging.Handler;
 import java.util.logging.Level;
 import java.util.logging.LogRecord;
 import java.util.logging.Logger;
+import javafx.application.Platform;
+import mes.io.File;
+import mes.io.Preferences;
 
 public class Application {
     public static final String name = "MES";
@@ -46,7 +51,8 @@ public class Application {
     public static final String styleSheet = "styles/general.css";
     public static final String className = "GlassWndClass-GlassWindowClass-3";
 
-    public static final Logger logger = Logger.getLogger(name);
+    private static final Logger logger = Logger.getLogger(name);
+    private static final File preferenceFile = new File(name.toLowerCase() + ".pref");
 
     private static class LogFormatter extends Formatter {
         public LogFormatter() {
@@ -70,22 +76,47 @@ public class Application {
         }
     }
 
+    public static Preferences loadPreferences() {
+        return (Preferences)preferenceFile.read();
+    }
+
+    public static void savePreferences(Preferences preferences) {
+        preferenceFile.write(preferences);
+    }
+
+    public static void logInformation(String message) {
+        logger.log(Level.INFO, message);
+    }
+
+    public static void logWarning(String message) {
+        logger.log(Level.WARNING, message);
+    }
+
+    public static void exit() {
+        preferenceFile.close();
+
+        Handler[] handlers = logger.getHandlers();
+
+        if (handlers != null)
+            for (Handler handler : handlers)
+                handler.close();
+
+        Platform.exit();
+        System.exit(0);
+    }
+
     public static void main(String[] args) {
-        if (ApplicationInstance.isRunning())
-            ApplicationInstance.focusWindow();
-        else {
-            try {
-                LogFormatter formatter = new LogFormatter();
+        try {
+            LogFormatter formatter = new LogFormatter();
 
-                FileHandler fileHandler = new FileHandler(name.toLowerCase() + ".log");
-                fileHandler.setFormatter(formatter);
+            FileHandler fileHandler = new FileHandler(name.toLowerCase() + ".log");
+            fileHandler.setFormatter(formatter);
 
-                logger.addHandler(fileHandler);
-            } catch (Exception exception) {
-                logger.log(Level.WARNING, "cannot write log to file.");
-            }
-
-            LauncherImpl.launchApplication(MainWindow.class, SplashScreen.class, args);
+            logger.addHandler(fileHandler);
+        } catch (Exception exception) {
+            logWarning("cannot write log to file.");
         }
+
+        LauncherImpl.launchApplication(MainWindow.class, SplashScreen.class, args);
     }
 }

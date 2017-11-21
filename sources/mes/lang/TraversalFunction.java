@@ -28,17 +28,21 @@
 
 package mes.lang;
 
-public class MinusOperatorSymbol extends UnaryOperatorSymbol {
-    public MinusOperatorSymbol() {
-        this(0);
+public abstract class TraversalFunction {
+    protected Object[] arguments;
+
+    public TraversalFunction(Object[] arguments) {
+        this.arguments = arguments;
     }
 
-    public MinusOperatorSymbol(int position) {
-        super(SymbolType.Minus, position);
+    public void setArguments(Object[] arguments) {
+        this.arguments = arguments;
     }
 
-    @Override
-    public LiteralSymbol compute(LiteralSymbol input) {
-        return new NumberLiteralSymbol(-input.getDoubleValue(), position);
+    public Object[] getArguments() {
+        return arguments;
     }
+
+    public abstract AbstractSyntaxNode evaluate(AbstractSyntaxNode node,
+            AbstractSyntaxNode left, AbstractSyntaxNode right);
 }

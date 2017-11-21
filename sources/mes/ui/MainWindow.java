@@ -1,4 +1,5 @@
-// Copyright (c) 2017, Danilo Peixoto. All rights reserved.
+// Copyright (c) 2017, Danilo Ferreira, João de Oliveira and Lucas Alves.
+// All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
 // modification, are permitted provided that the following conditions are met:
@@ -33,8 +34,6 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
-import java.util.logging.Handler;
-import java.util.logging.Level;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javafx.application.Platform;
@@ -117,6 +116,7 @@ public class MainWindow extends javafx.application.Application {
     private final int minimumWidth;
     private final int minimumHeight;
 
+    private final String fileExtensionName;
     private final String fileExtension;
 
     private final String[] icons;
@@ -323,7 +323,7 @@ public class MainWindow extends javafx.application.Application {
                         autocompletePopup.show(primaryStage);
                     }
                 } catch (Exception exception) {
-                    Application.logger.log(Level.INFO, "cannot evaluate text autocomplete.");
+                    Application.logInformation("cannot evaluate text autocomplete.");
                 }
             }
         }
@@ -1099,6 +1099,7 @@ public class MainWindow extends javafx.application.Application {
         minimumWidth = 250;
         minimumHeight = 250;
 
+        fileExtensionName = Application.name + " document";
         fileExtension = '.' + Application.name.toLowerCase();
 
         icons = new String[5];
@@ -1122,7 +1123,7 @@ public class MainWindow extends javafx.application.Application {
         interpreter = new Interpreter();
 
         if (!interpreter.hasDefaultSymbols())
-            Application.logger.log(Level.INFO, "cannot import default symbols.");
+            Application.logInformation("cannot import default symbols.");
 
         file = new File();
         fileWasSavedProperty = new SimpleBooleanProperty(false);
@@ -1209,7 +1210,7 @@ public class MainWindow extends javafx.application.Application {
         String extensionPattern = '*' + fileExtension;
 
         FileChooser.ExtensionFilter extensionFilter = new FileChooser.ExtensionFilter(
-                Application.fullName + " (" + extensionPattern + ")", extensionPattern);
+                fileExtensionName + " (" + extensionPattern + ")", extensionPattern);
 
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Open");
@@ -1239,7 +1240,7 @@ public class MainWindow extends javafx.application.Application {
         String extensionPattern = '*' + fileExtension;
 
         FileChooser.ExtensionFilter extensionFilter = new FileChooser.ExtensionFilter(
-                Application.fullName + " (" + extensionPattern + ")", extensionPattern);
+                fileExtensionName + " (" + extensionPattern + ")", extensionPattern);
 
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Save As");
@@ -1274,30 +1275,17 @@ public class MainWindow extends javafx.application.Application {
         focusCommandLine(commandLine);
     }
 
-    private void closeApplication() {
+    private void exitApplication() {
         file.close();
 
-        Handler[] handlers = Application.logger.getHandlers();
+        VBox rootLayout = (VBox)primaryStage.getScene().getRoot();
+        MenuBar menuBar = (MenuBar)rootLayout.getChildren().get(0);
 
-        if (handlers != null)
-            for (Handler handler : handlers)
-                handler.close();
+        Preferences preferences = new Preferences(enableTypeCheckingProperty.get(),
+                enableAutocompleteProperty.get(), menuBar.isStatusBarVisible());
 
-        file = new File("mes.pref");
-
-        if (file.isOpen()) {
-            VBox rootLayout = (VBox)primaryStage.getScene().getRoot();
-            MenuBar menuBar = (MenuBar)rootLayout.getChildren().get(0);
-
-            Preferences preferences = new Preferences(enableTypeCheckingProperty.get(),
-                    enableAutocompleteProperty.get(), menuBar.isStatusBarVisible());
-
-            file.write(preferences);
-            file.close();
-        }
-
-        Platform.exit();
-        System.exit(0);
+        Application.savePreferences(preferences);
+        Application.exit();
     }
 
     private void newAction(ActionEvent actionEvent) {
@@ -1402,11 +1390,11 @@ public class MainWindow extends javafx.application.Application {
                     if (file.isOpen())
                         writeFile();
                     else if (requestSave())
-                        closeApplication();
+                        exitApplication();
                 } else if (option.get() == DISCARD_BUTTON)
-                    closeApplication();
+                    exitApplication();
         } else
-            closeApplication();
+            exitApplication();
 
         event.consume();
     }
@@ -1519,7 +1507,7 @@ public class MainWindow extends javafx.application.Application {
             if (text.length() == 1)
                 character = text.charAt(0);
         } catch (Exception exception) {
-            Application.logger.log(Level.INFO, "cannot decode pressed key.");
+            Application.logInformation("cannot decode pressed key.");
         }
 
         if (character > 32 && character < 127 && !keyEvent.isShortcutDown()) {
@@ -1810,23 +1798,15 @@ public class MainWindow extends javafx.application.Application {
             openFile(temporaryFile);
         }
 
-        file.open(Application.name.toLowerCase() + ".pref");
+        Preferences preferences = Application.loadPreferences();
 
-        if (file.isOpen()) {
-            Preferences preferences = (Preferences)file.read();
-
-            if (preferences != null) {
-                enableTypeCheckingProperty.set(preferences.isEnableTypeChecking());
-                enableAutocompleteProperty.set(preferences.isEnableAutocomplete());
-                menuBar.setStatusBarVisible(preferences.isStatusBarVisible());
-            }
-
-            file.close();
+        if (preferences != null) {
+            enableTypeCheckingProperty.set(preferences.isEnableTypeChecking());
+            enableAutocompleteProperty.set(preferences.isEnableAutocomplete());
+            menuBar.setStatusBarVisible(preferences.isStatusBarVisible());
         }
 
-        file = new File();
         enableTypeCheckingProperty.addListener(this::updateTypeCheckingListener);
-
         stage.show();
 
         centerWindowOnScreen(stage);

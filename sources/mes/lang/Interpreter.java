@@ -1,4 +1,5 @@
-// Copyright (c) 2017, Danilo Peixoto. All rights reserved.
+// Copyright (c) 2017, Danilo Ferreira, João de Oliveira and Lucas Alves.
+// All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
 // modification, are permitted provided that the following conditions are met:
@@ -31,6 +32,22 @@ import mes.lang.ExceptionContent.ExceptionMessage;
 import mes.lang.Symbol.SymbolType;
 
 public class Interpreter {
+    private class EvaluationFunction extends TraversalFunction {
+        public EvaluationFunction() {
+            this(null);
+        }
+
+        public EvaluationFunction(Object[] parameters) {
+            super(parameters);
+        }
+
+        @Override
+        public AbstractSyntaxNode evaluate(AbstractSyntaxNode node,
+                AbstractSyntaxNode left, AbstractSyntaxNode right) {
+            return null;
+        }
+    }
+
     private SymbolTable symbolTable;
     private SymbolImporter defaultSymbols;
 
@@ -54,9 +71,9 @@ public class Interpreter {
 
         try {
             TokenStream tokens = Lexer.tokenize(source);
-            AbstractSyntaxTree ast = Parser.parse(tokens);
+            AbstractSyntaxTree abstractSyntaxTree = Parser.parse(tokens);
 
-            result = ast.traverse(this::evaluate, null);
+            result = (LiteralSymbol)abstractSyntaxTree.traverse(new EvaluationFunction());
             exceptionContent = null;
 
             if (result.getType() != SymbolType.Number) {
@@ -103,10 +120,5 @@ public class Interpreter {
                 return true;
 
         return false;
-    }
-
-    private static Symbol evaluate(Symbol node, Symbol left, Symbol right,
-            Object[] arguments) {
-        return null;
     }
 }

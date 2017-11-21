@@ -1,4 +1,5 @@
-// Copyright (c) 2017, Danilo Peixoto. All rights reserved.
+// Copyright (c) 2017, Danilo Ferreira, João de Oliveira and Lucas Alves.
+// All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
 // modification, are permitted provided that the following conditions are met:
@@ -26,8 +27,6 @@
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 package mes.lang;
-
-import mes.lang.AbstractSyntaxTree.AbstractSyntaxNode;
 
 public abstract class Symbol extends AbstractSyntaxNode {
     public enum SymbolType {
@@ -58,8 +57,7 @@ public abstract class Symbol extends AbstractSyntaxNode {
     protected int position;
 
     public Symbol(SymbolType type, int position) {
-        new AbstractSyntaxTree().super();
-
+        super();
         this.type = type;
         this.position = position;
     }

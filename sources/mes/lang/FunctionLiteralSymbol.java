@@ -1,4 +1,5 @@
-// Copyright (c) 2017, Danilo Peixoto. All rights reserved.
+// Copyright (c) 2017, Danilo Ferreira, João de Oliveira and Lucas Alves.
+// All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
 // modification, are permitted provided that the following conditions are met:
@@ -31,11 +32,31 @@ import java.lang.reflect.Method;
 import java.util.stream.Stream;
 
 public class FunctionLiteralSymbol extends IdentifierLiteralSymbol {
+    private class EvaluationFunction extends TraversalFunction {
+        public EvaluationFunction() {
+            this(null);
+        }
+
+        public EvaluationFunction(Object[] parameters) {
+            super(parameters);
+        }
+
+        @Override
+        public AbstractSyntaxNode evaluate(AbstractSyntaxNode node,
+                AbstractSyntaxNode left, AbstractSyntaxNode right) {
+            return null;
+        }
+    }
+
     private SymbolTable arguments;
     private Closure closure;
 
     public FunctionLiteralSymbol() {
         this("", true, 0);
+    }
+
+    public FunctionLiteralSymbol(String name, int position) {
+        this(name, true, position);
     }
 
     public FunctionLiteralSymbol(String name, boolean empty, int position) {
@@ -67,18 +88,19 @@ public class FunctionLiteralSymbol extends IdentifierLiteralSymbol {
 
         switch (closure.getType()) {
             case AbstractSyntaxTree:
-                AbstractSyntaxTree ast = closure.getAbstractSyntaxTree();
+                AbstractSyntaxTree abstractSyntaxTree = closure.getAbstractSyntaxTree();
 
-                NumberLiteralSymbol result = ast.traverse(this::evaluate, arguments);
+                NumberLiteralSymbol result = (NumberLiteralSymbol)abstractSyntaxTree.traverse(
+                        new EvaluationFunction());
                 value = result.getDoubleValue();
 
                 break;
-            case Runnable:
+            case Method:
                 try {
                     Stream<Object> parameters = arguments.stream().map(
                             literalSymbol -> literalSymbol.getDoubleValue());
 
-                    Method runnable = closure.getRunnable();
+                    Method runnable = closure.getMethod();
                     Object output = runnable.invoke(null, parameters.toArray());
 
                     if (output instanceof Number) {
@@ -127,10 +149,5 @@ public class FunctionLiteralSymbol extends IdentifierLiteralSymbol {
         stringBuilder.append("): number");
 
         return stringBuilder.toString();
-    }
-
-    private static NumberLiteralSymbol evaluate(Symbol node, Symbol left, Symbol right,
-            Object[] arguments) {
-
     }
 }

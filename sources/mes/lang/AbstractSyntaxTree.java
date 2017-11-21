@@ -1,4 +1,5 @@
-// Copyright (c) 2017, Danilo Peixoto. All rights reserved.
+// Copyright (c) 2017, Danilo Ferreira, João de Oliveira and Lucas Alves.
+// All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
 // modification, are permitted provided that the following conditions are met:
@@ -27,43 +28,7 @@
 
 package mes.lang;
 
-import java.lang.reflect.Method;
-
 public class AbstractSyntaxTree {
-    public abstract class AbstractSyntaxNode {
-        protected AbstractSyntaxNode left;
-        protected AbstractSyntaxNode right;
-
-        public AbstractSyntaxNode() {
-            left = null;
-            right = null;
-        }
-
-        public void setLeft(AbstractSyntaxNode left) {
-            this.left = left;
-        }
-
-        public void setRight(AbstractSyntaxNode right) {
-            this.right = right;
-        }
-
-        public AbstractSyntaxNode getLeft() {
-            return left;
-        }
-
-        public AbstractSyntaxNode getRight() {
-            return right;
-        }
-
-        public boolean isLeaf() {
-            return left == null && right == null;
-        }
-
-        public boolean isBinaryRoot() {
-            return left != null && right != null;
-        }
-    }
-
     private AbstractSyntaxNode root;
 
     public AbstractSyntaxTree() {
@@ -94,8 +59,8 @@ public class AbstractSyntaxTree {
         root = null;
     }
 
-    public Object traverse(Method function, Object[] arguments) {
-        return traverse(root, function, arguments);
+    public AbstractSyntaxNode traverse(TraversalFunction function) {
+        return traverse(root, function);
     }
 
     private int computeNodeCount(AbstractSyntaxNode node) {
@@ -105,21 +70,13 @@ public class AbstractSyntaxTree {
         return 1 + computeNodeCount(node.getLeft()) + computeNodeCount(node.getRight());
     }
 
-    private Object traverse(AbstractSyntaxNode node, Method function, Object[] arguments) {
+    private AbstractSyntaxNode traverse(AbstractSyntaxNode node, TraversalFunction function) {
         if (node == null)
             return null;
 
-        Object left = traverse(node.getLeft(), function, arguments);
-        Object right = traverse(node.getRight(), function, arguments);
+        AbstractSyntaxNode left = traverse(node.getLeft(), function);
+        AbstractSyntaxNode right = traverse(node.getRight(), function);
 
-        Object output;
-
-        try {
-            output = function.invoke(null, node, left, right, arguments);
-        } catch (Exception exception) {
-            output = null;
-        }
-
-        return output;
+        return function.evaluate(node, left, right);
     }
 }

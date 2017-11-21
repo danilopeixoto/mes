@@ -1,4 +1,5 @@
-// Copyright (c) 2017, Danilo Peixoto. All rights reserved.
+// Copyright (c) 2017, Danilo Ferreira, João de Oliveira and Lucas Alves.
+// All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
 // modification, are permitted provided that the following conditions are met:
@@ -25,30 +26,38 @@
 // OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-package mes.ui;
+package mes.lang;
 
-import com.sun.jna.Native;
-import com.sun.jna.platform.win32.WinDef.HWND;
-import com.sun.jna.win32.StdCallLibrary;
+public abstract class AbstractSyntaxNode {
+    protected AbstractSyntaxNode left;
+    protected AbstractSyntaxNode right;
 
-public abstract class ApplicationInstance {
-    private interface WindowsLibrary extends StdCallLibrary {
-        WindowsLibrary instance = (WindowsLibrary)Native.loadLibrary(
-                "user32", WindowsLibrary.class);
-
-        HWND FindWindowA(String className, String windowName);
-
-        boolean SetForegroundWindow(HWND windowHandler);
+    public AbstractSyntaxNode() {
+        left = null;
+        right = null;
     }
 
-    private static final HWND windowHandler = WindowsLibrary.instance.FindWindowA(
-            Application.className, Application.name);
-
-    public static boolean isRunning() {
-        return windowHandler != null;
+    public void setLeft(AbstractSyntaxNode left) {
+        this.left = left;
     }
 
-    public static void focusWindow() {
-        WindowsLibrary.instance.SetForegroundWindow(windowHandler);
+    public void setRight(AbstractSyntaxNode right) {
+        this.right = right;
+    }
+
+    public AbstractSyntaxNode getLeft() {
+        return left;
+    }
+
+    public AbstractSyntaxNode getRight() {
+        return right;
+    }
+
+    public boolean isLeaf() {
+        return left == null && right == null;
+    }
+
+    public boolean isBinaryRoot() {
+        return left != null && right != null;
     }
 }

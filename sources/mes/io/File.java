@@ -1,4 +1,5 @@
-// Copyright (c) 2017, Danilo Peixoto. All rights reserved.
+// Copyright (c) 2017, Danilo Ferreira, João de Oliveira and Lucas Alves.
+// All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
 // modification, are permitted provided that the following conditions are met:
@@ -31,7 +32,6 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.util.logging.Level;
 import mes.ui.Application;
 
 public class File {
@@ -91,7 +91,7 @@ public class File {
 
             return object;
         } catch (Exception exception) {
-            Application.logger.log(Level.WARNING, "cannot read data from file.");
+            Application.logWarning("cannot read data from file.");
         }
 
         return null;
@@ -107,7 +107,7 @@ public class File {
             objectWriter.close();
             fileWriter.close();
         } catch (Exception exception) {
-            Application.logger.log(Level.WARNING, "cannot write data to file.");
+            Application.logWarning("cannot write data to file.");
         }
     }
 }
