@@ -76,7 +76,7 @@ public class Interpreter {
             result = (LiteralSymbol)abstractSyntaxTree.traverse(new EvaluationFunction());
             exceptionContent = null;
 
-            if (result.getType() != SymbolType.Number) {
+            if (result.isIdentifierLiteral()) {
                 IdentifierLiteralSymbol identifierSymbol = (IdentifierLiteralSymbol)result;
 
                 if (isDefaultSymbol(identifierSymbol))
@@ -110,12 +110,12 @@ public class Interpreter {
             return false;
 
         for (LiteralSymbol literalSymbol : defaultSymbols.getConstants())
-            if (literalSymbol.getType() != SymbolType.Number
+            if (literalSymbol.isIdentifierLiteral()
                     && identifierSymbol.isRedefinitionOf((IdentifierLiteralSymbol)literalSymbol))
                 return true;
 
         for (LiteralSymbol literalSymbol : defaultSymbols.getFunctions())
-            if (literalSymbol.getType() != SymbolType.Number
+            if (literalSymbol.isIdentifierLiteral()
                     && identifierSymbol.isRedefinitionOf((IdentifierLiteralSymbol)literalSymbol))
                 return true;
 

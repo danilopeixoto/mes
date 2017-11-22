@@ -445,15 +445,15 @@ public class MainWindow extends javafx.application.Application {
         }
 
         public int getArgumentCount() {
-            if (isVariable())
+            if (!isFunction())
                 return 0;
 
             FunctionLiteralSymbol functionSymbol = (FunctionLiteralSymbol)identifierSymbol;
             return functionSymbol.getArguments().size();
         }
 
-        public boolean isVariable() {
-            return identifierSymbol.getType() == SymbolType.Variable;
+        public boolean isFunction() {
+            return identifierSymbol.getType() == SymbolType.Function;
         }
 
         @Override
@@ -482,8 +482,8 @@ public class MainWindow extends javafx.application.Application {
             } else {
                 setText(autocompleteData.getLabelText());
 
-                Image image = new Image(autocompleteData.isVariable()
-                        ? variableIcon : functionIcon);
+                Image image = new Image(autocompleteData.isFunction()
+                        ? functionIcon : variableIcon);
                 ImageView imageView = new ImageView(image);
 
                 setGraphic(imageView);
@@ -606,7 +606,7 @@ public class MainWindow extends javafx.application.Application {
 
                 int argumentCount = autocompleteData.getArgumentCount();
 
-                if (!autocompleteData.isVariable() && argumentCount != 0) {
+                if (autocompleteData.isFunction() && argumentCount != 0) {
                     int selectionBegin = beginIndex + autocompleteText.indexOf('(') + 1;
                     int selectionEnd = beginIndex;
 
@@ -1597,7 +1597,7 @@ public class MainWindow extends javafx.application.Application {
                     LiteralSymbol result = statement.getResult();
                     String output;
 
-                    if (result.getType() == SymbolType.Number)
+                    if (result.isNumberLiteral())
                         output = String.valueOf(result.getDoubleValue());
                     else {
                         IdentifierLiteralSymbol identifierResult = (IdentifierLiteralSymbol)result;

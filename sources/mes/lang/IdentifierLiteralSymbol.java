@@ -59,7 +59,7 @@ public abstract class IdentifierLiteralSymbol extends LiteralSymbol {
         if (type != other.getType() || !name.equals(other.getName()))
             return false;
 
-        if (type != SymbolType.Variable) {
+        if (type == SymbolType.Function) {
             FunctionLiteralSymbol functionSymbol = (FunctionLiteralSymbol)this;
             FunctionLiteralSymbol otherFunctionSymbol = (FunctionLiteralSymbol)other;
 

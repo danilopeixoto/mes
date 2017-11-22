@@ -73,4 +73,28 @@ public abstract class Symbol extends AbstractSyntaxNode {
     public int getPosition() {
         return position;
     }
+    
+    public boolean isLiteral() {
+        return this instanceof LiteralSymbol;
+    }
+    
+    public boolean isNumberLiteral() {
+        return this instanceof NumberLiteralSymbol;
+    }
+    
+    public boolean isIdentifierLiteral() {
+        return this instanceof IdentifierLiteralSymbol;
+    }
+    
+    public boolean isOperator() {
+        return this instanceof OperatorSymbol;
+    }
+    
+    public boolean isUnaryOperator() {
+        return this instanceof UnaryOperatorSymbol;
+    }
+    
+    public boolean isBinaryOperator() {
+        return this instanceof UnaryOperatorSymbol;
+    }
 }
