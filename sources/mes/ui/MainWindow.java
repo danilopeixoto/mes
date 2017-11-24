@@ -630,8 +630,7 @@ public class MainWindow extends javafx.application.Application {
             inputEvent.consume();
         }
 
-        private boolean filterSymbols(String word, LiteralSymbol symbol) {
-            IdentifierLiteralSymbol identifierSymbol = (IdentifierLiteralSymbol)symbol;
+        private boolean filterSymbols(String word, IdentifierLiteralSymbol identifierSymbol) {
             return identifierSymbol.getName().toLowerCase().startsWith(word);
         }
 
@@ -658,8 +657,7 @@ public class MainWindow extends javafx.application.Application {
             if (symbolTable.isEmpty())
                 items.add(new AutocompleteData());
             else {
-                symbolTable.forEach(symbol -> items.add(
-                        new AutocompleteData((IdentifierLiteralSymbol)symbol)));
+                symbolTable.forEach(symbol -> items.add(new AutocompleteData(symbol)));
                 items.sort(null);
             }
 
@@ -671,8 +669,8 @@ public class MainWindow extends javafx.application.Application {
         }
 
         public void computeList(String word, SymbolTable symbolTable) {
-            Stream<LiteralSymbol> stream = symbolTable.stream().filter(
-                    symbol -> filterSymbols(word, symbol));
+            Stream<IdentifierLiteralSymbol> stream = symbolTable.stream().filter(
+                    identifierSymbol -> filterSymbols(word, identifierSymbol));
 
             setList(stream.collect(Collectors.toCollection(SymbolTable::new)));
         }
@@ -690,7 +688,8 @@ public class MainWindow extends javafx.application.Application {
 
             ObservableList<AutocompleteData> items = listView.getItems();
 
-            if (!items.isEmpty() && items.get(0).getIdentifierSymbol() == null && !this.forced)
+            if (!items.isEmpty() && items.get(0).getIdentifierSymbol() == null
+                    && !this.forced)
                 return;
 
             Point2D offset = commandLine.localToScene(Point2D.ZERO);

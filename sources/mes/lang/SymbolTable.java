@@ -31,8 +31,8 @@ package mes.lang;
 import java.util.ArrayList;
 import java.util.Iterator;
 
-public class SymbolTable extends ArrayList<LiteralSymbol> {
-    public class SymbolIterator implements Iterator<LiteralSymbol> {
+public class SymbolTable extends ArrayList<IdentifierLiteralSymbol> {
+    public class SymbolIterator implements Iterator<IdentifierLiteralSymbol> {
         private int index;
 
         public SymbolIterator() {
@@ -43,8 +43,8 @@ public class SymbolTable extends ArrayList<LiteralSymbol> {
             this.index = index;
         }
 
-        public void set(LiteralSymbol token) {
-            SymbolTable.this.set(index, token);
+        public void set(IdentifierLiteralSymbol identifierLiteralSymbol) {
+            SymbolTable.this.set(index, identifierLiteralSymbol);
         }
 
         public LiteralSymbol get() {
@@ -69,11 +69,11 @@ public class SymbolTable extends ArrayList<LiteralSymbol> {
         }
 
         @Override
-        public LiteralSymbol next() {
+        public IdentifierLiteralSymbol next() {
             return hasNext() ? SymbolTable.this.get(index++) : null;
         }
 
-        public LiteralSymbol previous() {
+        public IdentifierLiteralSymbol previous() {
             return hasPrevious() ? SymbolTable.this.get(index--) : null;
         }
 

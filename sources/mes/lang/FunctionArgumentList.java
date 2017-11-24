@@ -26,29 +26,29 @@
 // OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-package mes.io;
+package mes.lang;
 
 import java.util.ArrayList;
 import java.util.Iterator;
 
-public class CommandLineStream extends ArrayList<CommandLineData> {
-    public class CommandLineIterator implements Iterator<CommandLineData> {
+public class FunctionArgumentList extends ArrayList<FunctionArgument> {
+    public class FunctionArgumentIterator implements Iterator<FunctionArgument> {
         private int index;
 
-        public CommandLineIterator() {
+        public FunctionArgumentIterator() {
             this(0);
         }
 
-        public CommandLineIterator(int index) {
+        public FunctionArgumentIterator(int index) {
             this.index = index;
         }
 
-        public void set(CommandLineData commandLineData) {
-            CommandLineStream.this.set(index, commandLineData);
+        public void set(FunctionArgument functionArgument) {
+            FunctionArgumentList.this.set(index, functionArgument);
         }
 
-        public CommandLineData get() {
-            return CommandLineStream.this.get(index);
+        public FunctionArgument get() {
+            return FunctionArgumentList.this.get(index);
         }
 
         public void setIndex(int index) {
@@ -69,12 +69,12 @@ public class CommandLineStream extends ArrayList<CommandLineData> {
         }
 
         @Override
-        public CommandLineData next() {
-            return hasNext() ? CommandLineStream.this.get(index++) : null;
+        public FunctionArgument next() {
+            return hasNext() ? FunctionArgumentList.this.get(index++) : null;
         }
 
-        public CommandLineData previous() {
-            return hasPrevious() ? CommandLineStream.this.get(index--) : null;
+        public FunctionArgument previous() {
+            return hasPrevious() ? FunctionArgumentList.this.get(index--) : null;
         }
 
         public void reset() {
@@ -82,16 +82,16 @@ public class CommandLineStream extends ArrayList<CommandLineData> {
         }
     }
 
-    public CommandLineStream() {
+    public FunctionArgumentList() {
         super();
     }
 
-    public CommandLineStream(int size) {
+    public FunctionArgumentList(int size) {
         super(size);
     }
 
     @Override
-    public CommandLineIterator iterator() {
-        return new CommandLineIterator();
+    public FunctionArgumentIterator iterator() {
+        return new FunctionArgumentIterator();
     }
 }

@@ -48,7 +48,7 @@ public class FunctionLiteralSymbol extends IdentifierLiteralSymbol {
         }
     }
 
-    private SymbolTable arguments;
+    private FunctionArgumentList arguments;
     private Closure closure;
 
     public FunctionLiteralSymbol() {
@@ -59,14 +59,14 @@ public class FunctionLiteralSymbol extends IdentifierLiteralSymbol {
         this(name, true, position);
     }
 
-    public FunctionLiteralSymbol(String name, boolean empty, int position) {
-        super(name, empty, SymbolType.Function, position);
+    public FunctionLiteralSymbol(String name, boolean nullIdentifier, int position) {
+        super(name, nullIdentifier, SymbolType.Function, position);
 
-        arguments = new SymbolTable();
+        arguments = new FunctionArgumentList();
         closure = new Closure();
     }
 
-    public void setArguments(SymbolTable arguments) {
+    public void setArguments(FunctionArgumentList arguments) {
         this.arguments = arguments;
     }
 
@@ -74,7 +74,7 @@ public class FunctionLiteralSymbol extends IdentifierLiteralSymbol {
         this.closure = closure;
     }
 
-    public SymbolTable getArguments() {
+    public FunctionArgumentList getArguments() {
         return arguments;
     }
 
@@ -97,11 +97,10 @@ public class FunctionLiteralSymbol extends IdentifierLiteralSymbol {
                 break;
             case Method:
                 try {
-                    Stream<Object> parameters = arguments.stream().map(
-                            literalSymbol -> literalSymbol.getDoubleValue());
+                    Stream<Object> parameters = arguments.stream().map(this::mapArguments);
 
-                    Method runnable = closure.getMethod();
-                    Object output = runnable.invoke(null, parameters.toArray());
+                    Method method = closure.getMethod();
+                    Object output = method.invoke(null, parameters.toArray());
 
                     if (output instanceof Number) {
                         Number number = (Number)output;
@@ -129,6 +128,9 @@ public class FunctionLiteralSymbol extends IdentifierLiteralSymbol {
 
     @Override
     public String getPrototype() {
+        if (!isNullIdentifier())
+            return "";
+
         StringBuilder stringBuilder = new StringBuilder();
 
         stringBuilder.append(name);
@@ -137,10 +139,11 @@ public class FunctionLiteralSymbol extends IdentifierLiteralSymbol {
         int argumentCount = arguments.size();
 
         for (int i = 0; i < argumentCount; i++) {
-            IdentifierLiteralSymbol identifierLiteralSymbol
-                    = (IdentifierLiteralSymbol)arguments.get(i);
+            FunctionArgument argument = arguments.get(i);
+            IdentifierLiteralSymbol identifierSymbol
+                    = (IdentifierLiteralSymbol)argument.getRoot();
 
-            stringBuilder.append(identifierLiteralSymbol.getName());
+            stringBuilder.append(identifierSymbol.getName());
 
             if (i != argumentCount - 1)
                 stringBuilder.append(", ");
@@ -149,5 +152,10 @@ public class FunctionLiteralSymbol extends IdentifierLiteralSymbol {
         stringBuilder.append("): number");
 
         return stringBuilder.toString();
+    }
+
+    private Object mapArguments(FunctionArgument argument) {
+        LiteralSymbol literalSymbol = (LiteralSymbol)argument.getRoot();
+        return literalSymbol.getDoubleValue();
     }
 }

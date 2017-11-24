@@ -30,29 +30,29 @@ package mes.lang;
 
 public abstract class IdentifierLiteralSymbol extends LiteralSymbol {
     protected String name;
-    protected boolean empty;
+    protected boolean nullIdentifier;
 
-    public IdentifierLiteralSymbol(String name, boolean empty,
+    public IdentifierLiteralSymbol(String name, boolean nullIdentifier,
             SymbolType type, int position) {
         super(type, position);
         this.name = name;
-        this.empty = empty;
+        this.nullIdentifier = nullIdentifier;
     }
 
     public void setName(String name) {
         this.name = name;
     }
 
-    public void setEmpty(boolean empty) {
-        this.empty = empty;
+    public void setNullIdentifier(boolean nullIdentifier) {
+        this.nullIdentifier = nullIdentifier;
     }
 
     public String getName() {
         return name;
     }
 
-    public boolean isEmpty() {
-        return empty;
+    public boolean isNullIdentifier() {
+        return nullIdentifier;
     }
 
     public boolean isRedefinitionOf(IdentifierLiteralSymbol other) {

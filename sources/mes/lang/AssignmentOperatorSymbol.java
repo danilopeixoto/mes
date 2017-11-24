@@ -42,13 +42,13 @@ public class AssignmentOperatorSymbol extends BinaryOperatorSymbol {
         if (left.getType() == SymbolType.Variable) {
             VariableLiteralSymbol variableSymbol = (VariableLiteralSymbol)left;
             variableSymbol.setValue(right.getDoubleValue());
-            variableSymbol.setEmpty(false);
+            variableSymbol.setNullIdentifier(false);
         } else {
             AbstractSyntaxTree abstractSyntaxTree = new AbstractSyntaxTree(right);
 
             FunctionLiteralSymbol functionSymbol = (FunctionLiteralSymbol)left;
             functionSymbol.setClosure(new Closure(abstractSyntaxTree));
-            functionSymbol.setEmpty(false);
+            functionSymbol.setNullIdentifier(false);
         }
 
         left.setPosition(position);

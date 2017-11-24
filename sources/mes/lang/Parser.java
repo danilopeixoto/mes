@@ -149,7 +149,7 @@ public abstract class Parser {
         SymbolTable arguments;
 
         if ((arguments = parseFunctionCallArguments(tokenIterator)) != null)
-            functionSymbol.setArguments(arguments);
+            functionSymbol.setArguments(null);
 
         token = tokenIterator.get();
 

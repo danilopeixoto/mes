@@ -26,72 +26,14 @@
 // OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-package mes.io;
+package mes.lang;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-
-public class CommandLineStream extends ArrayList<CommandLineData> {
-    public class CommandLineIterator implements Iterator<CommandLineData> {
-        private int index;
-
-        public CommandLineIterator() {
-            this(0);
-        }
-
-        public CommandLineIterator(int index) {
-            this.index = index;
-        }
-
-        public void set(CommandLineData commandLineData) {
-            CommandLineStream.this.set(index, commandLineData);
-        }
-
-        public CommandLineData get() {
-            return CommandLineStream.this.get(index);
-        }
-
-        public void setIndex(int index) {
-            this.index = index;
-        }
-
-        public int getIndex() {
-            return index;
-        }
-
-        @Override
-        public boolean hasNext() {
-            return index < size();
-        }
-
-        public boolean hasPrevious() {
-            return index >= 0;
-        }
-
-        @Override
-        public CommandLineData next() {
-            return hasNext() ? CommandLineStream.this.get(index++) : null;
-        }
-
-        public CommandLineData previous() {
-            return hasPrevious() ? CommandLineStream.this.get(index--) : null;
-        }
-
-        public void reset() {
-            index = 0;
-        }
+public class FunctionArgument extends AbstractSyntaxTree {
+    public FunctionArgument() {
+        this(null);
     }
 
-    public CommandLineStream() {
-        super();
-    }
-
-    public CommandLineStream(int size) {
-        super(size);
-    }
-
-    @Override
-    public CommandLineIterator iterator() {
-        return new CommandLineIterator();
+    public FunctionArgument(AbstractSyntaxNode root) {
+        super(root);
     }
 }

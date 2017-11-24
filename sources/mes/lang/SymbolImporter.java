@@ -79,7 +79,7 @@ public class SymbolImporter {
                     }
 
                     constant.setName(field.getName());
-                    constant.setEmpty(false);
+                    constant.setNullIdentifier(false);
 
                     constants.add(constant);
                 }
@@ -87,21 +87,22 @@ public class SymbolImporter {
         if (methods != null)
             for (Method method : methods)
                 if (method.isAnnotationPresent(ExportSymbol.class)) {
-                    SymbolTable arguments = new SymbolTable();
+                    FunctionArgumentList arguments = new FunctionArgumentList();
                     Parameter[] parameters = method.getParameters();
 
                     if (parameters != null)
                         for (Parameter parameter : parameters) {
-                            VariableLiteralSymbol argument = new VariableLiteralSymbol();
-                            argument.setName(parameter.getName());
-                            arguments.add(argument);
+                            VariableLiteralSymbol variableSymbol = new VariableLiteralSymbol();
+                            variableSymbol.setName(parameter.getName());
+
+                            arguments.add(new FunctionArgument(variableSymbol));
                         }
 
                     FunctionLiteralSymbol function = new FunctionLiteralSymbol();
                     function.setName(method.getName());
                     function.setArguments(arguments);
                     function.setClosure(new Closure(method));
-                    function.setEmpty(false);
+                    function.setNullIdentifier(false);
 
                     functions.add(function);
                 }

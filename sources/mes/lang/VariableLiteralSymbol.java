@@ -43,8 +43,9 @@ public class VariableLiteralSymbol extends IdentifierLiteralSymbol {
         this(name, value, false, position);
     }
 
-    public VariableLiteralSymbol(String name, double value, boolean empty, int position) {
-        super(name, empty, SymbolType.Variable, position);
+    public VariableLiteralSymbol(String name, double value, boolean nullIdentifier,
+            int position) {
+        super(name, nullIdentifier, SymbolType.Variable, position);
         this.value = value;
     }
 
