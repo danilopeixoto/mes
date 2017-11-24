@@ -39,6 +39,11 @@ import javafx.stage.Screen;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 
+/**
+ * Application splash screen (preloader).
+ * @author Danilo Ferreira
+ * @version 1.0.0
+ */
 public class SplashScreen extends Preloader {
     private final int width;
     private final int height;
@@ -47,6 +52,7 @@ public class SplashScreen extends Preloader {
 
     private Stage primaryStage;
 
+    /** Initialize splash screen properties. */
     public SplashScreen() {
         width = 600;
         height = 600;
@@ -54,12 +60,16 @@ public class SplashScreen extends Preloader {
         icon = "images/icon_96.png";
     }
 
-    private void centerWindowOnScreen(Stage stage) {
+    private void centerWindowOnScreen() {
         Rectangle2D bounds = Screen.getPrimary().getVisualBounds();
-        stage.setX((bounds.getWidth() - stage.getWidth()) / 2);
-        stage.setY((bounds.getHeight() - stage.getHeight()) / 2);
+        primaryStage.setX((bounds.getWidth() - primaryStage.getWidth()) / 2);
+        primaryStage.setY((bounds.getHeight() - primaryStage.getHeight()) / 2);
     }
 
+    /**
+     * Create root layout and show primary stage.
+     * @param stage Splash screen primary stage
+     */
     @Override
     public void start(Stage stage) {
         primaryStage = stage;
@@ -81,9 +91,15 @@ public class SplashScreen extends Preloader {
         stage.initStyle(StageStyle.UNDECORATED);
         stage.show();
 
-        centerWindowOnScreen(stage);
+        centerWindowOnScreen();
     }
 
+    /**
+     * Handle {@link MainWindow} notification. This method hide primary stage
+     * when the main window is ready to be shown.
+     * @param notification Notification sent from the main window
+     * @see MainWindow#start
+     */
     @Override
     public void handleApplicationNotification(PreloaderNotification notification) {
         if (notification instanceof ProgressNotification) {

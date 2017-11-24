@@ -91,7 +91,7 @@ public class File {
 
             return object;
         } catch (Exception exception) {
-            Application.logWarning("cannot read data from file.");
+            Application.warningLog("cannot read data from file.");
         }
 
         return null;
@@ -107,7 +107,7 @@ public class File {
             objectWriter.close();
             fileWriter.close();
         } catch (Exception exception) {
-            Application.logWarning("cannot write data to file.");
+            Application.warningLog("cannot write data to file.");
         }
     }
 }

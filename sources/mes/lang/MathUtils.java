@@ -243,7 +243,7 @@ public abstract class MathUtils {
     public static double number(boolean x) {
         return x ? 1.0 : 0;
     }
-
+    
     @ExportSymbol
     public static double min(double a, double b) {
         return Math.min(a, b);
@@ -287,6 +287,11 @@ public abstract class MathUtils {
     @ExportSymbol
     public static boolean isodd(double x) {
         return x % 2 != 0;
+    }
+    
+    @ExportSymbol
+    public static boolean isequal(double a, double b) {
+        return a == b;
     }
 
     public static int linear(double a, double b, MutableDouble x) {

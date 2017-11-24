@@ -40,6 +40,6 @@ public class EqualOperatorSymbol extends BinaryOperatorSymbol {
     @Override
     public LiteralSymbol compute(LiteralSymbol left, LiteralSymbol right) {
         return new NumberLiteralSymbol(MathUtils.number(
-                left.getBooleanValue() == right.getBooleanValue()), position);
+                left.getDoubleValue() == right.getDoubleValue()), position);
     }
 }

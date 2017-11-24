@@ -97,7 +97,8 @@ import javafx.stage.Screen;
 import javafx.stage.Stage;
 import javafx.stage.Window;
 import mes.io.Document;
-import mes.io.Document.CommandLineData;
+import mes.io.CommandLineData;
+import mes.io.CommandLineStream;
 import mes.io.File;
 import mes.io.Preferences;
 import mes.lang.ExceptionContent;
@@ -110,14 +111,17 @@ import mes.lang.Statement;
 import mes.lang.Symbol.SymbolType;
 import mes.lang.SymbolTable;
 
+/**
+ * Application main window shown after the {@link SplashScreen}.
+ *
+ * @author Danilo Ferreira
+ * @version 1.0.0
+ */
 public class MainWindow extends javafx.application.Application {
     private final int width;
     private final int height;
     private final int minimumWidth;
     private final int minimumHeight;
-
-    private final String fileExtensionName;
-    private final String fileExtension;
 
     private final String[] icons;
     private final String confirmationIcon;
@@ -323,7 +327,7 @@ public class MainWindow extends javafx.application.Application {
                         autocompletePopup.show(primaryStage);
                     }
                 } catch (Exception exception) {
-                    Application.logInformation("cannot evaluate text autocomplete.");
+                    Application.informationLog("cannot evaluate text autocomplete.");
                 }
             }
         }
@@ -408,7 +412,7 @@ public class MainWindow extends javafx.application.Application {
         }
     }
 
-    public class AutocompleteData implements Comparable<AutocompleteData> {
+    private class AutocompleteData implements Comparable<AutocompleteData> {
         private IdentifierLiteralSymbol identifierSymbol;
 
         public AutocompleteData() {
@@ -998,17 +1002,15 @@ public class MainWindow extends javafx.application.Application {
             licenseLink.setOnAction(actionEvent
                     -> getHostServices().showDocument(Application.licenseLink));
 
-            Text licenseEndLineText = new Text('.' + System.lineSeparator());
-            Text copyrightText = new Text(Application.copyright);
-
             TextFlow titleTextFlow = new TextFlow(titleText, versionText);
-            TextFlow descriptionTextFlow = new TextFlow(licenseText, licenseLink,
-                    licenseEndLineText, copyrightText);
+            TextFlow licenseTextFlow = new TextFlow(licenseText, licenseLink, new Text("."));
+
+            Text copyrightText = new Text(Application.copyright);
 
             VBox boxLayout = new VBox();
             boxLayout.setSpacing(5.0);
             boxLayout.setAlignment(Pos.CENTER_LEFT);
-            boxLayout.getChildren().addAll(titleTextFlow, descriptionTextFlow);
+            boxLayout.getChildren().addAll(titleTextFlow, licenseTextFlow, copyrightText);
 
             HBox rootLayout = new HBox();
             rootLayout.setSpacing(10.0);
@@ -1093,14 +1095,14 @@ public class MainWindow extends javafx.application.Application {
         }
     }
 
+    /**
+     * Initialize main window properties.
+     */
     public MainWindow() {
         width = 600;
         height = 600;
         minimumWidth = 250;
         minimumHeight = 250;
-
-        fileExtensionName = Application.name + " document";
-        fileExtension = '.' + Application.name.toLowerCase();
 
         icons = new String[5];
         icons[0] = "images/icon_16.png";
@@ -1123,7 +1125,7 @@ public class MainWindow extends javafx.application.Application {
         interpreter = new Interpreter();
 
         if (!interpreter.hasDefaultSymbols())
-            Application.logInformation("cannot import default symbols.");
+            Application.informationLog("cannot import default symbols.");
 
         file = new File();
         fileWasSavedProperty = new SimpleBooleanProperty(false);
@@ -1156,10 +1158,10 @@ public class MainWindow extends javafx.application.Application {
             rootLayout.getChildren().remove(rootLayout.getChildren().size() - 1);
     }
 
-    private void centerWindowOnScreen(Stage stage) {
+    private void centerWindowOnScreen() {
         Rectangle2D bounds = Screen.getPrimary().getVisualBounds();
-        stage.setX((bounds.getWidth() - stage.getWidth()) * 0.5);
-        stage.setY((bounds.getHeight() - stage.getHeight()) * 0.5);
+        primaryStage.setX((bounds.getWidth() - primaryStage.getWidth()) * 0.5);
+        primaryStage.setY((bounds.getHeight() - primaryStage.getHeight()) * 0.5);
     }
 
     private void readFile() {
@@ -1167,18 +1169,20 @@ public class MainWindow extends javafx.application.Application {
 
         if (document != null) {
             commandLines.clear();
-            CommandLine commandLine = null;
 
-            for (int i = 0; i < document.getCommandLineDataCount(); i++) {
-                CommandLineData commandLineData = document.getCommandLineData(i);
+            CommandLineStream commandLineStream = document.getCommandLineStream();
+            int commandLineDataCount = commandLineStream.size();
 
-                commandLine = createCommandLine(commandLineData.isError(),
+            for (int i = 0; i < commandLineDataCount; i++) {
+                CommandLineData commandLineData = commandLineStream.get(i);
+                CommandLine commandLine = createCommandLine(commandLineData.isError(),
                         commandLineData.getText());
-                commandLine.setEditable(false);
+
+                commandLine.setEditable(i == commandLineDataCount - 1);
             }
 
-            commandLine = getCommandLineOnStack(0);
-            commandLine.setEditable(true);
+            SymbolTable userSymbolTable = document.getSymbolTable();
+            interpreter.setUserSymbolTable(userSymbolTable);
 
             fileWasSavedProperty.set(true);
         } else {
@@ -1192,25 +1196,21 @@ public class MainWindow extends javafx.application.Application {
     }
 
     private void writeFile() {
-        Document document = new Document();
+        Stream<CommandLineData> stream = commandLines.stream().map(commandLine
+                -> new CommandLineData(commandLine.getText(), commandLine.isError()));
 
-        for (int i = 0; i < commandLines.size(); i++) {
-            CommandLine commandLine = commandLines.get(i);
-            CommandLineData commandLineData = document.new CommandLineData(
-                    commandLine.isError(), commandLine.getText());
-
-            document.addCommandLineData(commandLineData);
-        }
+        Document document = new Document(stream.collect(Collectors.toCollection(
+                CommandLineStream::new)), interpreter.getUserSymbolTable());
 
         file.write(document);
         fileWasSavedProperty.set(true);
     }
 
     private boolean requestOpen() {
-        String extensionPattern = '*' + fileExtension;
+        String extensionPattern = '*' + Application.documentExtension;
 
         FileChooser.ExtensionFilter extensionFilter = new FileChooser.ExtensionFilter(
-                fileExtensionName + " (" + extensionPattern + ")", extensionPattern);
+                Application.documentName + " (" + extensionPattern + ")", extensionPattern);
 
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Open");
@@ -1237,10 +1237,10 @@ public class MainWindow extends javafx.application.Application {
     }
 
     private boolean requestSave() {
-        String extensionPattern = '*' + fileExtension;
+        String extensionPattern = '*' + Application.documentExtension;
 
         FileChooser.ExtensionFilter extensionFilter = new FileChooser.ExtensionFilter(
-                fileExtensionName + " (" + extensionPattern + ")", extensionPattern);
+                Application.documentName + " (" + extensionPattern + ")", extensionPattern);
 
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Save As");
@@ -1507,7 +1507,7 @@ public class MainWindow extends javafx.application.Application {
             if (text.length() == 1)
                 character = text.charAt(0);
         } catch (Exception exception) {
-            Application.logInformation("cannot decode pressed key.");
+            Application.informationLog("cannot decode pressed key.");
         }
 
         if (character > 32 && character < 127 && !keyEvent.isShortcutDown()) {
@@ -1714,7 +1714,7 @@ public class MainWindow extends javafx.application.Application {
             List<java.io.File> files = dragboard.getFiles();
             String filepath = files.get(0).getPath();
 
-            if (files.size() == 1 && filepath.endsWith(fileExtension))
+            if (files.size() == 1 && filepath.endsWith(Application.documentExtension))
                 dragEvent.acceptTransferModes(TransferMode.COPY);
         }
 
@@ -1737,6 +1737,13 @@ public class MainWindow extends javafx.application.Application {
         dragEvent.consume();
     }
 
+    /**
+     * Create root layout and show primary stage. This method sends a
+     * notification to {@link SplashScreen} when finished.
+     *
+     * @param stage Main window primary stage
+     * @see SplashScreen#handleApplicationNotification
+     */
     @Override
     public void start(Stage stage) {
         primaryStage = stage;
@@ -1809,7 +1816,7 @@ public class MainWindow extends javafx.application.Application {
         enableTypeCheckingProperty.addListener(this::updateTypeCheckingListener);
         stage.show();
 
-        centerWindowOnScreen(stage);
+        centerWindowOnScreen();
         notifyPreloader(new ProgressNotification(100.0));
     }
 }

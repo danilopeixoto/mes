@@ -26,38 +26,5 @@
 // OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-package mes.io;
-
-import java.io.Serializable;
-import mes.lang.SymbolTable;
-
-public class Document implements Serializable {
-    private CommandLineStream commandLineStream;
-    private SymbolTable symbolTable;
-
-    public Document() {
-        this.commandLineStream = new CommandLineStream();
-        this.symbolTable = new SymbolTable();
-    }
-
-    public Document(CommandLineStream commandLineStream, SymbolTable symbolTable) {
-        this.commandLineStream = commandLineStream;
-        this.symbolTable = symbolTable;
-    }
-
-    public void setCommandLineStream(CommandLineStream commandLineStream) {
-        this.commandLineStream = commandLineStream;
-    }
-
-    public void setSymbolTable(SymbolTable symbolTable) {
-        this.symbolTable = symbolTable;
-    }
-
-    public CommandLineStream getCommandLineStream() {
-        return commandLineStream;
-    }
-
-    public SymbolTable getSymbolTable() {
-        return symbolTable;
-    }
-}
+/** Application and user interface implementation. */
+package mes.ui;

@@ -29,7 +29,6 @@
 package mes.lang;
 
 import mes.lang.ExceptionContent.ExceptionMessage;
-import mes.lang.Symbol.SymbolType;
 
 public class Interpreter {
     private class EvaluationFunction extends TraversalFunction {
@@ -48,17 +47,17 @@ public class Interpreter {
         }
     }
 
+    private SymbolTable userSymbolTable;
     private SymbolTable symbolTable;
+
     private SymbolImporter defaultSymbols;
 
     public Interpreter() {
+        userSymbolTable = new SymbolTable();
         symbolTable = new SymbolTable();
-        defaultSymbols = SymbolImporter.importFrom(MathUtils.class);
 
-        if (defaultSymbols != null) {
-            symbolTable.addAll(defaultSymbols.getConstants());
-            symbolTable.addAll(defaultSymbols.getFunctions());
-        }
+        defaultSymbols = SymbolImporter.importFrom(MathUtils.class);
+        transferDefaultSymbols();
     }
 
     public Statement run(String source) {
@@ -83,7 +82,7 @@ public class Interpreter {
                     throw new ExceptionContent(
                             ExceptionMessage.InvalidSymbolRedefinition, result.getPosition());
                 else
-                    symbolTable.add(identifierSymbol);
+                    addUserSymbol(identifierSymbol);
             }
         } catch (Exception exception) {
             result = null;
@@ -91,18 +90,43 @@ public class Interpreter {
             if (exception instanceof ExceptionContent)
                 exceptionContent = (ExceptionContent)exception;
             else
-                exceptionContent = new ExceptionContent(ExceptionMessage.UnknownException);
+                exceptionContent = new ExceptionContent(ExceptionMessage.throwable(exception));
         }
 
         return new Statement(result, exceptionContent);
+    }
+
+    public void setUserSymbolTable(SymbolTable userSymbolTable) {
+        this.userSymbolTable = userSymbolTable;
+
+        transferDefaultSymbols();
+        symbolTable.addAll(userSymbolTable);
+    }
+
+    public SymbolTable getUserSymbolTable() {
+        return userSymbolTable;
     }
 
     public SymbolTable getSymbolTable() {
         return symbolTable;
     }
 
+    public void clearUserSymbolTable() {
+        userSymbolTable.clear();
+        transferDefaultSymbols();
+    }
+
     public boolean hasDefaultSymbols() {
         return defaultSymbols != null;
+    }
+
+    private void transferDefaultSymbols() {
+        symbolTable.clear();
+
+        if (defaultSymbols != null) {
+            symbolTable.addAll(defaultSymbols.getConstants());
+            symbolTable.addAll(defaultSymbols.getFunctions());
+        }
     }
 
     private boolean isDefaultSymbol(IdentifierLiteralSymbol identifierSymbol) {
@@ -120,5 +144,10 @@ public class Interpreter {
                 return true;
 
         return false;
+    }
+
+    private void addUserSymbol(IdentifierLiteralSymbol userSymbol) {
+        userSymbolTable.add(userSymbol);
+        symbolTable.add(userSymbol);
     }
 }

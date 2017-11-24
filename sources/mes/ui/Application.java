@@ -40,19 +40,36 @@ import javafx.application.Platform;
 import mes.io.File;
 import mes.io.Preferences;
 
+/**
+ * Main application class that defines useful objects and constants.
+ * @author Danilo Ferreira
+ * @version 1.0.0
+ */
 public class Application {
+    /** Application name. */
     public static final String name = "MES";
+    /** Application full name. */
     public static final String fullName = "Mathematical Expression Solver";
+    /** Application version. */
     public static final String version = "1.0.0";
+    /** Application license. */
     public static final String license = "BSD-3-Clause license";
+    /** Application license link. */
     public static final String licenseLink = "https://github.com/danilopeixoto/mes/blob/master/LICENSE";
-    public static final String copyright = "Copyright © 2017, Danilo Peixoto. All rights reserved.";
+    /** Application copyright. */
+    public static final String copyright = "Copyright © 2017, Danilo Ferreira,\n"
+            + "João de Oliveira and Lucas Alves. All rights reserved.";
+    
+    /** MES document name. */
+    public static final String documentName = name + " document";
+    /** MES document extension. */
+    public static final String documentExtension = '.' + name.toLowerCase();
 
+    /** Application style sheet file. */
     public static final String styleSheet = "styles/general.css";
-    public static final String className = "GlassWndClass-GlassWindowClass-3";
-
-    private static final Logger logger = Logger.getLogger(name);
+    
     private static final File preferenceFile = new File(name.toLowerCase() + ".pref");
+    private static final Logger logger = Logger.getLogger(name);
 
     private static class LogFormatter extends Formatter {
         public LogFormatter() {
@@ -76,22 +93,41 @@ public class Application {
         }
     }
 
+    /**
+     * Return application preferences.
+     * @return Preferences
+     * @see Preferences
+     */
     public static Preferences loadPreferences() {
         return (Preferences)preferenceFile.read();
     }
 
+    /**
+     * Save application preferences to file.
+     * @param preferences Application preferences
+     * @see Preferences
+     */
     public static void savePreferences(Preferences preferences) {
         preferenceFile.write(preferences);
     }
 
-    public static void logInformation(String message) {
+    /**
+     * Write information message to default logger.
+     * @param message Information message
+     */
+    public static void informationLog(String message) {
         logger.log(Level.INFO, message);
     }
 
-    public static void logWarning(String message) {
+    /**
+     * Write warning message to default logger.
+     * @param message Warning message
+     */
+    public static void warningLog(String message) {
         logger.log(Level.WARNING, message);
     }
 
+    /** Force application to exit by closing log and preference files. */
     public static void exit() {
         preferenceFile.close();
 
@@ -105,7 +141,11 @@ public class Application {
         System.exit(0);
     }
 
-    public static void main(String[] args) {
+    /**
+     * Application entry point method.
+     * @param arguments Application arguments
+     */
+    public static void main(String[] arguments) {
         try {
             LogFormatter formatter = new LogFormatter();
 
@@ -114,9 +154,9 @@ public class Application {
 
             logger.addHandler(fileHandler);
         } catch (Exception exception) {
-            logWarning("cannot write log to file.");
+            warningLog("cannot write log to file.");
         }
 
-        LauncherImpl.launchApplication(MainWindow.class, SplashScreen.class, args);
+        LauncherImpl.launchApplication(MainWindow.class, SplashScreen.class, arguments);
     }
 }

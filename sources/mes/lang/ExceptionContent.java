@@ -35,7 +35,6 @@ public class ExceptionContent extends RuntimeException {
         public static final String UndefinedSymbol = "undefined symbol";
         public static final String InvalidSymbolRedefinition = "invalid symbol redefinition";
         public static final String InvalidNumberArguments = "invalid number of arguments";
-        public static final String UnknownException = "unknown";
 
         public static String custom(String message) {
             return message;
@@ -47,6 +46,32 @@ public class ExceptionContent extends RuntimeException {
 
         public static String unexpect(String element) {
             return custom("unexpected " + element + "symbol");
+        }
+
+        public static String throwable(Exception exceptionObject) {
+            String exceptionName;
+
+            try {
+                exceptionName = exceptionObject.getClass().getSimpleName();
+                String[] words = exceptionName.split("(?=[A-Z])");
+
+                StringBuilder stringBuilder = new StringBuilder();
+                int length = words.length - 1;
+
+                for (int i = 0; i < length; i++) {
+                    String word = words[i].toLowerCase();
+                    stringBuilder.append(word);
+
+                    if (i != length - 1)
+                        stringBuilder.append(' ');
+                }
+
+                exceptionName = stringBuilder.toString();
+            } catch (Exception exception) {
+                exceptionName = "unknown exception";
+            }
+            
+            return exceptionName;
         }
     }
 

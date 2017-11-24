@@ -29,35 +29,33 @@
 package mes.io;
 
 import java.io.Serializable;
-import mes.lang.SymbolTable;
 
-public class Document implements Serializable {
-    private CommandLineStream commandLineStream;
-    private SymbolTable symbolTable;
+public class CommandLineData implements Serializable {
+    private String text;
+    private boolean error;
 
-    public Document() {
-        this.commandLineStream = new CommandLineStream();
-        this.symbolTable = new SymbolTable();
+    public CommandLineData() {
+        this("", false);
     }
 
-    public Document(CommandLineStream commandLineStream, SymbolTable symbolTable) {
-        this.commandLineStream = commandLineStream;
-        this.symbolTable = symbolTable;
+    public CommandLineData(String text, boolean error) {
+        this.text = text;
+        this.error = error;
     }
 
-    public void setCommandLineStream(CommandLineStream commandLineStream) {
-        this.commandLineStream = commandLineStream;
+    public void setText(String text) {
+        this.text = text;
     }
 
-    public void setSymbolTable(SymbolTable symbolTable) {
-        this.symbolTable = symbolTable;
+    public void setError(boolean error) {
+        this.error = error;
     }
 
-    public CommandLineStream getCommandLineStream() {
-        return commandLineStream;
+    public String getText() {
+        return text;
     }
 
-    public SymbolTable getSymbolTable() {
-        return symbolTable;
+    public boolean isError() {
+        return error;
     }
 }

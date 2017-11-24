@@ -28,36 +28,70 @@
 
 package mes.io;
 
-import java.io.Serializable;
-import mes.lang.SymbolTable;
+import java.util.ArrayList;
+import java.util.Iterator;
 
-public class Document implements Serializable {
-    private CommandLineStream commandLineStream;
-    private SymbolTable symbolTable;
+public class CommandLineStream extends ArrayList<CommandLineData> {
+    public class CommandLineIterator implements Iterator<CommandLineData> {
+        private int index;
 
-    public Document() {
-        this.commandLineStream = new CommandLineStream();
-        this.symbolTable = new SymbolTable();
+        public CommandLineIterator() {
+            this(0);
+        }
+
+        public CommandLineIterator(int index) {
+            this.index = index;
+        }
+
+        public void set(CommandLineData token) {
+            CommandLineStream.this.set(index, token);
+        }
+
+        public CommandLineData get() {
+            return CommandLineStream.this.get(index);
+        }
+
+        public void setIndex(int index) {
+            this.index = index;
+        }
+
+        public int getIndex() {
+            return index;
+        }
+
+        @Override
+        public boolean hasNext() {
+            return index < size();
+        }
+
+        public boolean hasPrevious() {
+            return index >= 0;
+        }
+
+        @Override
+        public CommandLineData next() {
+            return hasNext() ? CommandLineStream.this.get(index++) : null;
+        }
+
+        public CommandLineData previous() {
+            return hasPrevious() ? CommandLineStream.this.get(index--) : null;
+        }
+
+        public void reset() {
+            index = 0;
+        }
     }
 
-    public Document(CommandLineStream commandLineStream, SymbolTable symbolTable) {
-        this.commandLineStream = commandLineStream;
-        this.symbolTable = symbolTable;
+    public CommandLineStream() {
+        super();
     }
 
-    public void setCommandLineStream(CommandLineStream commandLineStream) {
-        this.commandLineStream = commandLineStream;
+    public CommandLineStream(int size) {
+        super(size);
     }
 
-    public void setSymbolTable(SymbolTable symbolTable) {
-        this.symbolTable = symbolTable;
-    }
-
-    public CommandLineStream getCommandLineStream() {
-        return commandLineStream;
-    }
-
-    public SymbolTable getSymbolTable() {
-        return symbolTable;
+    @Override
+    public CommandLineIterator iterator() {
+        return new CommandLineIterator();
     }
 }
