@@ -28,15 +28,28 @@
 
 package mes.lang;
 
+/**
+ * Not equal operator abstraction.
+ * @author Danilo Ferreira, João de Oliveira and Lucas Alves
+ * @version 1.0.0
+ * @see BinaryOperatorSymbol
+ */
 public class NotEqualOperatorSymbol extends BinaryOperatorSymbol {
+    /** Initializes the not equal operator. */
     public NotEqualOperatorSymbol() {
         this(0);
     }
 
+    /**
+     * Initializes the not equal operator. By default the not equal operator is
+     * left associative with precedence 3.
+     * @param position The symbol position at the source code
+     */
     public NotEqualOperatorSymbol(int position) {
         super(3, Associativity.Left, SymbolType.NotEqual, position);
     }
-
+    
+    /** {@inheritDoc} */
     @Override
     public LiteralSymbol compute(LiteralSymbol left, LiteralSymbol right) {
         return new NumberLiteralSymbol(MathUtils.number(

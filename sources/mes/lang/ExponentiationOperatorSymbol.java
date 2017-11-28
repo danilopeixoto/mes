@@ -28,15 +28,28 @@
 
 package mes.lang;
 
+/**
+ * Exponentiation operator abstraction.
+ * @author Danilo Ferreira
+ * @version 1.0.0
+ * @see BinaryOperatorSymbol
+ */
 public class ExponentiationOperatorSymbol extends BinaryOperatorSymbol {
+    /** Initializes the exponentiation operator. */
     public ExponentiationOperatorSymbol() {
         this(0);
     }
 
+    /**
+     * Initializes the exponentiation operator. By default the assignment
+     * operator is right associative with precedence 8.
+     * @param position The symbol position at the source code
+     */
     public ExponentiationOperatorSymbol(int position) {
         super(8, Associativity.Right, SymbolType.Exponentiation, position);
     }
 
+    /** {@inheritDoc} */
     @Override
     public LiteralSymbol compute(LiteralSymbol left, LiteralSymbol right) {
         return new NumberLiteralSymbol(MathUtils.pow(

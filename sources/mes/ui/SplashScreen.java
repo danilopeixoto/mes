@@ -43,6 +43,7 @@ import javafx.stage.StageStyle;
  * Application splash screen (preloader).
  * @author Danilo Ferreira
  * @version 1.0.0
+ * @see Preloader
  */
 public class SplashScreen extends Preloader {
     private final int width;
@@ -52,7 +53,7 @@ public class SplashScreen extends Preloader {
 
     private Stage primaryStage;
 
-    /** Initialize splash screen properties. */
+    /** Initializes the splash screen properties. */
     public SplashScreen() {
         width = 600;
         height = 600;
@@ -67,8 +68,8 @@ public class SplashScreen extends Preloader {
     }
 
     /**
-     * Create root layout and show primary stage.
-     * @param stage Splash screen primary stage
+     * Creates the root layout and shows the primary stage.
+     * @param stage The primary stage of the splash screen
      */
     @Override
     public void start(Stage stage) {
@@ -95,10 +96,10 @@ public class SplashScreen extends Preloader {
     }
 
     /**
-     * Handle {@link MainWindow} notification. This method hide primary stage
-     * when the main window is ready to be shown.
-     * @param notification Notification sent from the main window
-     * @see MainWindow#start
+     * Handles {@link MainWindow} notification. This method hides the primary
+     * stage when the main window is ready to be shown.
+     * @param notification The notification sent from the main window
+     * @see MainWindow#start(Stage)
      */
     @Override
     public void handleApplicationNotification(PreloaderNotification notification) {

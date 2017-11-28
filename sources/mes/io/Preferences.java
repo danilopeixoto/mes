@@ -30,15 +30,30 @@ package mes.io;
 
 import java.io.Serializable;
 
+/**
+ * File content to application preference representation.
+ * @author Danilo Ferreira
+ * @version 1.0.0
+ * @see File
+ */
 public class Preferences implements Serializable {
     private boolean enableTypeChecking;
     private boolean enableAutocomplete;
     private boolean statusBarVisible;
 
+    /**
+     * Initializes the preferences. By default the type checking, text
+     * autocomplete and status bar visibility are enable.
+     */
     public Preferences() {
         this(true, true, true);
     }
 
+    /** Initializes the preferences.
+     * @param enableTypeChecking Enable type checking feature
+     * @param enableAutocomplete Enable text autocomplete feature
+     * @param statusBarVisible Enable status bar visibility
+     */
     public Preferences(boolean enableTypeChecking, boolean enableAutocomplete,
             boolean statusBarVisible) {
         this.enableTypeChecking = enableTypeChecking;
@@ -46,26 +61,53 @@ public class Preferences implements Serializable {
         this.statusBarVisible = statusBarVisible;
     }
 
+    /**
+     * Sets the type checking feature state.
+     * @param enableTypeChecking Enable type checking feature
+     */
     public void setEnableTypeChecking(boolean enableTypeChecking) {
         this.enableTypeChecking = enableTypeChecking;
     }
 
+    /**
+     * Sets the text autocomplete feature state.
+     * @param enableAutocomplete Enable text autocomplete feature
+     */
     public void setEnableAutocomplete(boolean enableAutocomplete) {
         this.enableAutocomplete = enableAutocomplete;
     }
 
+    /**
+     * Sets the status bar visibility state.
+     * @param statusBarVisible Enable status bar visibility
+     */
     public void setStatusBarVisible(boolean statusBarVisible) {
         this.statusBarVisible = statusBarVisible;
     }
 
+    /**
+     * Returns the type checking feature state.
+     * @return The type checking feature state.
+     * @see #setEnableTypeChecking(boolean)
+     */
     public boolean isEnableTypeChecking() {
         return enableTypeChecking;
     }
 
+    /**
+     * Returns the text autocomplete feature state.
+     * @return The text autocomplete feature state.
+     * @see #setEnableAutocomplete(boolean)
+     */
     public boolean isEnableAutocomplete() {
         return enableAutocomplete;
     }
 
+    /**
+     * Returns the status bar visibility state.
+     * @return The status bar visibility state.
+     * @see #setStatusBarVisible(boolean)
+     */
     public boolean isStatusBarVisible() {
         return statusBarVisible;
     }

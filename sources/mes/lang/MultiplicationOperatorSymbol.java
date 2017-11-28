@@ -28,15 +28,28 @@
 
 package mes.lang;
 
+/**
+ * Multiplication operator abstraction.
+ * @author Danilo Ferreira
+ * @version 1.0.0
+ * @see BinaryOperatorSymbol
+ */
 public class MultiplicationOperatorSymbol extends BinaryOperatorSymbol {
+    /** Initializes the multiplication operator. */
     public MultiplicationOperatorSymbol() {
         this(0);
     }
 
+    /**
+     * Initializes the multiplication operator. By default the multiplication
+     * operator is left associative with precedence 6.
+     * @param position The symbol position at the source code
+     */
     public MultiplicationOperatorSymbol(int position) {
         super(6, Associativity.Left, SymbolType.Multiplication, position);
     }
 
+    /** {@inheritDoc} */
     @Override
     public LiteralSymbol compute(LiteralSymbol left, LiteralSymbol right) {
         return new NumberLiteralSymbol(

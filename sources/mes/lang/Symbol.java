@@ -28,28 +28,55 @@
 
 package mes.lang;
 
+/**
+ * Represents the syntax components of the language specification.
+ * @author Danilo Ferreira
+ * @version 1.0.0
+ */
 public abstract class Symbol extends AbstractSyntaxNode {
+    /** Supported symbol types. */
     public enum SymbolType {
+        /** Number symbol. */
         Number,
+        /** Variable symbol. */
         Variable,
+        /** Function symbol. */
         Function,
+        /** Plus operator symbol. */
         Plus,
+        /** Minus operator symbol. */
         Minus,
+        /** Addition operator symbol. */
         Addition,
+        /** Subtraction operator symbol. */
         Subtraction,
+        /** Multiplication operator symbol. */
         Multiplication,
+        /** Division operator symbol. */
         Division,
+        /** Modulo operator symbol. */
         Modulo,
+        /** Exponentiation operator symbol. */
         Exponentiation,
+        /** Greater equal operator symbol. */
         GreaterEqual,
+        /** Greater operator symbol. */
         Greater,
+        /** Less equal operator symbol. */
         LessEqual,
+        /** Less operator symbol. */
         Less,
+        /** Equal operator symbol. */
         Equal,
+        /** Not equal operator symbol. */
         NotEqual,
+        /** <i>Not</i> operator symbol. */
         Not,
+        /** <i>And</i> operator symbol. */
         And,
+        /** <i>Or</i> operator symbol. */
         Or,
+        /** Assignment operator symbol. */
         Assignment
     }
 

@@ -28,15 +28,28 @@
 
 package mes.lang;
 
+/**
+ * Less operator abstraction.
+ * @author Danilo Ferreira
+ * @version 1.0.0
+ * @see BinaryOperatorSymbol
+ */
 public class LessOperatorSymbol extends BinaryOperatorSymbol {
+    /** Initializes the less operator. */
     public LessOperatorSymbol() {
         this(0);
     }
 
+    /**
+     * Initializes the less operator. By default the less operator is left
+     * associative with precedence 4.
+     * @param position The symbol position at the source code
+     */
     public LessOperatorSymbol(int position) {
         super(4, Associativity.Left, SymbolType.Less, position);
     }
 
+    /** {@inheritDoc} */
     @Override
     public LiteralSymbol compute(LiteralSymbol left, LiteralSymbol right) {
         return new NumberLiteralSymbol(MathUtils.number(

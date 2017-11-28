@@ -28,15 +28,28 @@
 
 package mes.lang;
 
+/**
+ * Minus operator abstraction.
+ * @author Danilo Ferreira
+ * @version 1.0.0
+ * @see UnaryOperatorSymbol
+ */
 public class MinusOperatorSymbol extends UnaryOperatorSymbol {
+    /** Initializes the minus operator. By default the position index is zero. */
     public MinusOperatorSymbol() {
         this(0);
     }
 
+    /**
+     * Initializes the minus operator.
+     * @param position The symbol position at the source code
+     * @see UnaryOperatorSymbol#UnaryOperatorSymbol(Symbol.SymbolType, int)
+     */
     public MinusOperatorSymbol(int position) {
         super(SymbolType.Minus, position);
     }
 
+    /** {@inheritDoc} */
     @Override
     public LiteralSymbol compute(LiteralSymbol input) {
         return new NumberLiteralSymbol(-input.getDoubleValue(), position);

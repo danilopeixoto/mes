@@ -28,6 +28,12 @@
 
 package mes.lang;
 
+/**
+ * Number type representation.
+ * @author Danilo Ferreira
+ * @version 1.0.0
+ * @see LiteralSymbol
+ */
 public class NumberLiteralSymbol extends LiteralSymbol {
     private double value;
 

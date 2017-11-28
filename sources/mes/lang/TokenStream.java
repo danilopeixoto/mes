@@ -28,70 +28,23 @@
 
 package mes.lang;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-
-public class TokenStream extends ArrayList<Token> {
-    public class TokenIterator implements Iterator<Token> {
-        private int index;
-
-        public TokenIterator() {
-            this(0);
-        }
-
-        public TokenIterator(int index) {
-            this.index = index;
-        }
-
-        public void set(Token token) {
-            TokenStream.this.set(index, token);
-        }
-
-        public Token get() {
-            return TokenStream.this.get(index);
-        }
-
-        public void setIndex(int index) {
-            this.index = index;
-        }
-
-        public int getIndex() {
-            return index;
-        }
-
-        @Override
-        public boolean hasNext() {
-            return index < size();
-        }
-
-        public boolean hasPrevious() {
-            return index >= 0;
-        }
-
-        @Override
-        public Token next() {
-            return hasNext() ? TokenStream.this.get(index++) : null;
-        }
-
-        public Token previous() {
-            return hasPrevious() ? TokenStream.this.get(index--) : null;
-        }
-
-        public void reset() {
-            index = 0;
-        }
-    }
-
+/**
+ * List implementation for {@link Token}.
+ * @author Danilo Ferreira
+ * @version 1.0.0
+ * @see List
+ */
+public class TokenStream extends List<Token> {
+    /** Initializes an empty token stream. */
     public TokenStream() {
         super();
     }
 
+    /**
+     * Initializes the token stream with initial size.
+     * @param size The list size
+     */
     public TokenStream(int size) {
         super(size);
-    }
-
-    @Override
-    public TokenIterator iterator() {
-        return new TokenIterator();
     }
 }

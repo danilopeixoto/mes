@@ -28,12 +28,21 @@
 
 package mes.lang;
 
+/**
+ * Operator abstraction.
+ * @author Danilo Ferreira
+ * @version 1.0.0
+ * @see Symbol
+ */
 public abstract class OperatorSymbol extends Symbol {
+    /** Operator associativity type. */
     public enum Associativity {
+        /** Left associativity. */
         Left,
+        /** Right associativity. */
         Right
     }
-
+    
     protected int precedence;
     protected Associativity associativity;
 

@@ -28,29 +28,57 @@
 
 package mes.lang;
 
+/**
+ * Represents the source code components of the language specification.
+ * @author Danilo Ferreira
+ * @version 1.0.0
+ */
 public class Token {
+    /** Supported token types. */
     public enum TokenType {
+        /** Identifier token. */
         Identifier,
+        /** Number token. */
         Number,
+        /** Addition operator token. */
         Addition,
+        /** Subtraction operator token. */
         Subtraction,
+        /** Multiplication operator token. */
         Multiplication,
+        /** Division operator token. */
         Division,
+        /** Modulo operator token. */
         Modulo,
+        /** Exponentiation operator token. */
         Exponentiation,
+        /** Equal operator token. */
         Equal,
+        /** Not equal operator token. */
         NotEqual,
+        /** Less equal operator token. */
         LessEqual,
+        /** Less operator token. */
         Less,
+        /** Greater equal operator token. */
         GreaterEqual,
+        /** Greater operator token. */
         Greater,
+        /** Not operator token. */
         Not,
+        /** And operator token. */
         And,
+        /** Or operator token. */
         Or,
+        /** Assignment operator token. */
         Assignment,
+        /** Left parenthesis token. */
         LParenthesis,
+        /** Right parenthesis token. */
         RParenthesis,
+        /** Comma token. */
         Comma,
+        /** End of line token. */
         EOL
     }
 

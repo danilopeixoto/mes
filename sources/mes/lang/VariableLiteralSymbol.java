@@ -28,24 +28,25 @@
 
 package mes.lang;
 
+/**
+ * Variable type representation.
+ * @author Danilo Ferreira
+ * @version 1.0.0
+ * @see IdentifierLiteralSymbol
+ */
 public class VariableLiteralSymbol extends IdentifierLiteralSymbol {
     private double value;
 
     public VariableLiteralSymbol() {
-        this("", 0, true, 0);
+        this("", 0, 0);
     }
 
     public VariableLiteralSymbol(String name, int position) {
-        this(name, 0, true, position);
+        this(name, 0, position);
     }
 
     public VariableLiteralSymbol(String name, double value, int position) {
-        this(name, value, false, position);
-    }
-
-    public VariableLiteralSymbol(String name, double value, boolean nullIdentifier,
-            int position) {
-        super(name, nullIdentifier, SymbolType.Variable, position);
+        super(name, SymbolType.Variable, position);
         this.value = value;
     }
 

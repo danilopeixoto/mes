@@ -28,37 +28,73 @@
 
 package mes.lang;
 
+/**
+ * Abstract syntax tree implementation for {@link Symbol}.
+ * @author Danilo Ferreira
+ * @version 1.0.0
+ * @see AbstractSyntaxNode
+ */
 public class AbstractSyntaxTree {
     private AbstractSyntaxNode root;
 
+    /** Initializes the abstract syntax tree with null root. */
     public AbstractSyntaxTree() {
         this(null);
     }
 
+    /**
+     * Initializes the abstract syntax tree.
+     * @param root The root node
+     */
     public AbstractSyntaxTree(AbstractSyntaxNode root) {
         this.root = root;
     }
 
+    /**
+     * Sets the root node of the abstract syntax tree.
+     * @param root The root node
+     */
     public void setRoot(AbstractSyntaxNode root) {
         this.root = root;
     }
 
+    /**
+     * Returns the root node of the abstract syntax tree.
+     * @return The root node.
+     * @see #setRoot(AbstractSyntaxNode)
+     */
     public AbstractSyntaxNode getRoot() {
         return root;
     }
 
+    /**
+     * Returns the number of nodes in the abstract syntax tree.
+     * @return The node count.
+     */
     public int getNodeCount() {
         return computeNodeCount(root);
     }
 
+    /**
+     * Returns true if the abstract syntax tree is empty and false otherwise.
+     * @return The empty state.
+     */
     public boolean isEmpty() {
         return root == null;
     }
 
+    /** Deletes all the nodes in the abstract syntax tree. */
     public void clear() {
         root = null;
     }
 
+    /**
+     * The post-order traversal of the abstract syntax tree. This method calls
+     * the function object while traversing tree.
+     * @param function A custom traversal function
+     * @return The output node.
+     * @see TraversalFunction
+     */
     public AbstractSyntaxNode traverse(TraversalFunction function) {
         return traverse(root, function);
     }

@@ -30,6 +30,14 @@ package mes.lang;
 
 import mes.lang.ExceptionContent.ExceptionMessage;
 
+/**
+ * Interpreter implementation for the language specification.
+ * @author Danilo Ferreira, João de Oliveira and Lucas Alves
+ * @version 1.0.0
+ * @see Lexer
+ * @see Parser
+ * @see TraversalFunction
+ */
 public class Interpreter {
     private class EvaluationFunction extends TraversalFunction {
         public EvaluationFunction() {

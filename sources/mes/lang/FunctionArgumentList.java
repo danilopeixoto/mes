@@ -28,70 +28,23 @@
 
 package mes.lang;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-
-public class FunctionArgumentList extends ArrayList<FunctionArgument> {
-    public class FunctionArgumentIterator implements Iterator<FunctionArgument> {
-        private int index;
-
-        public FunctionArgumentIterator() {
-            this(0);
-        }
-
-        public FunctionArgumentIterator(int index) {
-            this.index = index;
-        }
-
-        public void set(FunctionArgument functionArgument) {
-            FunctionArgumentList.this.set(index, functionArgument);
-        }
-
-        public FunctionArgument get() {
-            return FunctionArgumentList.this.get(index);
-        }
-
-        public void setIndex(int index) {
-            this.index = index;
-        }
-
-        public int getIndex() {
-            return index;
-        }
-
-        @Override
-        public boolean hasNext() {
-            return index < size();
-        }
-
-        public boolean hasPrevious() {
-            return index >= 0;
-        }
-
-        @Override
-        public FunctionArgument next() {
-            return hasNext() ? FunctionArgumentList.this.get(index++) : null;
-        }
-
-        public FunctionArgument previous() {
-            return hasPrevious() ? FunctionArgumentList.this.get(index--) : null;
-        }
-
-        public void reset() {
-            index = 0;
-        }
-    }
-
+/**
+ * List implementation for {@link FunctionArgument}.
+ * @author Danilo Ferreira
+ * @version 1.0.0
+ * @see List
+ */
+public class FunctionArgumentList extends List<FunctionArgument> {
+    /** Initializes an empty function argument list. */
     public FunctionArgumentList() {
         super();
     }
 
+    /**
+     * Initializes the function argument list with initial size.
+     * @param size List size
+     */
     public FunctionArgumentList(int size) {
         super(size);
-    }
-
-    @Override
-    public FunctionArgumentIterator iterator() {
-        return new FunctionArgumentIterator();
     }
 }

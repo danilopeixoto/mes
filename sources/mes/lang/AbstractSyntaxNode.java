@@ -28,35 +28,68 @@
 
 package mes.lang;
 
+/**
+ * Node implementation for {@link AbstractSyntaxTree}.
+ * @author Danilo Ferreira
+ * @version 1.0.0
+ * @see AbstractSyntaxTree
+ */
 public abstract class AbstractSyntaxNode {
     protected AbstractSyntaxNode left;
     protected AbstractSyntaxNode right;
 
+    /** Initializes the children of node to null. */
     public AbstractSyntaxNode() {
         left = null;
         right = null;
     }
 
+    /**
+     * Set the left child of node.
+     * @param left The left child node
+     */
     public void setLeft(AbstractSyntaxNode left) {
         this.left = left;
     }
 
+    /**
+     * Set the right child of node.
+     * @param right The right child node
+     */
     public void setRight(AbstractSyntaxNode right) {
         this.right = right;
     }
 
+    /**
+     * Returns the left child of node.
+     * @return The left child node.
+     * @see #setLeft(AbstractSyntaxNode)
+     */
     public AbstractSyntaxNode getLeft() {
         return left;
     }
 
+    /**
+     * Returns the right child of node.
+     * @return The right child node.
+     * @see #setRight(AbstractSyntaxNode)
+     */
     public AbstractSyntaxNode getRight() {
         return right;
     }
 
+    /**
+     * Returns true if all children are null and false otherwise.
+     * @return The leaf state.
+     */
     public boolean isLeaf() {
         return left == null && right == null;
     }
 
+    /**
+     * Returns true if all children are non-null and false otherwise.
+     * @return The binary root state.
+     */
     public boolean isBinaryRoot() {
         return left != null && right != null;
     }

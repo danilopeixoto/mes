@@ -28,15 +28,28 @@
 
 package mes.lang;
 
+/**
+ * Modulo operator abstraction.
+ * @author Danilo Ferreira
+ * @version 1.0.0
+ * @see BinaryOperatorSymbol
+ */
 public class ModuloOperatorSymbol extends BinaryOperatorSymbol {
+    /** Initializes the modulo operator. */
     public ModuloOperatorSymbol() {
         this(0);
     }
 
+    /**
+     * Initializes the modulo operator. By default the modulo operator is left
+     * associative with precedence 6.
+     * @param position The symbol position at the source code
+     */
     public ModuloOperatorSymbol(int position) {
         super(6, Associativity.Left, SymbolType.Modulo, position);
     }
 
+    /** {@inheritDoc} */
     @Override
     public LiteralSymbol compute(LiteralSymbol left, LiteralSymbol right) {
         return new NumberLiteralSymbol(

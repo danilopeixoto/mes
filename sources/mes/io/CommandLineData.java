@@ -30,31 +30,61 @@ package mes.io;
 
 import java.io.Serializable;
 
+/**
+ * UI Command Line data and property representation to save in document.
+ * @author Danilo Ferreira
+ * @version 1.0.0
+ * @see Document
+ */
 public class CommandLineData implements Serializable {
     private String text;
     private boolean error;
 
+    /** Initializes the default parameters. */
     public CommandLineData() {
         this("", false);
     }
 
+    /**
+     * Initializes parameters.
+     * @param text The command line text content
+     * @param error The flag to indicate the command line error representation
+     */
     public CommandLineData(String text, boolean error) {
         this.text = text;
         this.error = error;
     }
 
+    /**
+     * Sets the command line text content.
+     * @param text The command line text content
+     */
     public void setText(String text) {
         this.text = text;
     }
 
+    /**
+     * Sets the command line error representation flag.
+     * @param error The flag to indicate the command line error representation
+     */
     public void setError(boolean error) {
         this.error = error;
     }
 
+    /**
+     * Returns the command line text content.
+     * @return The text content.
+     * @see #setText(String)
+     */
     public String getText() {
         return text;
     }
 
+    /**
+     * Returns the command line error representation flag.
+     * @return The error flag.
+     * @see #setError(boolean)
+     */
     public boolean isError() {
         return error;
     }

@@ -30,43 +30,94 @@ package mes.lang;
 
 import java.lang.reflect.Method;
 
+/**
+ * Adapter class for {@link FunctionLiteralSymbol} closure.
+ * @author Danilo Ferreira
+ * @version 1.0.0
+ * @see AbstractSyntaxTree
+ * @see Method
+ */
 public class Closure {
+    /** Supported closure types. */
     public enum ClosureType {
+        /** Abstract syntax tree closure. */
         AbstractSyntaxTree,
+        /** Method closure. */
         Method,
+        /** Empty closure. */
         Empty
     }
-
+    
     private Object closureObject;
 
+    /** Initializes an empty closure. */
     public Closure() {
         closureObject = null;
     }
 
+    /**
+     * Initializes a closure instance as abstract syntax tree. If the abstract
+     * syntax tree is null an empty closure is assigned. 
+     * @param abstractSyntaxTree The abstract syntax tree to use as closure
+     */
     public Closure(AbstractSyntaxTree abstractSyntaxTree) {
         closureObject = abstractSyntaxTree;
     }
 
+    /**
+     * Initializes a closure instance as method. If the method is null an empty
+     * closure is assigned.
+     * @param method The method to use as closure
+     */
     public Closure(Method method) {
         closureObject = method;
     }
 
+    /**
+     * Sets closure instance as abstract syntax tree. If the abstract syntax
+     * tree is null an empty closure is assigned.
+     * @param abstractSyntaxTree The abstract syntax tree to use as closure
+     */
     public void setAbstractSyntaxTree(AbstractSyntaxTree abstractSyntaxTree) {
         closureObject = abstractSyntaxTree;
     }
 
+    /**
+     * Sets a closure instance as method. If the method is null an empty closure
+     * is assigned.
+     * @param method The method to use as closure
+     */
     public void setMethod(Method method) {
         closureObject = method;
     }
 
+    /**
+     * Returns an abstract syntax tree closure. The type of closure must be
+     * known to avoid type cast exception.
+     * @return An abstract syntax tree closure.
+     * @see #setAbstractSyntaxTree(AbstractSyntaxTree)
+     * @see #getType()
+     */
     public AbstractSyntaxTree getAbstractSyntaxTree() {
         return (AbstractSyntaxTree)closureObject;
     }
 
+    /**
+     * Returns a method closure. The type of closure must be known to avoid
+     * type cast exception.
+     * @return A method closure.
+     * @see #setMethod(Method)
+     * @see #getType()
+     */
     public Method getMethod() {
         return (Method)closureObject;
     }
-
+    
+    /**
+     * Returns the closure type of this instance.
+     * @return The closure type.
+     * @see ClosureType
+     */
     public ClosureType getType() {
         if (closureObject instanceof AbstractSyntaxTree)
             return ClosureType.AbstractSyntaxTree;

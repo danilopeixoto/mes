@@ -28,11 +28,27 @@
 
 package mes.lang;
 
+/**
+ * Argument representation for {@link FunctionLiteralSymbol}. This object is an
+ * abstract syntax tree that can be evaluated.
+ * @author Danilo Ferreira
+ * @version 1.0.0
+ * @see AbstractSyntaxTree
+ */
 public class FunctionArgument extends AbstractSyntaxTree {
+    /** Initializes a null function argument. This is equivalent to an empty
+     * abstract syntax tree.
+     * @see AbstractSyntaxTree
+     */
     public FunctionArgument() {
         this(null);
     }
 
+    /**
+     * Initializes the root node of the function argument.
+     * @param root A root node that usually represents literal or expression
+     * @see AbstractSyntaxNode
+     */
     public FunctionArgument(AbstractSyntaxNode root) {
         super(root);
     }

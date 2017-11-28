@@ -28,10 +28,28 @@
 
 package mes.lang;
 
+/**
+ * Unary operator abstraction.
+ * @author Danilo Ferreira
+ * @version 1.0.0
+ * @see OperatorSymbol
+ */
 public abstract class UnaryOperatorSymbol extends OperatorSymbol {
+    /**
+     * Initializes a unary operator. By default the unary operators are right
+     * associative with precedence 7.
+     * @param type The symbol type
+     * @param position The symbol position at the source code
+     */
     public UnaryOperatorSymbol(SymbolType type, int position) {
         super(7, Associativity.Right, type, position);
     }
 
+    /**
+     * Compute the unary operator result.
+     * @param input The input operand
+     * @return The output result.
+     * @see LiteralSymbol
+     */
     public abstract LiteralSymbol compute(LiteralSymbol input);
 }

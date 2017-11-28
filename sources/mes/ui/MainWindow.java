@@ -112,10 +112,10 @@ import mes.lang.Symbol.SymbolType;
 import mes.lang.SymbolTable;
 
 /**
- * Application main window shown after the {@link SplashScreen}.
- *
+ * Main window shown after the {@link SplashScreen}.
  * @author Danilo Ferreira
  * @version 1.0.0
+ * @see javafx.application.Application
  */
 public class MainWindow extends javafx.application.Application {
     private final int width;
@@ -1094,9 +1094,7 @@ public class MainWindow extends javafx.application.Application {
         }
     }
 
-    /**
-     * Initialize main window properties.
-     */
+    /** Initializes the main window properties. */
     public MainWindow() {
         width = 600;
         height = 600;
@@ -1737,11 +1735,10 @@ public class MainWindow extends javafx.application.Application {
     }
 
     /**
-     * Create root layout and show primary stage. This method sends a
+     * Creates the root layout and shows the primary stage. This method sends a
      * notification to {@link SplashScreen} when finished.
-     *
-     * @param stage Main window primary stage
-     * @see SplashScreen#handleApplicationNotification
+     * @param stage The primary stage of the main window
+     * @see SplashScreen#handleApplicationNotification(PreloaderNotification)
      */
     @Override
     public void start(Stage stage) {

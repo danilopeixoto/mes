@@ -28,11 +28,31 @@
 
 package mes.lang;
 
+/**
+ * Binary operator abstraction.
+ * @author Danilo Ferreira
+ * @version 1.0.0
+ * @see OperatorSymbol
+ */
 public abstract class BinaryOperatorSymbol extends OperatorSymbol {
+    /**
+     * Initializes a binary operator.
+     * @param precedence The operator precedence
+     * @param associativity The operator associativity
+     * @param type The symbol type
+     * @param position The symbol position at the source code
+     */
     public BinaryOperatorSymbol(int precedence, Associativity associativity,
             SymbolType type, int position) {
         super(precedence, associativity, type, position);
     }
 
+    /**
+     * Computes the binary operator result.
+     * @param left The left operand
+     * @param right The right operand
+     * @return The output result.
+     * @see LiteralSymbol
+     */
     public abstract LiteralSymbol compute(LiteralSymbol left, LiteralSymbol right);
 }

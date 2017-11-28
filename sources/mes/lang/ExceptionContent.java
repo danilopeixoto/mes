@@ -28,7 +28,19 @@
 
 package mes.lang;
 
+/**
+ * Exception thrown by the language specification.
+ * @author Danilo Ferreira, João de Oliveira and Lucas Alves
+ * @version 1.0.0
+ * @see RuntimeException
+ */
 public class ExceptionContent extends RuntimeException {
+    /**
+     * Useful constants and methods to exception messages.
+     * @author Danilo Ferreira, João de Oliveira and Lucas Alves
+     * @version 1.0.0
+     * @see ExceptionContent
+     */
     public interface ExceptionMessage {
         public static final String InvalidExpression = "invalid expression";
         public static final String UnknownToken = "unknown token";

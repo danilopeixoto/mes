@@ -28,15 +28,28 @@
 
 package mes.lang;
 
+/**
+ * Division operator abstraction.
+ * @author Danilo Ferreira
+ * @version 1.0.0
+ * @see BinaryOperatorSymbol
+ */
 public class DivisionOperatorSymbol extends BinaryOperatorSymbol {
+    /** Initializes the division operator. */
     public DivisionOperatorSymbol() {
         this(0);
     }
 
+    /**
+     * Initializes the division operator. By default the division operator is
+     * left associative with precedence 6.
+     * @param position The symbol position at the source code
+     */
     public DivisionOperatorSymbol(int position) {
         super(6, Associativity.Left, SymbolType.Division, position);
     }
 
+    /** {@inheritDoc} */
     @Override
     public LiteralSymbol compute(LiteralSymbol left, LiteralSymbol right) {
         return new NumberLiteralSymbol(

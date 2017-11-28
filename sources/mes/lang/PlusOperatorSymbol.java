@@ -28,15 +28,28 @@
 
 package mes.lang;
 
+/**
+ * Plus operator abstraction.
+ * @author Danilo Ferreira
+ * @version 1.0.0
+ * @see UnaryOperatorSymbol
+ */
 public class PlusOperatorSymbol extends UnaryOperatorSymbol {
+    /** Initializes the plus operator. By default the position index is zero. */
     public PlusOperatorSymbol() {
         this(0);
     }
 
+    /**
+     * Initializes the plus operator.
+     * @param position The symbol position at the source code
+     * @see UnaryOperatorSymbol#UnaryOperatorSymbol(Symbol.SymbolType, int)
+     */
     public PlusOperatorSymbol(int position) {
         super(SymbolType.Plus, position);
     }
 
+    /** {@inheritDoc} */
     @Override
     public LiteralSymbol compute(LiteralSymbol input) {
         return new NumberLiteralSymbol(input.getDoubleValue(), position);

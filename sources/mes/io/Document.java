@@ -31,32 +31,69 @@ package mes.io;
 import java.io.Serializable;
 import mes.lang.SymbolTable;
 
+/**
+ * File content to document representation.
+ * @author Danilo Ferreira
+ * @version 1.0.0
+ * @see File
+ */
 public class Document implements Serializable {
     private CommandLineStream commandLineStream;
     private SymbolTable symbolTable;
 
+    /**
+     * Initializes the document with an empty command line stream and symbol table.
+     * @see CommandLineStream
+     * @see SymbolTable
+     */
     public Document() {
         this.commandLineStream = new CommandLineStream();
         this.symbolTable = new SymbolTable();
     }
 
+    /**
+     * Initializes the document with a non-null command line stream and symbol
+     * table.
+     * @param commandLineStream The command line data stream
+     * @param symbolTable The identifier symbol table
+     * @see CommandLineStream
+     * @see SymbolTable
+     */
     public Document(CommandLineStream commandLineStream, SymbolTable symbolTable) {
         this.commandLineStream = commandLineStream;
         this.symbolTable = symbolTable;
     }
 
+    /**
+     * Sets a non-null command line data stream.
+     * @param commandLineStream Command line data stream
+     */
     public void setCommandLineStream(CommandLineStream commandLineStream) {
         this.commandLineStream = commandLineStream;
     }
-
+    
+    /**
+     * Sets a non-null identifier symbol table.
+     * @param symbolTable The identifier symbol table
+     */
     public void setSymbolTable(SymbolTable symbolTable) {
         this.symbolTable = symbolTable;
     }
 
+    /**
+     * Returns the command line data stream.
+     * @return The command line data.
+     * @see #setCommandLineStream(CommandLineStream)
+     */
     public CommandLineStream getCommandLineStream() {
         return commandLineStream;
     }
 
+    /**
+     * Returns the identifier symbol table.
+     * @return The identifier symbol table.
+     * @see #setSymbolTable(SymbolTable)
+     */
     public SymbolTable getSymbolTable() {
         return symbolTable;
     }

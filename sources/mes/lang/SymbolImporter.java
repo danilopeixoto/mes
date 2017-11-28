@@ -32,6 +32,14 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
 
+/**
+ * Class to import symbols from the native language into the MES
+ * language specification.
+ * @author Danilo Ferreira
+ * @version 1.0.0
+ * @see Interpreter
+ * @see MathUtils
+ */
 public class SymbolImporter {
     private SymbolTable constants;
     private SymbolTable functions;
@@ -79,8 +87,6 @@ public class SymbolImporter {
                     }
 
                     constant.setName(field.getName());
-                    constant.setNullIdentifier(false);
-
                     constants.add(constant);
                 }
 
@@ -102,7 +108,6 @@ public class SymbolImporter {
                     function.setName(method.getName());
                     function.setArguments(arguments);
                     function.setClosure(new Closure(method));
-                    function.setNullIdentifier(false);
 
                     functions.add(function);
                 }

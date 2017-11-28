@@ -28,15 +28,28 @@
 
 package mes.lang;
 
+/**
+ * <i>Or</i> operator abstraction.
+ * @author Danilo Ferreira
+ * @version 1.0.0
+ * @see BinaryOperatorSymbol
+ */
 public class OrOperatorSymbol extends BinaryOperatorSymbol {
+    /** Initializes the <i>or</i> operator. */
     public OrOperatorSymbol() {
         this(0);
     }
 
+    /**
+     * Initializes the <i>or</i> operator. By default the <i>or</i> operator is
+     * left associative with precedence 1.
+     * @param position The symbol position at the source code
+     */
     public OrOperatorSymbol(int position) {
         super(1, Associativity.Left, SymbolType.Or, position);
     }
 
+    /** {@inheritDoc} */
     @Override
     public LiteralSymbol compute(LiteralSymbol left, LiteralSymbol right) {
         return new NumberLiteralSymbol(MathUtils.number(

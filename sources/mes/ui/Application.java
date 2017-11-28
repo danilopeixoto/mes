@@ -46,28 +46,28 @@ import mes.io.Preferences;
  * @version 1.0.0
  */
 public class Application {
-    /** Application name. */
+    /** The application name. */
     public static final String name = "MES";
-    /** Application full name. */
+    /** The application full name. */
     public static final String fullName = "Mathematical Expression Solver";
-    /** Application version. */
+    /** The application version. */
     public static final String version = "1.0.0";
-    /** Application license. */
+    /** The application license. */
     public static final String license = "BSD-3-Clause license";
-    /** Application license link. */
+    /** The application license link. */
     public static final String licenseLink = "https://github.com/danilopeixoto/mes/blob/master/LICENSE";
-    /** Application copyright. */
+    /** The application copyright. */
     public static final String copyright = "Copyright © 2017, Danilo Ferreira,\n"
             + "João de Oliveira and Lucas Alves. All rights reserved.";
-    
-    /** MES document name. */
+
+    /** The MES document name. */
     public static final String documentName = name + " document";
-    /** MES document extension. */
+    /** The MES document extension. */
     public static final String documentExtension = '.' + name.toLowerCase();
 
-    /** Application style sheet file. */
+    /** The application style sheet file. */
     public static final String styleSheet = "styles/general.css";
-    
+
     private static final File preferenceFile = new File(name.toLowerCase() + ".pref");
     private static final Logger logger = Logger.getLogger(name);
 
@@ -94,8 +94,8 @@ public class Application {
     }
 
     /**
-     * Return application preferences.
-     * @return Preferences
+     * Returns the application preferences.
+     * @return The preferences for application.
      * @see Preferences
      */
     public static Preferences loadPreferences() {
@@ -103,8 +103,8 @@ public class Application {
     }
 
     /**
-     * Save application preferences to file.
-     * @param preferences Application preferences
+     * Saves the application preferences to file.
+     * @param preferences The application preferences
      * @see Preferences
      */
     public static void savePreferences(Preferences preferences) {
@@ -112,22 +112,22 @@ public class Application {
     }
 
     /**
-     * Write information message to default logger.
-     * @param message Information message
+     * Writes the information message to default logger.
+     * @param message The information message
      */
     public static void informationLog(String message) {
         logger.log(Level.INFO, message);
     }
 
     /**
-     * Write warning message to default logger.
-     * @param message Warning message
+     * Writes the warning message to default logger.
+     * @param message The warning message
      */
     public static void warningLog(String message) {
         logger.log(Level.WARNING, message);
     }
 
-    /** Force application to exit by closing log and preference files. */
+    /** Forces the application to exit by closing log and preference files. */
     public static void exit() {
         preferenceFile.close();
 
@@ -142,8 +142,9 @@ public class Application {
     }
 
     /**
-     * Application entry point method.
-     * @param arguments Application arguments
+     * The application entry point method. A valid filename can be passed as an
+     * argument to be opened.
+     * @param arguments The application arguments
      */
     public static void main(String[] arguments) {
         try {

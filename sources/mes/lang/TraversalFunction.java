@@ -28,21 +28,49 @@
 
 package mes.lang;
 
+/**
+ * Function abstraction for {@link AbstractSyntaxTree} traversal.
+ * @author Danilo Ferreira
+ * @version 1.0.0
+ * @see AbstractSyntaxTree#traverse(TraversalFunction)
+ */
 public abstract class TraversalFunction {
     protected Object[] arguments;
 
+    /**
+     * Initializes the traversal function with a primitive array of objects as
+     * arguments.
+     * @param arguments The function arguments
+     */
     public TraversalFunction(Object[] arguments) {
         this.arguments = arguments;
     }
 
+    /**
+     * Set the primitive array of objects as arguments.
+     * @param arguments The function arguments
+     */
     public void setArguments(Object[] arguments) {
         this.arguments = arguments;
     }
 
+    /**
+     * Returns the arguments as primitive array of objects.
+     * @return The function arguments.
+     */
     public Object[] getArguments() {
         return arguments;
     }
 
+    /**
+     * This method is called in the {@link AbstractSyntaxTree} traversal.
+     * @param node The current node
+     * @param left The left child of the current node
+     * @param right The right child of the current node
+     * @return The output node.
+     * @see AbstractSyntaxTree#traverse(TraversalFunction)
+     * @see AbstractSyntaxNode
+     */
     public abstract AbstractSyntaxNode evaluate(AbstractSyntaxNode node,
             AbstractSyntaxNode left, AbstractSyntaxNode right);
 }

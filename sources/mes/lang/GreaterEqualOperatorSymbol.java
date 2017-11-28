@@ -28,15 +28,28 @@
 
 package mes.lang;
 
+/**
+ * Greater equal operator abstraction.
+ * @author Danilo Ferreira
+ * @version 1.0.0
+ * @see BinaryOperatorSymbol
+ */
 public class GreaterEqualOperatorSymbol extends BinaryOperatorSymbol {
+    /** Initializes the greater equal operator. */
     public GreaterEqualOperatorSymbol() {
         this(0);
     }
 
+    /**
+     * Initializes the greater equal operator. By default the greater equal
+     * operator is left associative with precedence 4.
+     * @param position The symbol position at the source code
+     */
     public GreaterEqualOperatorSymbol(int position) {
         super(4, Associativity.Left, SymbolType.GreaterEqual, position);
     }
 
+    /** {@inheritDoc} */
     @Override
     public LiteralSymbol compute(LiteralSymbol left, LiteralSymbol right) {
         return new NumberLiteralSymbol(MathUtils.number(

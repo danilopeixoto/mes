@@ -28,15 +28,28 @@
 
 package mes.lang;
 
+/**
+ * Addition operator abstraction.
+ * @author Danilo Ferreira
+ * @version 1.0.0
+ * @see BinaryOperatorSymbol
+ */
 public class AdditionOperatorSymbol extends BinaryOperatorSymbol {
+    /** Initializes the addition operator. */
     public AdditionOperatorSymbol() {
         this(0);
     }
 
+    /**
+     * Initializes the addition operator. By default the addition operator is
+     * left associative with precedence 5.
+     * @param position The symbol position at the source code
+     */
     public AdditionOperatorSymbol(int position) {
         super(5, Associativity.Left, SymbolType.Addition, position);
     }
 
+    /** {@inheritDoc} */
     @Override
     public LiteralSymbol compute(LiteralSymbol left, LiteralSymbol right) {
         return new NumberLiteralSymbol(

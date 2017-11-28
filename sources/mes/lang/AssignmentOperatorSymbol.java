@@ -28,27 +28,38 @@
 
 package mes.lang;
 
+/**
+ * Assignment operator abstraction.
+ * @author Danilo Ferreira
+ * @version 1.0.0
+ * @see BinaryOperatorSymbol
+ */
 public class AssignmentOperatorSymbol extends BinaryOperatorSymbol {
+    /** Initializes the assignment operator. */
     public AssignmentOperatorSymbol() {
         this(0);
     }
 
+    /**
+     * Initializes the assignment operator. By default the assignment operator
+     * is right associative with precedence 0.
+     * @param position The symbol position at the source code
+     */
     public AssignmentOperatorSymbol(int position) {
         super(0, Associativity.Right, SymbolType.Assignment, position);
     }
 
+    /** {@inheritDoc} */
     @Override
     public LiteralSymbol compute(LiteralSymbol left, LiteralSymbol right) {
         if (left.getType() == SymbolType.Variable) {
             VariableLiteralSymbol variableSymbol = (VariableLiteralSymbol)left;
             variableSymbol.setValue(right.getDoubleValue());
-            variableSymbol.setNullIdentifier(false);
         } else {
             AbstractSyntaxTree abstractSyntaxTree = new AbstractSyntaxTree(right);
 
             FunctionLiteralSymbol functionSymbol = (FunctionLiteralSymbol)left;
             functionSymbol.setClosure(new Closure(abstractSyntaxTree));
-            functionSymbol.setNullIdentifier(false);
         }
 
         left.setPosition(position);

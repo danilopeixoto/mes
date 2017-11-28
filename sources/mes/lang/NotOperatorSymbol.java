@@ -28,15 +28,28 @@
 
 package mes.lang;
 
+/**
+ * Not operator abstraction.
+ * @author Danilo Ferreira
+ * @version 1.0.0
+ * @see UnaryOperatorSymbol
+ */
 public class NotOperatorSymbol extends UnaryOperatorSymbol {
+    /** Initializes the <i>not</i> operator. By default the position index is zero. */
     public NotOperatorSymbol() {
         this(0);
     }
 
+    /**
+     * Initializes the <i>not</i> operator.
+     * @param position The symbol position at the source code
+     * @see UnaryOperatorSymbol#UnaryOperatorSymbol(Symbol.SymbolType, int)
+     */
     public NotOperatorSymbol(int position) {
         super(SymbolType.Not, position);
     }
 
+    /** {@inheritDoc} */
     @Override
     public LiteralSymbol compute(LiteralSymbol input) {
         return new NumberLiteralSymbol(MathUtils.number(

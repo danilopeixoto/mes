@@ -31,6 +31,12 @@ package mes.lang;
 import java.lang.reflect.Method;
 import java.util.stream.Stream;
 
+/**
+ * Function type representation.
+ * @author Danilo Ferreira
+ * @version 1.0.0
+ * @see IdentifierLiteralSymbol
+ */
 public class FunctionLiteralSymbol extends IdentifierLiteralSymbol {
     private class EvaluationFunction extends TraversalFunction {
         public EvaluationFunction() {
@@ -52,15 +58,11 @@ public class FunctionLiteralSymbol extends IdentifierLiteralSymbol {
     private Closure closure;
 
     public FunctionLiteralSymbol() {
-        this("", true, 0);
+        this("", 0);
     }
 
     public FunctionLiteralSymbol(String name, int position) {
-        this(name, true, position);
-    }
-
-    public FunctionLiteralSymbol(String name, boolean nullIdentifier, int position) {
-        super(name, nullIdentifier, SymbolType.Function, position);
+        super(name, SymbolType.Function, position);
 
         arguments = new FunctionArgumentList();
         closure = new Closure();
@@ -128,9 +130,6 @@ public class FunctionLiteralSymbol extends IdentifierLiteralSymbol {
 
     @Override
     public String getPrototype() {
-        if (!isNullIdentifier())
-            return "";
-
         StringBuilder stringBuilder = new StringBuilder();
 
         stringBuilder.append(name);

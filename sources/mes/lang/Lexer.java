@@ -31,7 +31,22 @@ package mes.lang;
 import mes.lang.ExceptionContent.ExceptionMessage;
 import mes.lang.Token.TokenType;
 
+/**
+ * Lexer to tokenize source code.
+ * @author Danilo Ferreira
+ * @version 1.0.0
+ */
 public abstract class Lexer {
+    /**
+     * Tokenizes the source code and returns a token stream. An
+     * <i>end of line</i> token is attached at the end of the stream.
+     * @param source The source code
+     * @return A token stream generated from source code.
+     * @throws ExceptionContent An invalid token or expression is thrown to
+     * {@link Interpreter}
+     * @see TokenStream
+     * @see Interpreter#run(String, boolean)
+     */
     public static TokenStream tokenize(String source) {
         TokenStream tokens = new TokenStream();
 

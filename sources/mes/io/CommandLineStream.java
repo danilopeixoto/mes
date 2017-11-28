@@ -28,70 +28,25 @@
 
 package mes.io;
 
-import java.util.ArrayList;
-import java.util.Iterator;
+import mes.lang.List;
 
-public class CommandLineStream extends ArrayList<CommandLineData> {
-    public class CommandLineIterator implements Iterator<CommandLineData> {
-        private int index;
-
-        public CommandLineIterator() {
-            this(0);
-        }
-
-        public CommandLineIterator(int index) {
-            this.index = index;
-        }
-
-        public void set(CommandLineData commandLineData) {
-            CommandLineStream.this.set(index, commandLineData);
-        }
-
-        public CommandLineData get() {
-            return CommandLineStream.this.get(index);
-        }
-
-        public void setIndex(int index) {
-            this.index = index;
-        }
-
-        public int getIndex() {
-            return index;
-        }
-
-        @Override
-        public boolean hasNext() {
-            return index < size();
-        }
-
-        public boolean hasPrevious() {
-            return index >= 0;
-        }
-
-        @Override
-        public CommandLineData next() {
-            return hasNext() ? CommandLineStream.this.get(index++) : null;
-        }
-
-        public CommandLineData previous() {
-            return hasPrevious() ? CommandLineStream.this.get(index--) : null;
-        }
-
-        public void reset() {
-            index = 0;
-        }
-    }
-
+/**
+ * List implementation for {@link CommandLineData}.
+ * @author Danilo Ferreira
+ * @version 1.0.0
+ * @see List
+ */
+public class CommandLineStream extends List<CommandLineData> {
+    /** Initializes an empty command line stream. */
     public CommandLineStream() {
         super();
     }
 
+    /**
+     * Initializes the command line stream with initial size.
+     * @param size List size
+     */
     public CommandLineStream(int size) {
         super(size);
-    }
-
-    @Override
-    public CommandLineIterator iterator() {
-        return new CommandLineIterator();
     }
 }

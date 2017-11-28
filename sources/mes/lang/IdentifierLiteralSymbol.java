@@ -28,31 +28,26 @@
 
 package mes.lang;
 
+/**
+ * Identifier type abstraction.
+ * @author Danilo Ferreira
+ * @version 1.0.0
+ * @see LiteralSymbol
+ */
 public abstract class IdentifierLiteralSymbol extends LiteralSymbol {
     protected String name;
-    protected boolean nullIdentifier;
 
-    public IdentifierLiteralSymbol(String name, boolean nullIdentifier,
-            SymbolType type, int position) {
+    public IdentifierLiteralSymbol(String name, SymbolType type, int position) {
         super(type, position);
         this.name = name;
-        this.nullIdentifier = nullIdentifier;
     }
 
     public void setName(String name) {
         this.name = name;
     }
 
-    public void setNullIdentifier(boolean nullIdentifier) {
-        this.nullIdentifier = nullIdentifier;
-    }
-
     public String getName() {
         return name;
-    }
-
-    public boolean isNullIdentifier() {
-        return nullIdentifier;
     }
 
     public boolean isRedefinitionOf(IdentifierLiteralSymbol other) {

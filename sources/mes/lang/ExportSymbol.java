@@ -33,7 +33,17 @@ import static java.lang.annotation.ElementType.METHOD;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
+import java.lang.annotation.Documented;
 
+/**
+ * Indicates whether field or method should be exported to language specification.
+ * @author Danilo Ferreira
+ * @version 1.0.0
+ * @see Retention
+ * @see Target
+ * @see Documented
+ */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(value = {FIELD, METHOD})
+@Documented
 public @interface ExportSymbol {}

@@ -28,70 +28,23 @@
 
 package mes.lang;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-
-public class SymbolTable extends ArrayList<IdentifierLiteralSymbol> {
-    public class SymbolIterator implements Iterator<IdentifierLiteralSymbol> {
-        private int index;
-
-        public SymbolIterator() {
-            this(0);
-        }
-
-        public SymbolIterator(int index) {
-            this.index = index;
-        }
-
-        public void set(IdentifierLiteralSymbol identifierLiteralSymbol) {
-            SymbolTable.this.set(index, identifierLiteralSymbol);
-        }
-
-        public LiteralSymbol get() {
-            return SymbolTable.this.get(index);
-        }
-
-        public void setIndex(int index) {
-            this.index = index;
-        }
-
-        public int getIndex() {
-            return index;
-        }
-
-        @Override
-        public boolean hasNext() {
-            return index < size();
-        }
-
-        public boolean hasPrevious() {
-            return index >= 0;
-        }
-
-        @Override
-        public IdentifierLiteralSymbol next() {
-            return hasNext() ? SymbolTable.this.get(index++) : null;
-        }
-
-        public IdentifierLiteralSymbol previous() {
-            return hasPrevious() ? SymbolTable.this.get(index--) : null;
-        }
-
-        public void reset() {
-            index = 0;
-        }
-    }
-
+/**
+ * List implementation for {@link IdentifierLiteralSymbol}.
+ * @author Danilo Ferreira
+ * @version 1.0.0
+ * @see List
+ */
+public class SymbolTable extends List<IdentifierLiteralSymbol> {
+    /** Initializes an empty symbol table. */
     public SymbolTable() {
         super();
     }
 
+    /**
+     * Initializes the symbol table with initial size.
+     * @param size The list size
+     */
     public SymbolTable(int size) {
         super(size);
-    }
-
-    @Override
-    public SymbolIterator iterator() {
-        return new SymbolIterator();
     }
 }

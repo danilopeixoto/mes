@@ -28,15 +28,28 @@
 
 package mes.lang;
 
+/**
+ * <i>And</i> operator abstraction.
+ * @author Danilo Ferreira
+ * @version 1.0.0
+ * @see BinaryOperatorSymbol
+ */
 public class AndOperatorSymbol extends BinaryOperatorSymbol {
+    /** Initializes the <i>and</i> operator. */
     public AndOperatorSymbol() {
         this(0);
     }
 
+    /**
+     * Initializes the <i>and</i> operator. By default the <i>and</i> operator
+     * is left associative with precedence 2.
+     * @param position The symbol position at the source code
+     */
     public AndOperatorSymbol(int position) {
         super(2, Associativity.Left, SymbolType.And, position);
     }
 
+    /** {@inheritDoc} */
     @Override
     public LiteralSymbol compute(LiteralSymbol left, LiteralSymbol right) {
         return new NumberLiteralSymbol(MathUtils.number(

@@ -28,6 +28,12 @@
 
 package mes.lang;
 
+/**
+ * Output representation of an expression evaluated by {@link Interpreter}.
+ * @author Danilo Ferreira
+ * @version 1.0.0
+ * @see Interpreter#run(String, boolean)
+ */
 public class Statement {
     private LiteralSymbol result;
     private ExceptionContent exception;

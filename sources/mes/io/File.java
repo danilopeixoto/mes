@@ -34,22 +34,44 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import mes.ui.Application;
 
+/**
+ * IO binary file implementation.
+ * @author Danilo Ferreira
+ * @version 1.0.0
+ */
 public class File {
     private boolean exceptions;
     private java.io.File file;
 
+    /** Initializes a null file object. */
     public File() {
         open((java.io.File)null);
     }
 
+    /**
+     * Initializes the file from a Java file object.
+     * @param file A Java file object
+     * @see #open(java.io.File)
+     */
     public File(java.io.File file) {
         open(file);
     }
 
+    /**
+     * Initializes the file from a valid filename.
+     * @param filename A valid filename
+     * @see #open(String)
+     */
     public File(String filename) {
         open(filename);
     }
 
+    /**
+     * Opens a file from a Java file object. If file doesn't exist a new one will
+     * be created. A null file object is assigned if any exception is thrown.
+     * @param file A Java file object
+     * @see java.io.File
+     */
     public void open(java.io.File file) {
         exceptions = false;
         this.file = file;
@@ -63,22 +85,44 @@ public class File {
             }
     }
 
+    /**
+     * Opens a file from a valid filename. If file doesn't exist a new one will
+     * be created. A null file object is assigned if any exception is thrown.
+     * @param filename A valid filename
+     * @see java.io.File
+     */
     public void open(String filename) {
         open(new java.io.File(filename));
     }
 
+    /** Closes the file object. */
     public void close() {
         file = null;
     }
 
+    /**
+     * Returns true if the file is opened and false otherwise.
+     * @return The file open state.
+     */
     public boolean isOpen() {
         return file != null && file.canRead() && file.canWrite();
     }
 
+    /**
+     * Returns true if exceptions were thrown when opening file and false
+     * otherwise.
+     * @return The file exception state.
+     */
     public boolean hasExceptions() {
         return exceptions;
     }
 
+    /**
+     * Tries read an object from file. If any exception is thrown this method
+     * returns null and a warning message is logged to application default logger.
+     * @return The object read from file.
+     * @see Application#warningLog(String)
+     */
     public Object read() {
         try {
             FileInputStream fileReader = new FileInputStream(file);
@@ -97,6 +141,12 @@ public class File {
         return null;
     }
 
+    /**
+     * Tries write an object to file. If any exception is thrown a warning
+     * message is logged to application default logger.
+     * @param object The object to write to file
+     * @see Application#warningLog(String)
+     */
     public void write(Object object) {
         try {
             FileOutputStream fileWriter = new FileOutputStream(file);

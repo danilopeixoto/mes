@@ -28,6 +28,12 @@
 
 package mes.lang;
 
+/**
+ * Literal type abstraction.
+ * @author Danilo Ferreira
+ * @version 1.0.0
+ * @see Symbol
+ */
 public abstract class LiteralSymbol extends Symbol {
     public LiteralSymbol(SymbolType type, int position) {
         super(type, position);

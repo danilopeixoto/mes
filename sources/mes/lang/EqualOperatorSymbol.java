@@ -28,15 +28,28 @@
 
 package mes.lang;
 
+/**
+ * Equal operator abstraction.
+ * @author Danilo Ferreira, João de Oliveira and Lucas Alves
+ * @version 1.0.0
+ * @see BinaryOperatorSymbol
+ */
 public class EqualOperatorSymbol extends BinaryOperatorSymbol {
+    /** Initializes the equal operator. */
     public EqualOperatorSymbol() {
         this(0);
     }
 
+    /**
+     * Initializes the equal operator. By default the equal operator is
+     * left associative with precedence 3.
+     * @param position The symbol position at the source code
+     */
     public EqualOperatorSymbol(int position) {
         super(3, Associativity.Left, SymbolType.Equal, position);
     }
 
+    /** {@inheritDoc} */
     @Override
     public LiteralSymbol compute(LiteralSymbol left, LiteralSymbol right) {
         return new NumberLiteralSymbol(MathUtils.number(

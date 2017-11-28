@@ -28,15 +28,28 @@
 
 package mes.lang;
 
+/**
+ * Subtraction operator abstraction.
+ * @author Danilo Ferreira
+ * @version 1.0.0
+ * @see BinaryOperatorSymbol
+ */
 public class SubtractionOperatorSymbol extends BinaryOperatorSymbol {
+    /** Initializes the subtraction operator. */
     public SubtractionOperatorSymbol() {
         this(0);
     }
 
+    /**
+     * Initializes the subtraction operator. By default the subtraction operator
+     * is left associative with precedence 5.
+     * @param position The symbol position at the source code
+     */
     public SubtractionOperatorSymbol(int position) {
         super(5, Associativity.Left, SymbolType.Subtraction, position);
     }
 
+    /** {@inheritDoc} */
     @Override
     public LiteralSymbol compute(LiteralSymbol left, LiteralSymbol right) {
         return new NumberLiteralSymbol(
