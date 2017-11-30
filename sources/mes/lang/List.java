@@ -54,20 +54,31 @@ public class List<E> extends ArrayList<E> {
         }
 
         /**
-         * Set the current object of the iterator.
+         * Set the current object of the iterator. This iterator must be a
+         * valid element of list.
          * @param object The new object
+         * @throws NullPointerException An exception indicating an invalid
+         * iterator object
+         * @see #isNull()
          */
         public void set(E object) {
-            List.this.set(index, object);
+            try {
+                List.this.set(index, object);
+            }
+            catch(Exception exception) {
+                throw new NullPointerException("Invalid iterator object.");
+            }
         }
 
         /**
-         * Returns the current object of the iterator.
+         * Returns the current object of the iterator. This iterator must be a
+         * valid element of list otherwise a null object is returned.
          * @return The current iterator object.
          * @see #set(Object)
+         * @see #isNull()
          */
         public E get() {
-            return List.this.get(index);
+            return isNull() ? null : List.this.get(index);
         }
 
         /**
@@ -79,7 +90,7 @@ public class List<E> extends ArrayList<E> {
         }
 
         /**
-         * Returns the current element index of iterator object.
+         * Returns the current element index of the iterator object.
          * @return The element index.
          * @see #setIndex(int)
          */
@@ -88,16 +99,24 @@ public class List<E> extends ArrayList<E> {
         }
         
         /**
-         * Returns if the previous index is a valid element of list.
-         * @return The previous element state.
+         * Returns whether the current iterator object is a valid element of list.
+         * @return The state of the current iterator object.
+         */
+        public boolean isNull() {
+            return index < 0 || index >= size();
+        }
+        
+        /**
+         * Returns whether the previous index is a valid iteration element.
+         * @return The state of the previous index.
          */
         public boolean hasPrevious() {
             return index >= 0;
         }
 
         /**
-         * Returns if the next index is a valid element of list.
-         * @return The next element state.
+         * Returns whether the next index is a valid iteration element.
+         * @return The state of the next index.
          */
         @Override
         public boolean hasNext() {
@@ -106,7 +125,7 @@ public class List<E> extends ArrayList<E> {
         
         /**
          * Returns the current iterator object and decrements the iterator.
-         * If the previous element is invalid this method returns null.
+         * If the current element is invalid this method returns null.
          * @return The current iterator object.
          * @see #hasPrevious()
          */
@@ -116,7 +135,7 @@ public class List<E> extends ArrayList<E> {
 
         /**
          * Returns the current iterator object and increments the iterator.
-         * If the next element is invalid this method returns null.
+         * If the current element is invalid this method returns null.
          * @return The current iterator object.
          * @see #hasNext()
          */

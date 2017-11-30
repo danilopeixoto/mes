@@ -44,9 +44,11 @@ public class SubtractionOperatorSymbol extends BinaryOperatorSymbol {
      * Initializes the subtraction operator. By default the subtraction operator
      * is left associative with precedence 5.
      * @param position The symbol position at the source code
+     * @see Lexer#Lexer(String)
+     * @see OperatorData
      */
     public SubtractionOperatorSymbol(int position) {
-        super(5, Associativity.Left, SymbolType.Subtraction, position);
+        super(SymbolType.Subtraction, position);
     }
 
     /** {@inheritDoc} */

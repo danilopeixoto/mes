@@ -44,9 +44,11 @@ public class DivisionOperatorSymbol extends BinaryOperatorSymbol {
      * Initializes the division operator. By default the division operator is
      * left associative with precedence 6.
      * @param position The symbol position at the source code
+     * @see Lexer#Lexer(String)
+     * @see OperatorData
      */
     public DivisionOperatorSymbol(int position) {
-        super(6, Associativity.Left, SymbolType.Division, position);
+        super(SymbolType.Division, position);
     }
 
     /** {@inheritDoc} */

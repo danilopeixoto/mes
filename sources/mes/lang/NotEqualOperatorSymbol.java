@@ -44,9 +44,11 @@ public class NotEqualOperatorSymbol extends BinaryOperatorSymbol {
      * Initializes the not equal operator. By default the not equal operator is
      * left associative with precedence 3.
      * @param position The symbol position at the source code
+     * @see Lexer#Lexer(String)
+     * @see OperatorData
      */
     public NotEqualOperatorSymbol(int position) {
-        super(3, Associativity.Left, SymbolType.NotEqual, position);
+        super(SymbolType.NotEqual, position);
     }
     
     /** {@inheritDoc} */

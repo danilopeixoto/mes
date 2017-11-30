@@ -47,17 +47,17 @@ public class ExceptionContent extends RuntimeException {
         public static final String UndefinedSymbol = "undefined symbol";
         public static final String InvalidSymbolRedefinition = "invalid symbol redefinition";
         public static final String InvalidNumberArguments = "invalid number of arguments";
-
+        
         public static String custom(String message) {
             return message;
         }
 
         public static String expect(String element) {
-            return custom("expected " + element + "symbol");
+            return custom("expected " + element);
         }
 
         public static String unexpect(String element) {
-            return custom("unexpected " + element + "symbol");
+            return custom("unexpected " + element);
         }
 
         public static String throwable(Exception exceptionObject) {

@@ -40,9 +40,11 @@ public abstract class UnaryOperatorSymbol extends OperatorSymbol {
      * associative with precedence 7.
      * @param type The symbol type
      * @param position The symbol position at the source code
+     * @see Lexer#Lexer(String)
+     * @see OperatorData
      */
     public UnaryOperatorSymbol(SymbolType type, int position) {
-        super(7, Associativity.Right, type, position);
+        super(type, position);
     }
 
     /**

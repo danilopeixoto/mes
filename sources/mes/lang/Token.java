@@ -32,6 +32,7 @@ package mes.lang;
  * Represents the source code components of the language specification.
  * @author Danilo Ferreira
  * @version 1.0.0
+ * @see OperatorData
  */
 public class Token {
     /** Supported token types. */
@@ -40,10 +41,10 @@ public class Token {
         Identifier,
         /** Number token. */
         Number,
-        /** Addition operator token. */
-        Addition,
-        /** Subtraction operator token. */
-        Subtraction,
+        /** Positive or addition operator token. */
+        Plus,
+        /** Negative or subtraction operator token. */
+        Minus,
         /** Multiplication operator token. */
         Multiplication,
         /** Division operator token. */
@@ -52,10 +53,6 @@ public class Token {
         Modulo,
         /** Exponentiation operator token. */
         Exponentiation,
-        /** Equal operator token. */
-        Equal,
-        /** Not equal operator token. */
-        NotEqual,
         /** Less equal operator token. */
         LessEqual,
         /** Less operator token. */
@@ -64,11 +61,15 @@ public class Token {
         GreaterEqual,
         /** Greater operator token. */
         Greater,
-        /** Not operator token. */
+        /** Equal operator token. */
+        Equal,
+        /** Not equal operator token. */
+        NotEqual,
+        /** <i>Not</i> operator token. */
         Not,
-        /** And operator token. */
+        /** <i>And</i> operator token. */
         And,
-        /** Or operator token. */
+        /** <i>Or</i> operator token. */
         Or,
         /** Assignment operator token. */
         Assignment,
@@ -81,35 +82,50 @@ public class Token {
         /** End of line token. */
         EOL
     }
-
+    
     private TokenType type;
     private String value;
+    private OperatorData unaryOperatorData;
+    private OperatorData binaryOperatorData;
     private int position;
 
-    public Token() {
+    private Token(TokenType type, int position) {
+        this(type, "", position);
     }
 
-    public Token(TokenType type, int position) {
-        this.type = type;
-        this.position = position;
+    private Token(TokenType type, String value, int position) {
+        this(type, value, null, null, position);
+    }
+    
+    private Token(TokenType type, OperatorData unaryOperatorData,
+            OperatorData binaryOperatorData, int position) {
+        this(type, "", unaryOperatorData, binaryOperatorData, position);
     }
 
-    public Token(TokenType type, String value, int position) {
+    private Token(TokenType type, String value, OperatorData unaryOperatorData,
+            OperatorData binaryOperatorData, int position) {
         this.type = type;
         this.value = value;
+        this.unaryOperatorData = unaryOperatorData;
+        this.binaryOperatorData = binaryOperatorData;
         this.position = position;
     }
 
-    public void setType(TokenType type) {
-        this.type = type;
+    public static Token createIdentifier(String value, int position) {
+        return new Token(TokenType.Identifier, value, position);
     }
 
-    public void setValue(String value) {
-        this.value = value;
+    public static Token createNumber(String value, int position) {
+        return new Token(TokenType.Number, value, position);
+    }
+    
+    public static Token createOperator(TokenType type, OperatorData unaryOperatorData,
+            OperatorData binaryOperatorData, int position) {
+        return new Token(type, unaryOperatorData, binaryOperatorData, position);
     }
 
-    public void setPosition(int position) {
-        this.position = position;
+    public static Token createStructure(TokenType type, int position) {
+        return new Token(type, position);
     }
 
     public TokenType getType() {
@@ -119,8 +135,41 @@ public class Token {
     public String getValue() {
         return value;
     }
+    
+    public OperatorData getUnaryOperatorData() {
+        return unaryOperatorData;
+    }
+    
+    public OperatorData getBinaryOperatorData() {
+        return binaryOperatorData;
+    }
 
     public int getPosition() {
         return position;
+    }
+
+    public boolean isNumber() {
+        return type == TokenType.Number;
+    }
+
+    public boolean isIdentifier() {
+        return type == TokenType.Identifier;
+    }
+
+    public boolean isOperator() {
+        return isUnaryOperator() || isBinaryOperator();
+    }
+
+    public boolean isUnaryOperator() {
+        return unaryOperatorData != null;
+    }
+
+    public boolean isBinaryOperator() {
+        return binaryOperatorData != null;
+    }
+
+    public boolean isLanguageStructure() {
+        return type == TokenType.LParenthesis || type == TokenType.RParenthesis
+                || type == TokenType.Comma || type == TokenType.EOL;
     }
 }

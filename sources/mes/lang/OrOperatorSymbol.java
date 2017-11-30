@@ -44,9 +44,11 @@ public class OrOperatorSymbol extends BinaryOperatorSymbol {
      * Initializes the <i>or</i> operator. By default the <i>or</i> operator is
      * left associative with precedence 1.
      * @param position The symbol position at the source code
+     * @see Lexer#Lexer(String)
+     * @see OperatorData
      */
     public OrOperatorSymbol(int position) {
-        super(1, Associativity.Left, SymbolType.Or, position);
+        super(SymbolType.Or, position);
     }
 
     /** {@inheritDoc} */

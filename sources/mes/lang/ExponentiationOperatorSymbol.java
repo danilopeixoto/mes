@@ -41,12 +41,14 @@ public class ExponentiationOperatorSymbol extends BinaryOperatorSymbol {
     }
 
     /**
-     * Initializes the exponentiation operator. By default the assignment
+     * Initializes the exponentiation operator. By default the exponentiation
      * operator is right associative with precedence 8.
      * @param position The symbol position at the source code
+     * @see Lexer#Lexer(String)
+     * @see OperatorData
      */
     public ExponentiationOperatorSymbol(int position) {
-        super(8, Associativity.Right, SymbolType.Exponentiation, position);
+        super(SymbolType.Exponentiation, position);
     }
 
     /** {@inheritDoc} */

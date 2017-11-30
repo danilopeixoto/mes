@@ -37,14 +37,11 @@ package mes.lang;
 public abstract class BinaryOperatorSymbol extends OperatorSymbol {
     /**
      * Initializes a binary operator.
-     * @param precedence The operator precedence
-     * @param associativity The operator associativity
      * @param type The symbol type
      * @param position The symbol position at the source code
      */
-    public BinaryOperatorSymbol(int precedence, Associativity associativity,
-            SymbolType type, int position) {
-        super(precedence, associativity, type, position);
+    public BinaryOperatorSymbol(SymbolType type, int position) {
+        super(type, position);
     }
 
     /**

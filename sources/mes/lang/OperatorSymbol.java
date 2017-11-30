@@ -35,29 +35,12 @@ package mes.lang;
  * @see Symbol
  */
 public abstract class OperatorSymbol extends Symbol {
-    /** Operator associativity type. */
-    public enum Associativity {
-        /** Left associativity. */
-        Left,
-        /** Right associativity. */
-        Right
-    }
-    
-    protected int precedence;
-    protected Associativity associativity;
-
-    public OperatorSymbol(int precedence, Associativity associativity,
-            SymbolType type, int position) {
+    /**
+     * Initializes an operator symbol.
+     * @param type The symbol type
+     * @param position The symbol position at the source code
+     */
+    public OperatorSymbol(SymbolType type, int position) {
         super(type, position);
-        this.precedence = precedence;
-        this.associativity = associativity;
-    }
-
-    public int getPrecedence() {
-        return precedence;
-    }
-
-    public Associativity getAssociativity() {
-        return associativity;
     }
 }

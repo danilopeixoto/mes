@@ -29,24 +29,24 @@
 package mes.lang;
 
 /**
- * Minus operator abstraction.
+ * Negative operator abstraction.
  * @author Danilo Ferreira
  * @version 1.0.0
  * @see UnaryOperatorSymbol
  */
-public class MinusOperatorSymbol extends UnaryOperatorSymbol {
-    /** Initializes the minus operator. By default the position index is zero. */
-    public MinusOperatorSymbol() {
+public class NegativeOperatorSymbol extends UnaryOperatorSymbol {
+    /** Initializes the negative operator. By default the position index is zero. */
+    public NegativeOperatorSymbol() {
         this(0);
     }
 
     /**
-     * Initializes the minus operator.
+     * Initializes the negative operator.
      * @param position The symbol position at the source code
      * @see UnaryOperatorSymbol#UnaryOperatorSymbol(Symbol.SymbolType, int)
      */
-    public MinusOperatorSymbol(int position) {
-        super(SymbolType.Minus, position);
+    public NegativeOperatorSymbol(int position) {
+        super(SymbolType.Negative, position);
     }
 
     /** {@inheritDoc} */

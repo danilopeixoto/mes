@@ -29,26 +29,29 @@
 package mes.lang;
 
 import mes.lang.ExceptionContent.ExceptionMessage;
+import mes.lang.OperatorData.Associativity;
 import mes.lang.Token.TokenType;
 
 /**
- * Lexer to tokenize source code.
+ * Lexer to tokenize the source code.
  * @author Danilo Ferreira
  * @version 1.0.0
+ * @see Parser
  */
-public abstract class Lexer {
+public class Lexer {
+    private TokenStream tokenStream;
+
     /**
-     * Tokenizes the source code and returns a token stream. An
-     * <i>end of line</i> token is attached at the end of the stream.
+     * Initializes the lexer by tokenizing the source code. An <i>end of
+     * line</i> token is attached to the end of the stream.
      * @param source The source code
-     * @return A token stream generated from source code.
-     * @throws ExceptionContent An invalid token or expression is thrown to
+     * @throws ExceptionContent Invalid token or expression thrown to
      * {@link Interpreter}
-     * @see TokenStream
      * @see Interpreter#run(String, boolean)
+     * @see OperatorData
      */
-    public static TokenStream tokenize(String source) {
-        TokenStream tokens = new TokenStream();
+    public Lexer(String source) {
+        tokenStream = new TokenStream();
 
         for (int i = 0; i < source.length(); i++) {
             String s = source.substring(i);
@@ -59,78 +62,100 @@ public abstract class Lexer {
             if (Character.isWhitespace(c))
                 continue;
             else if ((endIndex = isIdentifier(s)) != 0) {
-                tokens.add(new Token(TokenType.Identifier, s.substring(0, endIndex), i));
+                tokenStream.add(Token.createIdentifier(s.substring(0, endIndex), i));
                 i += endIndex - 1;
             } else if ((endIndex = isNumber(s)) != 0) {
-                tokens.add(new Token(TokenType.Number, source.substring(0, endIndex), i));
+                tokenStream.add(Token.createNumber(s.substring(0, endIndex), i));
                 i += endIndex - 1;
-            } else if (s.startsWith("=="))
-                tokens.add(new Token(TokenType.Equal, i++));
-            else if (s.startsWith("!="))
-                tokens.add(new Token(TokenType.NotEqual, i++));
-            else if (s.startsWith("<="))
-                tokens.add(new Token(TokenType.LessEqual, i++));
+            } else if (s.startsWith("<="))
+                tokenStream.add(Token.createOperator(TokenType.LessEqual,
+                        null, new OperatorData(4, Associativity.Left), i++));
             else if (s.startsWith(">="))
-                tokens.add(new Token(TokenType.GreaterEqual, i++));
+                tokenStream.add(Token.createOperator(TokenType.GreaterEqual,
+                        null, new OperatorData(4, Associativity.Left), i++));
+            else if (s.startsWith("=="))
+                tokenStream.add(Token.createOperator(TokenType.Equal,
+                        null, new OperatorData(3, Associativity.Left), i++));
+            else if (s.startsWith("!="))
+                tokenStream.add(Token.createOperator(TokenType.NotEqual,
+                        null, new OperatorData(3, Associativity.Left), i++));
             else if (s.startsWith("&&"))
-                tokens.add(new Token(TokenType.And, i++));
+                tokenStream.add(Token.createOperator(TokenType.And,
+                        null, new OperatorData(2, Associativity.Left), i++));
             else if (s.startsWith("||"))
-                tokens.add(new Token(TokenType.Or, i++));
+                tokenStream.add(Token.createOperator(TokenType.Or,
+                        null, new OperatorData(1, Associativity.Left), i++));
             else
                 switch (c) {
                     case '+':
-                        tokens.add(new Token(TokenType.Addition, i));
+                        tokenStream.add(Token.createOperator(TokenType.Plus,
+                                 new OperatorData(7, Associativity.Right),
+                                 new OperatorData(5, Associativity.Left), i));
                         break;
                     case '-':
-                        tokens.add(new Token(TokenType.Subtraction, i));
+                        tokenStream.add(Token.createOperator(TokenType.Minus,
+                                new OperatorData(7, Associativity.Right),
+                                new OperatorData(5, Associativity.Left), i));
                         break;
                     case '*':
-                        tokens.add(new Token(TokenType.Multiplication, i));
+                        tokenStream.add(Token.createOperator(TokenType.Multiplication,
+                                null, new OperatorData(6, Associativity.Left), i));
                         break;
                     case '/':
-                        tokens.add(new Token(TokenType.Division, i));
+                        tokenStream.add(Token.createOperator(TokenType.Division,
+                                null, new OperatorData(6, Associativity.Left), i));
                         break;
                     case '%':
-                        tokens.add(new Token(TokenType.Modulo, i));
+                        tokenStream.add(Token.createOperator(TokenType.Modulo,
+                                null, new OperatorData(6, Associativity.Left), i));
                         break;
                     case '^':
-                        tokens.add(new Token(TokenType.Exponentiation, i));
+                        tokenStream.add(Token.createOperator(TokenType.Exponentiation,
+                                null, new OperatorData(8, Associativity.Right), i));
                         break;
                     case '<':
-                        tokens.add(new Token(TokenType.Less, i));
+                        tokenStream.add(Token.createOperator(TokenType.Less,
+                                null, new OperatorData(4, Associativity.Left), i));
                         break;
                     case '>':
-                        tokens.add(new Token(TokenType.Greater, i));
+                        tokenStream.add(Token.createOperator(TokenType.Greater,
+                                null, new OperatorData(4, Associativity.Left), i));
                         break;
                     case '!':
-                        tokens.add(new Token(TokenType.Not, i));
+                        tokenStream.add(Token.createOperator(TokenType.Not,
+                                new OperatorData(7, Associativity.Right), null, i));
                         break;
                     case '=':
-                        tokens.add(new Token(TokenType.Assignment, i));
+                        tokenStream.add(Token.createOperator(TokenType.Assignment,
+                                null, new OperatorData(0, Associativity.Right), i));
                         break;
                     case ',':
-                        tokens.add(new Token(TokenType.Comma, i));
+                        tokenStream.add(Token.createStructure(TokenType.Comma, i));
                         break;
                     case '(':
-                        tokens.add(new Token(TokenType.LParenthesis, i));
+                        tokenStream.add(Token.createStructure(TokenType.LParenthesis, i));
                         break;
                     case ')':
-                        tokens.add(new Token(TokenType.RParenthesis, i));
+                        tokenStream.add(Token.createStructure(TokenType.RParenthesis, i));
                         break;
                     default:
                         throw new ExceptionContent(ExceptionMessage.UnknownToken, i);
                 }
         }
-
-        if (tokens.isEmpty())
-            throw new ExceptionContent(ExceptionMessage.InvalidExpression, 0);
-
-        tokens.add(new Token(TokenType.EOL, source.length()));
-
-        return tokens;
+        
+        tokenStream.add(Token.createStructure(TokenType.EOL, source.length()));
     }
 
-    private static int isIdentifier(String source) {
+    /**
+     * Returns a token stream representing the source code.
+     * @return A token stream.
+     * @see TokenStream
+     */
+    public TokenStream getTokenStream() {
+        return tokenStream;
+    }
+
+    private int isIdentifier(String source) {
         int i = 0;
         char c = source.charAt(i);
 
@@ -145,24 +170,24 @@ public abstract class Lexer {
         return i;
     }
 
-    private static int isNumber(String source) {
+    private int isNumber(String source) {
         int i = 0;
         char c = source.charAt(i);
 
         if (!Character.isDigit(c))
             return i;
-
-        while (i < source.length() && Character.isDigit(c))
-            c = source.charAt(++i);
+        
+        while (Character.isDigit(c))
+            c = ++i < source.length() ? source.charAt(i) : '\0';
 
         if (i < source.length() - 1 && c == '.') {
             c = source.charAt(++i);
 
             if (!Character.isDigit(c))
                 return i - 1;
-
-            while (i < source.length() && Character.isDigit(c))
-                c = source.charAt(++i);
+            
+            while (Character.isDigit(c))
+                c = ++i < source.length() ? source.charAt(i) : '\0';
         }
 
         if (i < source.length() - 1 && c == 'e') {
@@ -177,9 +202,9 @@ public abstract class Lexer {
 
             if (!Character.isDigit(c))
                 return i - 1;
-
-            while (i < source.length() && Character.isDigit(c))
-                c = source.charAt(++i);
+            
+            while (Character.isDigit(c))
+                c = ++i < source.length() ? source.charAt(i) : '\0';
         }
 
         return i;

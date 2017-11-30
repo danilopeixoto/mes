@@ -44,9 +44,11 @@ public class ModuloOperatorSymbol extends BinaryOperatorSymbol {
      * Initializes the modulo operator. By default the modulo operator is left
      * associative with precedence 6.
      * @param position The symbol position at the source code
+     * @see Lexer#Lexer(String)
+     * @see OperatorData
      */
     public ModuloOperatorSymbol(int position) {
-        super(6, Associativity.Left, SymbolType.Modulo, position);
+        super(SymbolType.Modulo, position);
     }
 
     /** {@inheritDoc} */

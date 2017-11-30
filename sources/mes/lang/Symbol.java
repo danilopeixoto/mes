@@ -42,10 +42,10 @@ public abstract class Symbol extends AbstractSyntaxNode {
         Variable,
         /** Function symbol. */
         Function,
-        /** Plus operator symbol. */
-        Plus,
-        /** Minus operator symbol. */
-        Minus,
+        /** Positive operator symbol. */
+        Positive,
+        /** Negative operator symbol. */
+        Negative,
         /** Addition operator symbol. */
         Addition,
         /** Subtraction operator symbol. */
@@ -58,14 +58,14 @@ public abstract class Symbol extends AbstractSyntaxNode {
         Modulo,
         /** Exponentiation operator symbol. */
         Exponentiation,
-        /** Greater equal operator symbol. */
-        GreaterEqual,
-        /** Greater operator symbol. */
-        Greater,
         /** Less equal operator symbol. */
         LessEqual,
         /** Less operator symbol. */
         Less,
+        /** Greater equal operator symbol. */
+        GreaterEqual,
+        /** Greater operator symbol. */
+        Greater,
         /** Equal operator symbol. */
         Equal,
         /** Not equal operator symbol. */
@@ -122,6 +122,6 @@ public abstract class Symbol extends AbstractSyntaxNode {
     }
     
     public boolean isBinaryOperator() {
-        return this instanceof UnaryOperatorSymbol;
+        return this instanceof BinaryOperatorSymbol;
     }
 }

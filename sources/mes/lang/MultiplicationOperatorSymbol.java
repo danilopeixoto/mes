@@ -44,9 +44,11 @@ public class MultiplicationOperatorSymbol extends BinaryOperatorSymbol {
      * Initializes the multiplication operator. By default the multiplication
      * operator is left associative with precedence 6.
      * @param position The symbol position at the source code
+     * @see Lexer#Lexer(String)
+     * @see OperatorData
      */
     public MultiplicationOperatorSymbol(int position) {
-        super(6, Associativity.Left, SymbolType.Multiplication, position);
+        super(SymbolType.Multiplication, position);
     }
 
     /** {@inheritDoc} */

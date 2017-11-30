@@ -44,9 +44,11 @@ public class AssignmentOperatorSymbol extends BinaryOperatorSymbol {
      * Initializes the assignment operator. By default the assignment operator
      * is right associative with precedence 0.
      * @param position The symbol position at the source code
+     * @see Lexer#Lexer(String)
+     * @see OperatorData
      */
     public AssignmentOperatorSymbol(int position) {
-        super(0, Associativity.Right, SymbolType.Assignment, position);
+        super(SymbolType.Assignment, position);
     }
 
     /** {@inheritDoc} */

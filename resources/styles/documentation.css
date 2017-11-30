@@ -107,13 +107,17 @@ sup {
 .aboutLanguage {
     float: right;
     padding: 0px 21px;
-    font-size: 11px;
+    font-size: 12px;
+    text-align: right;
     z-index: 200;
-    margin-top: -9px;
 }
 
 .legalCopy {
-    margin-left: 0.5em;
+    text-align: center;
+}
+
+.legalCopy small {
+    font-size: 12px;
 }
 
 .bar a, .bar a:link, .bar a:visited, .bar a:active {
@@ -138,7 +142,7 @@ sup {
     color: white;
     padding: 0.8em 0.5em 0.4em 0.8em;
     height: auto;
-    font-size: 11px;
+    font-size: 12px;
     margin: 0;
 }
 
@@ -175,6 +179,7 @@ sup {
     width: 100%;
     overflow: hidden;
     font-size: 13px;
+    margin-bottom: 10px;
 }
 
 .subNav div {

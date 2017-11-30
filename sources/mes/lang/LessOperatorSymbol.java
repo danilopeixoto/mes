@@ -44,9 +44,11 @@ public class LessOperatorSymbol extends BinaryOperatorSymbol {
      * Initializes the less operator. By default the less operator is left
      * associative with precedence 4.
      * @param position The symbol position at the source code
+     * @see Lexer#Lexer(String)
+     * @see OperatorData
      */
     public LessOperatorSymbol(int position) {
-        super(4, Associativity.Left, SymbolType.Less, position);
+        super(SymbolType.Less, position);
     }
 
     /** {@inheritDoc} */

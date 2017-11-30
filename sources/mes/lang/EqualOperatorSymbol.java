@@ -44,9 +44,11 @@ public class EqualOperatorSymbol extends BinaryOperatorSymbol {
      * Initializes the equal operator. By default the equal operator is
      * left associative with precedence 3.
      * @param position The symbol position at the source code
+     * @see Lexer#Lexer(String)
+     * @see OperatorData
      */
     public EqualOperatorSymbol(int position) {
-        super(3, Associativity.Left, SymbolType.Equal, position);
+        super(SymbolType.Equal, position);
     }
 
     /** {@inheritDoc} */

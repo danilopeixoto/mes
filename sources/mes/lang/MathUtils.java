@@ -294,7 +294,7 @@ public abstract class MathUtils {
      * @param a Minimum value of the input range
      * @param b Maximum value of the input range
      * @return The linear interpolation between zero and one.
-     * @see smoothstep(double, double, double)
+     * @see #smoothstep(double, double, double)
      */
     @ExportSymbol
     public static double lerp(double x, double a, double b) {
@@ -307,7 +307,7 @@ public abstract class MathUtils {
      * @param a Minimum value of the input range
      * @param b Maximum value of the input range
      * @return The smooth interpolation between zero and one.
-     * @see lerp(double, double, double)
+     * @see #lerp(double, double, double)
      */
     @ExportSymbol
     public static double smoothstep(double x, double a, double b) {

@@ -44,9 +44,11 @@ public class LessEqualOperatorSymbol extends BinaryOperatorSymbol {
      * Initializes the less equal operator. By default the less equal operator
      * is left associative with precedence 4.
      * @param position The symbol position at the source code
+     * @see Lexer#Lexer(String)
+     * @see OperatorData
      */
     public LessEqualOperatorSymbol(int position) {
-        super(4, Associativity.Left, SymbolType.LessEqual, position);
+        super(SymbolType.LessEqual, position);
     }
 
     /** {@inheritDoc} */

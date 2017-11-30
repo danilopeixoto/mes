@@ -29,24 +29,24 @@
 package mes.lang;
 
 /**
- * Plus operator abstraction.
+ * Positive operator abstraction.
  * @author Danilo Ferreira
  * @version 1.0.0
  * @see UnaryOperatorSymbol
  */
-public class PlusOperatorSymbol extends UnaryOperatorSymbol {
-    /** Initializes the plus operator. By default the position index is zero. */
-    public PlusOperatorSymbol() {
+public class PositiveOperatorSymbol extends UnaryOperatorSymbol {
+    /** Initializes the positive operator. By default the position index is zero. */
+    public PositiveOperatorSymbol() {
         this(0);
     }
 
     /**
-     * Initializes the plus operator.
+     * Initializes the positive operator.
      * @param position The symbol position at the source code
      * @see UnaryOperatorSymbol#UnaryOperatorSymbol(Symbol.SymbolType, int)
      */
-    public PlusOperatorSymbol(int position) {
-        super(SymbolType.Plus, position);
+    public PositiveOperatorSymbol(int position) {
+        super(SymbolType.Positive, position);
     }
 
     /** {@inheritDoc} */

@@ -1589,7 +1589,7 @@ public class MainWindow extends javafx.application.Application {
 
                 if (statement.hasException()) {
                     ExceptionContent exception = statement.getException();
-                    commandLine = createCommandLine(true, ">> " + exception.getMessage());
+                    commandLine = createCommandLine(true, exception.getMessage());
                 } else {
                     LiteralSymbol result = statement.getResult();
                     String output;

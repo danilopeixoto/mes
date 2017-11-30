@@ -54,7 +54,7 @@ public class Interpreter {
             return null;
         }
     }
-
+    
     private SymbolTable userSymbolTable;
     private SymbolTable symbolTable;
 
@@ -77,8 +77,10 @@ public class Interpreter {
         ExceptionContent exceptionContent;
 
         try {
-            TokenStream tokens = Lexer.tokenize(source);
-            AbstractSyntaxTree abstractSyntaxTree = Parser.parse(tokens);
+            Lexer lexer = new Lexer(source);
+            Parser parser = new Parser(lexer);
+            
+            AbstractSyntaxTree abstractSyntaxTree = parser.getAbstractSyntaxTree();
 
             result = (LiteralSymbol)abstractSyntaxTree.traverse(new EvaluationFunction());
             exceptionContent = null;

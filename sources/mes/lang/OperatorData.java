@@ -29,32 +29,48 @@
 package mes.lang;
 
 /**
- * Greater operator abstraction.
+ * Represents the properties of a unary or binary operator.
  * @author Danilo Ferreira
  * @version 1.0.0
- * @see BinaryOperatorSymbol
+ * @see Token
  */
-public class GreaterOperatorSymbol extends BinaryOperatorSymbol {
-    /** Initializes the greater operator. */
-    public GreaterOperatorSymbol() {
-        this(0);
+public class OperatorData {
+    /** Operator associativity type. */
+    public enum Associativity {
+        /** Left associative. */
+        Left,
+        /** Right associative. */
+        Right
+    }
+    
+    private int precedence;
+    private Associativity associativity;
+    
+    /**
+     * Initializes the operator data.
+     * @param precedence The operator precedence
+     * @param associativity The operator associativity
+     * @see Associativity
+     */
+    public OperatorData(int precedence, Associativity associativity) {
+        this.precedence = precedence;
+        this.associativity = associativity;
     }
 
     /**
-     * Initializes the greater operator. By default the greater operator is left
-     * associative with precedence 4.
-     * @param position The symbol position at the source code
-     * @see Lexer#Lexer(String)
-     * @see OperatorData
+     * Returns the operator precedence.
+     * @return An integer representing low or high precedences.
      */
-    public GreaterOperatorSymbol(int position) {
-        super(SymbolType.Greater, position);
+    public int getPrecedence() {
+        return precedence;
     }
 
-    /** {@inheritDoc} */
-    @Override
-    public LiteralSymbol compute(LiteralSymbol left, LiteralSymbol right) {
-        return new NumberLiteralSymbol(MathUtils.number(
-                left.getDoubleValue() > right.getDoubleValue()), position);
+    /**
+     * Returns the operator associativity.
+     * @return The operator associativity (left or right).
+     * @see Associativity
+     */
+    public Associativity getAssociativity() {
+        return associativity;
     }
 }

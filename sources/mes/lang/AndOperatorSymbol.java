@@ -44,9 +44,11 @@ public class AndOperatorSymbol extends BinaryOperatorSymbol {
      * Initializes the <i>and</i> operator. By default the <i>and</i> operator
      * is left associative with precedence 2.
      * @param position The symbol position at the source code
+     * @see Lexer#Lexer(String)
+     * @see OperatorData
      */
     public AndOperatorSymbol(int position) {
-        super(2, Associativity.Left, SymbolType.And, position);
+        super(SymbolType.And, position);
     }
 
     /** {@inheritDoc} */

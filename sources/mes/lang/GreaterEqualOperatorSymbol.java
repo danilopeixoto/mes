@@ -44,9 +44,11 @@ public class GreaterEqualOperatorSymbol extends BinaryOperatorSymbol {
      * Initializes the greater equal operator. By default the greater equal
      * operator is left associative with precedence 4.
      * @param position The symbol position at the source code
+     * @see Lexer#Lexer(String)
+     * @see OperatorData
      */
     public GreaterEqualOperatorSymbol(int position) {
-        super(4, Associativity.Left, SymbolType.GreaterEqual, position);
+        super(SymbolType.GreaterEqual, position);
     }
 
     /** {@inheritDoc} */

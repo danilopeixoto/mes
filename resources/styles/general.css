@@ -34,7 +34,7 @@
 }
 
 * {
-    -fx-font-family: "Segoe UI";
+    -fx-font-family: Segoe UI, Arial, Helvetica, sans-serif;
     -fx-text-fill: black;
     -fx-font-size: 13px;
     -fx-highlight-fill: #a5d0ff;
@@ -56,8 +56,11 @@
 }
 
 .type-check-popup {
-    -fx-background-color: #ffe5e5;
+    -fx-background-color: #ffefef;
     -fx-background-radius: 5px;
+    -fx-border-color: #ffe0e0;
+    -fx-border-width: 1px;
+    -fx-border-radius: 5px;
     -fx-padding: 4px 10px;
 }
 
@@ -102,10 +105,11 @@
 }
 
 .command-line:error {
-    -fx-background-color: #ffe5e5;
+    -fx-background-color: #ffefef;
     -fx-background-image: none !important;
     -fx-padding: 4px !important;
     -fx-border-color: transparent !important;
+    -fx-font-family: Segoe UI, Arial, Helvetica, sans-serif;
 }
 
 .command-line:focused {
