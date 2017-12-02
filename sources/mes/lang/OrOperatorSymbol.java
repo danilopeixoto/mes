@@ -53,8 +53,11 @@ public class OrOperatorSymbol extends BinaryOperatorSymbol {
 
     /** {@inheritDoc} */
     @Override
-    public LiteralSymbol compute(LiteralSymbol left, LiteralSymbol right) {
-        return new NumberLiteralSymbol(MathUtils.number(
-                left.getBooleanValue() || right.getBooleanValue()), position);
+    public LiteralSymbol evaluate() {
+        LiteralSymbol leftOperand = (LiteralSymbol)left;
+        LiteralSymbol rightOperand = (LiteralSymbol)right;
+        
+        return new NumberLiteralSymbol(leftOperand.getBooleanValue() ||
+                rightOperand.getBooleanValue(), position);
     }
 }

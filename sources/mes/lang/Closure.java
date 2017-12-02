@@ -28,6 +28,10 @@
 
 package mes.lang;
 
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.Serializable;
 import java.lang.reflect.Method;
 
 /**
@@ -37,7 +41,7 @@ import java.lang.reflect.Method;
  * @see AbstractSyntaxTree
  * @see Method
  */
-public class Closure {
+public class Closure implements Serializable {
     /** Supported closure types. */
     public enum ClosureType {
         /** Abstract syntax tree closure. */
@@ -56,8 +60,8 @@ public class Closure {
     }
 
     /**
-     * Initializes a closure instance as abstract syntax tree. If the abstract
-     * syntax tree is null an empty closure is assigned. 
+     * Initializes the closure instance as abstract syntax tree. If the
+     * abstract syntax tree is null an empty closure is created. 
      * @param abstractSyntaxTree The abstract syntax tree to use as closure
      */
     public Closure(AbstractSyntaxTree abstractSyntaxTree) {
@@ -65,8 +69,8 @@ public class Closure {
     }
 
     /**
-     * Initializes a closure instance as method. If the method is null an empty
-     * closure is assigned.
+     * Initializes the closure instance as method. If the method is null an
+     * empty closure is created.
      * @param method The method to use as closure
      */
     public Closure(Method method) {
@@ -74,8 +78,8 @@ public class Closure {
     }
 
     /**
-     * Sets closure instance as abstract syntax tree. If the abstract syntax
-     * tree is null an empty closure is assigned.
+     * Sets the closure instance as abstract syntax tree. If the abstract
+     * syntax tree is null an empty closure is defined.
      * @param abstractSyntaxTree The abstract syntax tree to use as closure
      */
     public void setAbstractSyntaxTree(AbstractSyntaxTree abstractSyntaxTree) {
@@ -83,8 +87,8 @@ public class Closure {
     }
 
     /**
-     * Sets a closure instance as method. If the method is null an empty closure
-     * is assigned.
+     * Sets the closure instance as method. If the method is null an empty
+     * closure is defined.
      * @param method The method to use as closure
      */
     public void setMethod(Method method) {
@@ -125,5 +129,17 @@ public class Closure {
             return ClosureType.Method;
 
         return ClosureType.Empty;
+    }
+    
+    private void readObject(ObjectInputStream inputStream)
+            throws IOException, ClassNotFoundException {
+        closureObject = inputStream.readObject();
+    }
+    
+    private void writeObject(ObjectOutputStream outputStream) throws IOException {
+        if (closureObject instanceof Method)
+            outputStream.writeObject(null);
+        else
+            outputStream.writeObject(closureObject);
     }
 }

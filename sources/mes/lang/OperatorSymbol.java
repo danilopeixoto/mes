@@ -43,4 +43,12 @@ public abstract class OperatorSymbol extends Symbol {
     public OperatorSymbol(SymbolType type, int position) {
         super(type, position);
     }
+    
+    /**
+     * Compute the operator result. The left and right children are
+     * used as operand.
+     * @return A literal symbol as result.
+     * @see LiteralSymbol
+     */
+    public abstract LiteralSymbol evaluate();
 }

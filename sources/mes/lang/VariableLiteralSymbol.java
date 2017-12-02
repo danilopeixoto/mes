@@ -28,6 +28,9 @@
 
 package mes.lang;
 
+import mes.lang.Closure.ClosureType;
+import mes.lang.ExceptionContent.ExceptionMessage;
+
 /**
  * Variable type representation.
  * @author Danilo Ferreira
@@ -35,38 +38,47 @@ package mes.lang;
  * @see IdentifierLiteralSymbol
  */
 public class VariableLiteralSymbol extends IdentifierLiteralSymbol {
-    private double value;
-
     public VariableLiteralSymbol() {
-        this("", 0, 0);
+        this("", 0);
     }
 
     public VariableLiteralSymbol(String name, int position) {
         this(name, 0, position);
     }
-
-    public VariableLiteralSymbol(String name, double value, int position) {
-        super(name, SymbolType.Variable, position);
-        this.value = value;
+    
+    public VariableLiteralSymbol(String name, boolean booleanValue, int position) {
+        super(name, MathUtils.number(booleanValue), SymbolType.Variable, position);
     }
 
-    public void setValue(double value) {
-        this.value = value;
+    public VariableLiteralSymbol(String name, double doubleValue, int position) {
+        super(name, doubleValue, SymbolType.Variable, position);
     }
-
+    
     @Override
-    public double getDoubleValue() {
-        return value;
-    }
-
-    @Override
-    public boolean getBooleanValue() {
-        return MathUtils.bool(getDoubleValue());
+    public void evaluate(SymbolTable globalSymbolTable) {
+        if (closure.getType() == ClosureType.AbstractSyntaxTree) {
+            AbstractSyntaxTree abstractSyntaxTree = closure.getAbstractSyntaxTree();
+            
+            LiteralSymbol literalSymbol = (LiteralSymbol)abstractSyntaxTree.traverse(
+                    new LiteralEvaluation(globalSymbolTable));
+            
+            value = literalSymbol.getDoubleValue();
+        }
+        else {
+            if (!globalSymbolTable.contains(this))
+                throw new ExceptionContent(ExceptionMessage.UndefinedSymbol, position);
+            
+            for (IdentifierLiteralSymbol identifierSymbol: globalSymbolTable) {
+                if (identifierSymbol.equals(this)) {
+                    value = identifierSymbol.getDoubleValue();
+                    return;
+                }
+            }
+        }
     }
 
     @Override
     public String getPrototype() {
-        return String.format(value == 0 || (value >= 0.1 && value < 10)
-                ? "%s: %.5f" : "%s: %1.5e", name, value);
+        return String.format("%s: %s", name, getFormatedValue());
     }
 }

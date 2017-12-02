@@ -136,9 +136,8 @@ public class Application {
         if (handlers != null)
             for (Handler handler : handlers)
                 handler.close();
-
+        
         Platform.exit();
-        System.exit(0);
     }
 
     /**

@@ -46,12 +46,4 @@ public abstract class UnaryOperatorSymbol extends OperatorSymbol {
     public UnaryOperatorSymbol(SymbolType type, int position) {
         super(type, position);
     }
-
-    /**
-     * Compute the unary operator result.
-     * @param input The input operand
-     * @return The output result.
-     * @see LiteralSymbol
-     */
-    public abstract LiteralSymbol compute(LiteralSymbol input);
 }

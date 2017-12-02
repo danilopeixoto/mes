@@ -53,8 +53,13 @@ public class ExponentiationOperatorSymbol extends BinaryOperatorSymbol {
 
     /** {@inheritDoc} */
     @Override
-    public LiteralSymbol compute(LiteralSymbol left, LiteralSymbol right) {
-        return new NumberLiteralSymbol(MathUtils.pow(
-                left.getDoubleValue(), right.getDoubleValue()), position);
+    public LiteralSymbol evaluate() {
+        LiteralSymbol leftOperand = (LiteralSymbol)left;
+        LiteralSymbol rightOperand = (LiteralSymbol)right;
+        
+        double number = MathUtils.pow(leftOperand.getDoubleValue(),
+                rightOperand.getDoubleValue());
+        
+        return new NumberLiteralSymbol(number, position);
     }
 }

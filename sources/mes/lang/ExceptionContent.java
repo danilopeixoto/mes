@@ -45,8 +45,18 @@ public class ExceptionContent extends RuntimeException {
         public static final String InvalidExpression = "invalid expression";
         public static final String UnknownToken = "unknown token";
         public static final String UndefinedSymbol = "undefined symbol";
-        public static final String InvalidSymbolRedefinition = "invalid symbol redefinition";
-        public static final String InvalidNumberArguments = "invalid number of arguments";
+        public static final String InvalidSymbolRedefinition =
+                "invalid redefinition of default symbol";
+        public static final String IllegalExpressionAssignment =
+                "illegal expression assignment";
+        public static final String InvalidFunctionArgument =
+                "invalid function argument";
+        public static final String InvalidArgumentRedefinition =
+                "invalid redefinition of function argument";
+        public static final String InvalidNumberArguments =
+                "invalid number of arguments";
+        public static final String FunctionEvaluationFailed =
+                "cannot evaluate function";
         
         public static String custom(String message) {
             return message;

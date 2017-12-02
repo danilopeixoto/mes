@@ -28,23 +28,17 @@
 
 package mes.lang;
 
+import java.util.TreeSet;
+
 /**
- * List implementation for {@link IdentifierLiteralSymbol}.
+ * Set implementation for {@link IdentifierLiteralSymbol}.
  * @author Danilo Ferreira
  * @version 1.0.0
- * @see List
+ * @see TreeSet
  */
-public class SymbolTable extends List<IdentifierLiteralSymbol> {
+public class SymbolTable extends TreeSet<IdentifierLiteralSymbol> {
     /** Initializes an empty symbol table. */
     public SymbolTable() {
         super();
-    }
-
-    /**
-     * Initializes the symbol table with initial size.
-     * @param size The list size
-     */
-    public SymbolTable(int size) {
-        super(size);
     }
 }

@@ -26,73 +26,20 @@
 // OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-package mes.lang;
+package mes.io;
 
-import java.io.Serializable;
+import java.util.TreeSet;
 
 /**
- * Node implementation for {@link AbstractSyntaxTree}.
+ * History list implementation for {@link mes.ui.Application}.
  * @author Danilo Ferreira
  * @version 1.0.0
- * @see AbstractSyntaxTree
+ * @see TreeSet
+ * @see mes.ui.MainWindow
  */
-public abstract class AbstractSyntaxNode implements Serializable {
-    protected AbstractSyntaxNode left;
-    protected AbstractSyntaxNode right;
-
-    /** Initializes the children of node to null. */
-    public AbstractSyntaxNode() {
-        left = null;
-        right = null;
-    }
-
-    /**
-     * Set the left child of node.
-     * @param left The left child node
-     */
-    public void setLeft(AbstractSyntaxNode left) {
-        this.left = left;
-    }
-
-    /**
-     * Set the right child of node.
-     * @param right The right child node
-     */
-    public void setRight(AbstractSyntaxNode right) {
-        this.right = right;
-    }
-
-    /**
-     * Returns the left child of node.
-     * @return The left child node.
-     * @see #setLeft(AbstractSyntaxNode)
-     */
-    public AbstractSyntaxNode getLeft() {
-        return left;
-    }
-
-    /**
-     * Returns the right child of node.
-     * @return The right child node.
-     * @see #setRight(AbstractSyntaxNode)
-     */
-    public AbstractSyntaxNode getRight() {
-        return right;
-    }
-
-    /**
-     * Returns true if all children are null and false otherwise.
-     * @return The leaf state.
-     */
-    public boolean isLeaf() {
-        return left == null && right == null;
-    }
-
-    /**
-     * Returns true if all children are non-null and false otherwise.
-     * @return The binary root state.
-     */
-    public boolean isBinaryRoot() {
-        return left != null && right != null;
+public class HistoryList extends TreeSet<String> {
+    /** Initializes an empty history list. */
+    public HistoryList() {
+        super();
     }
 }

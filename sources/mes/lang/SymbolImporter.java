@@ -77,15 +77,15 @@ public class SymbolImporter {
                 if (field.isAnnotationPresent(ExportSymbol.class)) {
                     VariableLiteralSymbol constant = new VariableLiteralSymbol();
                     Object value = field.get(null);
-
+                    
                     if (value instanceof Number) {
                         Number number = (Number)value;
-                        constant.setValue(number.doubleValue());
+                        constant.setDoubleValue(number.doubleValue());
                     } else if (value instanceof Boolean) {
                         Boolean bool = (Boolean)value;
-                        constant.setValue(MathUtils.number(bool));
+                        constant.setBooleanValue(bool);
                     }
-
+                    
                     constant.setName(field.getName());
                     constants.add(constant);
                 }
@@ -103,12 +103,14 @@ public class SymbolImporter {
 
                             arguments.add(new FunctionArgument(variableSymbol));
                         }
-
+                    
+                    Closure closure = new Closure(method);
+                    
                     FunctionLiteralSymbol function = new FunctionLiteralSymbol();
                     function.setName(method.getName());
                     function.setArguments(arguments);
-                    function.setClosure(new Closure(method));
-
+                    function.setClosure(closure);
+                    
                     functions.add(function);
                 }
     }

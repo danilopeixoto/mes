@@ -40,25 +40,31 @@ public class Preferences implements Serializable {
     private boolean enableTypeChecking;
     private boolean enableAutocomplete;
     private boolean statusBarVisible;
+    
+    private HistoryList historyList;
 
     /**
      * Initializes the preferences. By default the type checking, text
      * autocomplete and status bar visibility are enable.
      */
     public Preferences() {
-        this(true, true, true);
+        this(true, true, true, new HistoryList());
     }
 
     /** Initializes the preferences.
      * @param enableTypeChecking Enable type checking feature
      * @param enableAutocomplete Enable text autocomplete feature
      * @param statusBarVisible Enable status bar visibility
+     * @param historyList The user history list
+     * @see HistoryList
      */
     public Preferences(boolean enableTypeChecking, boolean enableAutocomplete,
-            boolean statusBarVisible) {
+            boolean statusBarVisible, HistoryList historyList) {
         this.enableTypeChecking = enableTypeChecking;
         this.enableAutocomplete = enableAutocomplete;
         this.statusBarVisible = statusBarVisible;
+        
+        this.historyList = historyList;
     }
 
     /**
@@ -83,6 +89,15 @@ public class Preferences implements Serializable {
      */
     public void setStatusBarVisible(boolean statusBarVisible) {
         this.statusBarVisible = statusBarVisible;
+    }
+    
+    /**
+     * Sets the user history list.
+     * @param historyList The user history list
+     * @see HistoryList
+     */
+    public void setHistoryList(HistoryList historyList) {
+        this.historyList = historyList;
     }
 
     /**
@@ -110,5 +125,14 @@ public class Preferences implements Serializable {
      */
     public boolean isStatusBarVisible() {
         return statusBarVisible;
+    }
+    
+    /**
+     * Returns the user history list.
+     * @return The user history list.
+     * @see #setHistoryList(HistoryList)
+     */
+    public HistoryList getHistoryList() {
+        return historyList;
     }
 }

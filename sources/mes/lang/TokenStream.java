@@ -42,7 +42,7 @@ public class TokenStream extends List<Token> {
 
     /**
      * Initializes the token stream with initial size.
-     * @param size The list size
+     * @param size The token stream size
      */
     public TokenStream(int size) {
         super(size);

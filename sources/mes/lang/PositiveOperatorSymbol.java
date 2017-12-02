@@ -51,7 +51,8 @@ public class PositiveOperatorSymbol extends UnaryOperatorSymbol {
 
     /** {@inheritDoc} */
     @Override
-    public LiteralSymbol compute(LiteralSymbol input) {
-        return new NumberLiteralSymbol(input.getDoubleValue(), position);
+    public LiteralSymbol evaluate() {
+        LiteralSymbol inputOperand = (LiteralSymbol)left;
+        return new NumberLiteralSymbol(inputOperand.getDoubleValue(), position);
     }
 }

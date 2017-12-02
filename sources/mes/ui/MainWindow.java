@@ -34,18 +34,21 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javafx.application.Platform;
+import javafx.application.Preloader.PreloaderNotification;
 import javafx.application.Preloader.ProgressNotification;
 import javafx.beans.binding.Binding;
 import javafx.beans.binding.Bindings;
+import javafx.beans.binding.IntegerBinding;
 import javafx.beans.property.ReadOnlyDoubleProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.value.ObservableValue;
-import javafx.collections.ListChangeListener;
+import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.css.PseudoClass;
 import javafx.event.ActionEvent;
@@ -96,10 +99,11 @@ import javafx.stage.Popup;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
 import javafx.stage.Window;
-import mes.io.Document;
 import mes.io.CommandLineData;
 import mes.io.CommandLineStream;
+import mes.io.Document;
 import mes.io.File;
+import mes.io.HistoryList;
 import mes.io.Preferences;
 import mes.lang.ExceptionContent;
 import mes.lang.FunctionLiteralSymbol;
@@ -142,6 +146,8 @@ public class MainWindow extends javafx.application.Application {
     private SimpleBooleanProperty fileWasSavedProperty;
 
     private ObservableList<CommandLine> commandLines;
+    private ObservableList<IdentifierLiteralSymbol> definitions;
+    private ObservableList<String> history;
 
     private SimpleDoubleProperty scrollPositionProperty;
 
@@ -153,6 +159,8 @@ public class MainWindow extends javafx.application.Application {
 
     private SimpleIntegerProperty lineNumberProperty;
     private SimpleIntegerProperty columnNumberProperty;
+    
+    private int selectedHistoryIndex;
 
     private static PseudoClass ERROR_PSEUDO_CLASS = PseudoClass.getPseudoClass("error");
     private static PseudoClass TYPECHECK_PSEUDO_CLASS = PseudoClass.getPseudoClass("type-checked");
@@ -412,7 +420,7 @@ public class MainWindow extends javafx.application.Application {
         }
     }
 
-    private class AutocompleteData implements Comparable<AutocompleteData> {
+    private class AutocompleteData {
         private IdentifierLiteralSymbol identifierSymbol;
 
         public AutocompleteData() {
@@ -458,11 +466,6 @@ public class MainWindow extends javafx.application.Application {
 
         public boolean isFunction() {
             return identifierSymbol.getType() == SymbolType.Function;
-        }
-
-        @Override
-        public int compareTo(AutocompleteData other) {
-            return getLabelText().compareTo(other.getLabelText());
         }
     }
 
@@ -656,10 +659,8 @@ public class MainWindow extends javafx.application.Application {
 
             if (symbolTable.isEmpty())
                 items.add(new AutocompleteData());
-            else {
+            else
                 symbolTable.forEach(symbol -> items.add(new AutocompleteData(symbol)));
-                items.sort(null);
-            }
 
             listView.setPrefHeight(MathUtils.min(minimumHeight * 0.5,
                     items.size() * rowHeight + 5));
@@ -770,7 +771,9 @@ public class MainWindow extends javafx.application.Application {
                     saveMenuItem, saveAsMenuItem, separatorFileMenu3,
                     exitMenuItem);
 
-            Binding binding = Bindings.size(commandLines).lessThan(2);
+            Binding commandLineSizeBinding = Bindings.size(commandLines).lessThan(2);
+            Binding definitionSizeBinding = Bindings.size(definitions).isEqualTo(0);
+            Binding historySizeBinding = Bindings.size(history).isEqualTo(0);
 
             MenuItem copyMenuItem = new MenuItem("Copy");
             copyMenuItem.setOnAction(MainWindow.this::copyAction);
@@ -787,9 +790,19 @@ public class MainWindow extends javafx.application.Application {
 
             MenuItem deleteAllMenuItem = new MenuItem("Delete All");
             deleteAllMenuItem.setOnAction(MainWindow.this::deleteAllAction);
-            deleteAllMenuItem.disableProperty().bind(binding);
-
+            deleteAllMenuItem.disableProperty().bind(commandLineSizeBinding);
+            
             SeparatorMenuItem separatorEditMenu2 = new SeparatorMenuItem();
+            
+            MenuItem deleteDefinitionsMenuItem = new MenuItem("Delete Definitions");
+            deleteDefinitionsMenuItem.setOnAction(MainWindow.this::deleteDefinitionsAction);
+            deleteDefinitionsMenuItem.disableProperty().bind(definitionSizeBinding);
+
+            MenuItem deleteHistoryMenuItem = new MenuItem("Delete History");
+            deleteHistoryMenuItem.setOnAction(MainWindow.this::deleteHistoryAction);
+            deleteHistoryMenuItem.disableProperty().bind(historySizeBinding);
+            
+            SeparatorMenuItem separatorEditMenu3 = new SeparatorMenuItem();
 
             CheckMenuItem typeCheckingMenuItem = new CheckMenuItem("Type Checking");
             typeCheckingMenuItem.setSelected(true);
@@ -802,6 +815,7 @@ public class MainWindow extends javafx.application.Application {
             Menu editMenu = new Menu("_Edit");
             editMenu.getItems().addAll(copyMenuItem, separatorEditMenu1,
                     deleteMenuItem, deleteAllMenuItem, separatorEditMenu2,
+                    deleteDefinitionsMenuItem, deleteHistoryMenuItem, separatorEditMenu3,
                     typeCheckingMenuItem, autocompleteMenuItem);
 
             CheckMenuItem statusBarMenuItem = new CheckMenuItem("Status Bar");
@@ -1042,7 +1056,7 @@ public class MainWindow extends javafx.application.Application {
             copyMenuItem.setAccelerator(new KeyCodeCombination(KeyCode.C,
                     KeyCombination.CONTROL_DOWN));
 
-            SeparatorMenuItem separator = new SeparatorMenuItem();
+            SeparatorMenuItem separator1 = new SeparatorMenuItem();
 
             MenuItem deleteMenuItem = new MenuItem("Delete");
             deleteMenuItem.setAccelerator(new KeyCodeCombination(KeyCode.DELETE));
@@ -1055,13 +1069,27 @@ public class MainWindow extends javafx.application.Application {
                 deleteMenuItem.setDisable(true);
             }
 
-            Binding binding = Bindings.size(commandLines).lessThan(2);
+            Binding commandLineSizeBinding = Bindings.size(commandLines).lessThan(2);
+            Binding definitionSizeBinding = Bindings.size(definitions).isEqualTo(0);
+            Binding historySizeBinding = Bindings.size(history).isEqualTo(0);
 
             MenuItem deleteAllMenuItem = new MenuItem("Delete All");
             deleteAllMenuItem.setOnAction(this::deleteAllAction);
-            deleteAllMenuItem.disableProperty().bind(binding);
+            deleteAllMenuItem.disableProperty().bind(commandLineSizeBinding);
+            
+            SeparatorMenuItem separator2 = new SeparatorMenuItem();
+            
+            MenuItem deleteDefinitionsMenuItem = new MenuItem("Delete Definitions");
+            deleteDefinitionsMenuItem.setOnAction(MainWindow.this::deleteDefinitionsAction);
+            deleteDefinitionsMenuItem.disableProperty().bind(definitionSizeBinding);
+            
+            MenuItem deleteHistoryMenuItem = new MenuItem("Delete History");
+            deleteHistoryMenuItem.setOnAction(MainWindow.this::deleteHistoryAction);
+            deleteHistoryMenuItem.disableProperty().bind(historySizeBinding);
 
-            getItems().addAll(copyMenuItem, separator, deleteMenuItem, deleteAllMenuItem);
+            getItems().addAll(copyMenuItem, separator1,
+                    deleteMenuItem, deleteAllMenuItem, separator2,
+                    deleteDefinitionsMenuItem, deleteHistoryMenuItem);
         }
 
         private void copyAction(ActionEvent actionEvent, CommandLine commandLine) {
@@ -1126,6 +1154,9 @@ public class MainWindow extends javafx.application.Application {
 
         file = new File();
         fileWasSavedProperty = new SimpleBooleanProperty(false);
+        
+        definitions = FXCollections.observableArrayList();
+        history = FXCollections.observableArrayList();
 
         scrollPositionProperty = new SimpleDoubleProperty(0);
 
@@ -1179,8 +1210,10 @@ public class MainWindow extends javafx.application.Application {
             }
 
             SymbolTable userSymbolTable = document.getSymbolTable();
+            
             interpreter.setUserSymbolTable(userSymbolTable);
-
+            definitions.setAll(userSymbolTable);
+            
             fileWasSavedProperty.set(true);
         } else {
             clearCommandLines();
@@ -1279,7 +1312,8 @@ public class MainWindow extends javafx.application.Application {
         MenuBar menuBar = (MenuBar)rootLayout.getChildren().get(0);
 
         Preferences preferences = new Preferences(enableTypeCheckingProperty.get(),
-                enableAutocompleteProperty.get(), menuBar.isStatusBarVisible());
+                enableAutocompleteProperty.get(), menuBar.isStatusBarVisible(),
+                history.stream().collect(Collectors.toCollection(HistoryList::new)));
 
         Application.savePreferences(preferences);
         Application.exit();
@@ -1430,6 +1464,18 @@ public class MainWindow extends javafx.application.Application {
         clearCommandLines();
         actionEvent.consume();
     }
+    
+    private void deleteDefinitionsAction(ActionEvent actionEvent) {
+        interpreter.clearUserSymbolTable();
+        definitions.clear();
+        
+        actionEvent.consume();
+    }
+    
+    private void deleteHistoryAction(ActionEvent actionEvent) {
+        history.clear();
+        actionEvent.consume();
+    }
 
     private void showAboutDialogAction(ActionEvent actionEvent) {
         AboutDialog aboutDialog = new AboutDialog();
@@ -1488,6 +1534,10 @@ public class MainWindow extends javafx.application.Application {
     private CommandLine getCommandLineOnStack(int index) {
         return commandLines.get(commandLines.size() - index - 1);
     }
+    
+    private String getHistoryOnStack(int index) {
+        return history.get(history.size() - index - 1);
+    }
 
     private void typedCharacterEvent(KeyEvent keyEvent) {
         CommandLine sourceCommandLine = (CommandLine)keyEvent.getSource();
@@ -1539,6 +1589,10 @@ public class MainWindow extends javafx.application.Application {
                 KeyCombination.CONTROL_DOWN);
         KeyCombination autocompleteShortcut = new KeyCodeCombination(KeyCode.SPACE,
                 KeyCombination.CONTROL_DOWN);
+        KeyCombination historyMoveDownShortcut = new KeyCodeCombination(KeyCode.DOWN,
+                KeyCombination.SHIFT_DOWN);
+        KeyCombination historyMoveUpShortcut = new KeyCodeCombination(KeyCode.UP,
+                KeyCombination.SHIFT_DOWN);
 
         if (sourceCommandLine != currentCommandLine && code == KeyCode.ENTER) {
             focusCommandLine(currentCommandLine);
@@ -1547,6 +1601,31 @@ public class MainWindow extends javafx.application.Application {
             keyEvent.consume();
         } else if (autocompleteShortcut.match(keyEvent)) {
             showAutocompletePopup(sourceCommandLine);
+            keyEvent.consume();
+        } else if (sourceCommandLine.isEditable() &
+                (historyMoveDownShortcut.match(keyEvent) ||
+                historyMoveUpShortcut.match(keyEvent))) {
+            if (!history.isEmpty()) {
+                int lastIndex = history.size() - 1;
+                
+                if (code == KeyCode.DOWN && selectedHistoryIndex != 0) {
+                    if (selectedHistoryIndex == -1)
+                        selectedHistoryIndex++;
+                    else
+                        selectedHistoryIndex--;
+                }
+                else if (code == KeyCode.UP && selectedHistoryIndex != lastIndex)
+                    selectedHistoryIndex++;
+                
+                sourceCommandLine.setText(getHistoryOnStack(selectedHistoryIndex));
+                sourceCommandLine.selectAll();
+                
+                sourceCommandLine.getAutocompletePopup().hide();
+            }
+            
+            keyEvent.consume();
+        } else if (code == KeyCode.SHIFT && sourceCommandLine.isEditable()) {
+            selectedHistoryIndex = -1;
             keyEvent.consume();
         } else if (code == KeyCode.DOWN) {
             robot.keyPress(KeyCode.TAB);
@@ -1582,9 +1661,15 @@ public class MainWindow extends javafx.application.Application {
             keyEvent.consume();
         } else if (code == KeyCode.ENTER) {
             if (currentCommandLine.lengthProperty().get() != 0) {
+                String commandText = currentCommandLine.getText();
+                String formatedCommandText = commandText.trim();
+                
+                if (!history.contains(formatedCommandText))
+                    history.add(formatedCommandText);
+                
                 currentCommandLine.setEditable(false);
 
-                Statement statement = interpreter.run(currentCommandLine.getText());
+                Statement statement = interpreter.run(commandText);
                 CommandLine commandLine;
 
                 if (statement.hasException()) {
@@ -1595,10 +1680,12 @@ public class MainWindow extends javafx.application.Application {
                     String output;
 
                     if (result.isNumberLiteral())
-                        output = String.valueOf(result.getDoubleValue());
+                        output = result.getFormatedValue();
                     else {
                         IdentifierLiteralSymbol identifierResult = (IdentifierLiteralSymbol)result;
                         output = identifierResult.getPrototype();
+                        
+                        definitions.add(identifierResult);
                     }
 
                     commandLine = createCommandLine(false, ">> " + output);
@@ -1644,8 +1731,9 @@ public class MainWindow extends javafx.application.Application {
             }
     }
 
-    private void commandLinesSizeListener(ListChangeListener.Change<? extends CommandLine> change) {
-        if (change.next() && (change.getAddedSize() != 0 || change.getRemovedSize() != 0)) {
+    private void commandLinesSizeListener(ObservableValue<? extends Number> observable,
+            Number previousValue, Number currentValue) {
+        if (!currentValue.equals(previousValue)) {
             CommandLine commandLine = (CommandLine)primaryStage.getScene().getFocusOwner();
 
             lineNumberProperty.set(commandLines.indexOf(commandLine) + 1);
@@ -1747,13 +1835,15 @@ public class MainWindow extends javafx.application.Application {
         VBox boxLayout = new VBox();
 
         commandLines = (ObservableList<CommandLine>)(ObservableList<?>)boxLayout.getChildren();
-        commandLines.addListener(this::commandLinesSizeListener);
-
+        
+        IntegerBinding commandLineSizeBinding = Bindings.size(commandLines);
+        commandLineSizeBinding.addListener(this::commandLinesSizeListener);
+        
         ReadOnlyDoubleProperty heightProperty = stage.heightProperty();
-        Binding binding = Bindings.createObjectBinding(()
+        Binding paddingBinding = Bindings.createObjectBinding(()
                 -> new Insets(0, 0, heightProperty.doubleValue() * 0.3, 0), heightProperty);
 
-        boxLayout.paddingProperty().bind(binding);
+        boxLayout.paddingProperty().bind(paddingBinding);
 
         MenuBar menuBar = new MenuBar();
 
@@ -1807,6 +1897,9 @@ public class MainWindow extends javafx.application.Application {
             enableTypeCheckingProperty.set(preferences.isEnableTypeChecking());
             enableAutocompleteProperty.set(preferences.isEnableAutocomplete());
             menuBar.setStatusBarVisible(preferences.isStatusBarVisible());
+            
+            HistoryList historyList = preferences.getHistoryList();
+            history.setAll(historyList);
         }
 
         enableTypeCheckingProperty.addListener(this::updateTypeCheckingListener);

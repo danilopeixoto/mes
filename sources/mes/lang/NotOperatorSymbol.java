@@ -51,8 +51,8 @@ public class NotOperatorSymbol extends UnaryOperatorSymbol {
 
     /** {@inheritDoc} */
     @Override
-    public LiteralSymbol compute(LiteralSymbol input) {
-        return new NumberLiteralSymbol(MathUtils.number(
-                !input.getBooleanValue()), position);
+    public LiteralSymbol evaluate() {
+        LiteralSymbol inputOperand = (LiteralSymbol)left;
+        return new NumberLiteralSymbol(!inputOperand.getBooleanValue(), position);
     }
 }

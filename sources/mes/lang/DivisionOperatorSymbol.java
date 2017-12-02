@@ -53,8 +53,11 @@ public class DivisionOperatorSymbol extends BinaryOperatorSymbol {
 
     /** {@inheritDoc} */
     @Override
-    public LiteralSymbol compute(LiteralSymbol left, LiteralSymbol right) {
-        return new NumberLiteralSymbol(
-                left.getDoubleValue() / right.getDoubleValue(), position);
+    public LiteralSymbol evaluate() {
+        LiteralSymbol leftOperand = (LiteralSymbol)left;
+        LiteralSymbol rightOperand = (LiteralSymbol)right;
+        
+        return new NumberLiteralSymbol(leftOperand.getDoubleValue() /
+                rightOperand.getDoubleValue(), position);
     }
 }

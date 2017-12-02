@@ -564,35 +564,34 @@ public abstract class MathUtils {
     
     /**
      * Computes the approximate root of a cubic equation using Newton-Raphson
-     * algorithm. If the algorithm converges this method returns the root when
-     * the maximum number of iterations or tolerance is reached.
+     * algorithm. If the algorithm converges this method returns the approximate
+     * root when the tolerance is reached.
      * @param a Third degree coefficient
      * @param b Second degree coefficient
      * @param c First degree coefficient
      * @param d Zero degree coefficient
      * @param x0 Initial value
-     * @param maxi Maximum number of iterations
      * @param eps Tolerance value
      * @return The approximate root of the cubic equation.
      */
     @ExportSymbol
-    public static double newton(double a, double b, double c, double d, double x0,
-            int maxi, double eps) {
-        for (int i = 0; i < maxi; i++) {
+    public static double newton(double a, double b, double c, double d,
+            double x0, double eps) {
+        while (true) {
             double y = x0 * (x0 * (x0 * a + b) + c) + d;
             double dy = x0 * (3.0 * x0 * a + 2.0 * b) + c;
 
             if (dy == 0)
-                return x0;
+                break;
 
             double x1 = x0 - y / dy;
 
-            if (abs(x1 - x0) < eps)
-                return x0;
+            if (abs(x1 - x0) <= eps)
+                break;
 
             x0 = x1;
         }
-
+        
         return x0;
     }
 }

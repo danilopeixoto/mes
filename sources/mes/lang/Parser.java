@@ -180,8 +180,11 @@ public class Parser {
             case And:
                 binaryOperator = new AndOperatorSymbol(currentToken.getPosition());
                 break;
-            default:
+            case Or:
                 binaryOperator = new OrOperatorSymbol(currentToken.getPosition());
+                break;
+            default:
+                binaryOperator = new AssignmentOperatorSymbol(currentToken.getPosition());
         }
 
         next();

@@ -42,7 +42,7 @@ public abstract class TraversalFunction {
      * arguments.
      * @param arguments The function arguments
      */
-    public TraversalFunction(Object[] arguments) {
+    public TraversalFunction(Object... arguments) {
         this.arguments = arguments;
     }
 
@@ -63,14 +63,11 @@ public abstract class TraversalFunction {
     }
 
     /**
-     * This method is called in the {@link AbstractSyntaxTree} traversal.
-     * @param node The current node
-     * @param left The left child of the current node
-     * @param right The right child of the current node
+     * This method defines an {@link AbstractSyntaxTree} traversal.
+     * @param node The current node being traversed
      * @return The output node.
      * @see AbstractSyntaxTree#traverse(TraversalFunction)
      * @see AbstractSyntaxNode
      */
-    public abstract AbstractSyntaxNode evaluate(AbstractSyntaxNode node,
-            AbstractSyntaxNode left, AbstractSyntaxNode right);
+    public abstract AbstractSyntaxNode traverse(AbstractSyntaxNode node);
 }

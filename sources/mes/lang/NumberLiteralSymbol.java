@@ -35,28 +35,15 @@ package mes.lang;
  * @see LiteralSymbol
  */
 public class NumberLiteralSymbol extends LiteralSymbol {
-    private double value;
-
     public NumberLiteralSymbol() {
         this(0, 0);
     }
 
-    public NumberLiteralSymbol(double value, int position) {
-        super(SymbolType.Number, position);
-        this.value = value;
+    public NumberLiteralSymbol(boolean booleanValue, int position) {
+        super(MathUtils.number(booleanValue), SymbolType.Number, position);
     }
-
-    public void setValue(double value) {
-        this.value = value;
-    }
-
-    @Override
-    public double getDoubleValue() {
-        return value;
-    }
-
-    @Override
-    public boolean getBooleanValue() {
-        return MathUtils.bool(getDoubleValue());
+    
+    public NumberLiteralSymbol(double doubleValue, int position) {
+        super(doubleValue, SymbolType.Number, position);
     }
 }

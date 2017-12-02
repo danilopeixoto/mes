@@ -43,13 +43,4 @@ public abstract class BinaryOperatorSymbol extends OperatorSymbol {
     public BinaryOperatorSymbol(SymbolType type, int position) {
         super(type, position);
     }
-
-    /**
-     * Computes the binary operator result.
-     * @param left The left operand
-     * @param right The right operand
-     * @return The output result.
-     * @see LiteralSymbol
-     */
-    public abstract LiteralSymbol compute(LiteralSymbol left, LiteralSymbol right);
 }

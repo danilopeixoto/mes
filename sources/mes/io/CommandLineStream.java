@@ -44,7 +44,7 @@ public class CommandLineStream extends List<CommandLineData> {
 
     /**
      * Initializes the command line stream with initial size.
-     * @param size List size
+     * @param size The command line stream size
      */
     public CommandLineStream(int size) {
         super(size);

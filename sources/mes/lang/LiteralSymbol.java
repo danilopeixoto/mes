@@ -35,11 +35,31 @@ package mes.lang;
  * @see Symbol
  */
 public abstract class LiteralSymbol extends Symbol {
-    public LiteralSymbol(SymbolType type, int position) {
+    protected double value;
+    
+    public LiteralSymbol(double doubleValue, SymbolType type, int position) {
         super(type, position);
+        this.value = doubleValue;
+    }
+    
+    public void setBooleanValue(boolean booleanValue) {
+        this.value = MathUtils.number(booleanValue);
+    }
+    
+    public void setDoubleValue(double doubleValue) {
+        this.value = doubleValue;
+    }
+    
+    public boolean getBooleanValue() {
+        return MathUtils.bool(value);
     }
 
-    public abstract double getDoubleValue();
-
-    public abstract boolean getBooleanValue();
+    public double getDoubleValue() {
+        return value;
+    }
+    
+    public String getFormatedValue() {
+        return String.format(value == 0 || (value >= 0.1 && value < 10)
+                ? "%.5f" : "%1.5e", value);
+    }
 }

@@ -29,6 +29,7 @@
 package mes.lang;
 
 import mes.lang.ExceptionContent.ExceptionMessage;
+import mes.lang.Symbol.SymbolType;
 
 /**
  * Interpreter implementation for the language specification.
@@ -39,19 +40,55 @@ import mes.lang.ExceptionContent.ExceptionMessage;
  * @see TraversalFunction
  */
 public class Interpreter {
-    private class EvaluationFunction extends TraversalFunction {
-        public EvaluationFunction() {
-            this(null);
-        }
-
-        public EvaluationFunction(Object[] parameters) {
-            super(parameters);
+    private class ExpressionEvaluation extends TraversalFunction {
+        public ExpressionEvaluation() {
+            super();
         }
 
         @Override
-        public AbstractSyntaxNode evaluate(AbstractSyntaxNode node,
-                AbstractSyntaxNode left, AbstractSyntaxNode right) {
-            return null;
+        public AbstractSyntaxNode traverse(AbstractSyntaxNode node) {
+            if (node == null)
+                return null;
+            
+            Symbol nodeSymbol = (Symbol)node;
+            
+            if (nodeSymbol.getType() == SymbolType.Assignment) {
+                Symbol leftSymbol = (Symbol)nodeSymbol.getLeft();
+                
+                if (leftSymbol.isIdentifierLiteral()) {
+                    OperatorSymbol assignmentOperator = (OperatorSymbol)nodeSymbol;
+                    IdentifierLiteralSymbol identifierSymbol = (IdentifierLiteralSymbol)leftSymbol;
+                    
+                    if (isDefaultSymbol(identifierSymbol))
+                        throw new ExceptionContent(ExceptionMessage.InvalidSymbolRedefinition,
+                                identifierSymbol.getPosition());
+                    
+                    identifierSymbol = (IdentifierLiteralSymbol)assignmentOperator.evaluate();
+                    identifierSymbol.evaluate(symbolTable);
+                    
+                    return identifierSymbol;
+                }
+                else
+                    throw new ExceptionContent(ExceptionMessage.IllegalExpressionAssignment,
+                        nodeSymbol.getPosition());
+            }
+            
+            nodeSymbol.setLeft(traverse(nodeSymbol.getLeft()));
+            nodeSymbol.setRight(traverse(nodeSymbol.getRight()));
+            
+            if (nodeSymbol.isNumberLiteral())
+                return nodeSymbol;
+            else if (nodeSymbol.isIdentifierLiteral()) {
+                IdentifierLiteralSymbol identifierSymbol =
+                        (IdentifierLiteralSymbol)nodeSymbol;
+                
+                identifierSymbol.evaluate(symbolTable);
+                
+                return identifierSymbol.getNumberLiteralSymbol();
+            }
+            
+            OperatorSymbol operatorSymbol = (OperatorSymbol)nodeSymbol;
+            return operatorSymbol.evaluate();
         }
     }
     
@@ -82,18 +119,11 @@ public class Interpreter {
             
             AbstractSyntaxTree abstractSyntaxTree = parser.getAbstractSyntaxTree();
 
-            result = (LiteralSymbol)abstractSyntaxTree.traverse(new EvaluationFunction());
+            result = (LiteralSymbol)abstractSyntaxTree.traverse(new ExpressionEvaluation());
             exceptionContent = null;
-
-            if (result.isIdentifierLiteral()) {
-                IdentifierLiteralSymbol identifierSymbol = (IdentifierLiteralSymbol)result;
-
-                if (isDefaultSymbol(identifierSymbol))
-                    throw new ExceptionContent(
-                            ExceptionMessage.InvalidSymbolRedefinition, result.getPosition());
-                else
-                    addUserSymbol(identifierSymbol);
-            }
+            
+            if (!typeChecking && result.isIdentifierLiteral())
+                updateUserSymbol((IdentifierLiteralSymbol)result);
         } catch (Exception exception) {
             result = null;
 
@@ -142,21 +172,24 @@ public class Interpreter {
     private boolean isDefaultSymbol(IdentifierLiteralSymbol identifierSymbol) {
         if (!hasDefaultSymbols())
             return false;
-
-        for (LiteralSymbol literalSymbol : defaultSymbols.getConstants())
+        
+        for (LiteralSymbol literalSymbol: defaultSymbols.getConstants())
             if (literalSymbol.isIdentifierLiteral()
-                    && identifierSymbol.isRedefinitionOf((IdentifierLiteralSymbol)literalSymbol))
+                    && identifierSymbol.equals(literalSymbol))
                 return true;
 
-        for (LiteralSymbol literalSymbol : defaultSymbols.getFunctions())
+        for (LiteralSymbol literalSymbol: defaultSymbols.getFunctions())
             if (literalSymbol.isIdentifierLiteral()
-                    && identifierSymbol.isRedefinitionOf((IdentifierLiteralSymbol)literalSymbol))
+                    && identifierSymbol.equals(literalSymbol))
                 return true;
-
+        
         return false;
     }
 
-    private void addUserSymbol(IdentifierLiteralSymbol userSymbol) {
+    private void updateUserSymbol(IdentifierLiteralSymbol userSymbol) {
+        userSymbolTable.remove(userSymbol);
+        symbolTable.remove(userSymbol);
+        
         userSymbolTable.add(userSymbol);
         symbolTable.add(userSymbol);
     }

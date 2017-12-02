@@ -28,13 +28,15 @@
 
 package mes.lang;
 
+import java.io.Serializable;
+
 /**
  * Abstract syntax tree implementation for {@link Symbol}.
  * @author Danilo Ferreira
  * @version 1.0.0
  * @see AbstractSyntaxNode
  */
-public class AbstractSyntaxTree {
+public class AbstractSyntaxTree implements Serializable {
     private AbstractSyntaxNode root;
 
     /** Initializes the abstract syntax tree with null root. */
@@ -89,14 +91,13 @@ public class AbstractSyntaxTree {
     }
 
     /**
-     * The post-order traversal of the abstract syntax tree. This method calls
-     * the function object while traversing tree.
-     * @param function A custom traversal function
+     * Traverses the abstract syntax tree using a custom traversal function.
+     * @param traversalFunction A custom traversal function
      * @return The output node.
      * @see TraversalFunction
      */
-    public AbstractSyntaxNode traverse(TraversalFunction function) {
-        return traverse(root, function);
+    public AbstractSyntaxNode traverse(TraversalFunction traversalFunction) {
+        return traversalFunction.traverse(root);
     }
 
     private int computeNodeCount(AbstractSyntaxNode node) {
@@ -104,15 +105,5 @@ public class AbstractSyntaxTree {
             return 0;
 
         return 1 + computeNodeCount(node.getLeft()) + computeNodeCount(node.getRight());
-    }
-
-    private AbstractSyntaxNode traverse(AbstractSyntaxNode node, TraversalFunction function) {
-        if (node == null)
-            return null;
-
-        AbstractSyntaxNode left = traverse(node.getLeft(), function);
-        AbstractSyntaxNode right = traverse(node.getRight(), function);
-
-        return function.evaluate(node, left, right);
     }
 }
