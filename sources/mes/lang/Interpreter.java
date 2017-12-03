@@ -120,12 +120,19 @@ public class Interpreter {
             Parser parser = new Parser(lexer);
             
             AbstractSyntaxTree abstractSyntaxTree = parser.getAbstractSyntaxTree();
-
             result = (LiteralSymbol)abstractSyntaxTree.traverse(new ExpressionEvaluation());
+            
+            if (result == null)
+                result = new NumberLiteralSymbol();
+            
             exceptionContent = null;
             
-            if (!typeChecking && result.isIdentifierLiteral())
-                updateUserSymbol((IdentifierLiteralSymbol)result);
+            if (!typeChecking && result.isIdentifierLiteral()) {
+                IdentifierLiteralSymbol identifierSymbol = (IdentifierLiteralSymbol)result;
+                identifierSymbol.setDocumentation(parser.getComment());
+                
+                updateUserSymbol(identifierSymbol);
+            }
         } catch (Exception exception) {
             result = null;
 

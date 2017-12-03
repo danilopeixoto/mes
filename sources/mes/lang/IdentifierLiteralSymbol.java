@@ -77,12 +77,15 @@ public abstract class IdentifierLiteralSymbol extends LiteralSymbol
     protected String name;
     protected Closure closure;
     
+    protected String documentation;
+    
     public IdentifierLiteralSymbol(String name, double doubleValue,
             SymbolType type, int position) {
         super(doubleValue, type, position);
-        
         this.name = name;
+        
         closure = new Closure();
+        documentation = "";
     }
 
     public void setName(String name) {
@@ -92,6 +95,10 @@ public abstract class IdentifierLiteralSymbol extends LiteralSymbol
     public void setClosure(Closure closure) {
         this.closure = closure;
     }
+    
+    public void setDocumentation(String documentation) {
+        this.documentation = documentation;
+    }
 
     public String getName() {
         return name;
@@ -99,6 +106,10 @@ public abstract class IdentifierLiteralSymbol extends LiteralSymbol
 
     public Closure getClosure() {
         return closure;
+    }
+    
+    public String getDocumentation() {
+        return documentation;
     }
     
     public NumberLiteralSymbol getNumberLiteralSymbol() {

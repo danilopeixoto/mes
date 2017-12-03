@@ -67,7 +67,12 @@ public class Lexer {
             } else if ((endIndex = isNumber(s)) != 0) {
                 tokenStream.add(Token.createNumber(s.substring(0, endIndex), i));
                 i += endIndex - 1;
-            } else if (s.startsWith("<="))
+            }
+            else if (s.startsWith("//")) {
+                tokenStream.add(Token.createComment(s.substring(2).trim(), i));
+                break;
+            }
+            else if (s.startsWith("<="))
                 tokenStream.add(Token.createOperator(TokenType.LessEqual,
                         null, new OperatorData(4, Associativity.Left), i++));
             else if (s.startsWith(">="))

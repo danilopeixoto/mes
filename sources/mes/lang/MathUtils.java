@@ -39,35 +39,35 @@ public abstract class MathUtils {
     private static final Random random = new Random();
 
     /** The Euler real constant: 2.7182818284590452354. */
-    @ExportSymbol
+    @ExportSymbol("The Euler constant.")
     public static final double E = Math.E;
 
     /** The pi real constant: 3.14159265358979323846. */
-    @ExportSymbol
+    @ExportSymbol("The pi constant.")
     public static final double PI = Math.PI;
 
     /** The epsilon real value: 2.2204460492503131e-016. */
-    @ExportSymbol
+    @ExportSymbol("The epsilon number.")
     public static final double EPSILON = Math.ulp(1.0);
 
     /** The largest real value: 1.7976931348623158e+308. */
-    @ExportSymbol
+    @ExportSymbol("The largest number.")
     public static final double LARGEST = Double.MAX_VALUE;
 
     /** The infinity constant: Infinity. */
-    @ExportSymbol
+    @ExportSymbol("The infinity constant.")
     public static final double INFINITY = Double.POSITIVE_INFINITY;
 
     /** The undefined constant: NaN. */
-    @ExportSymbol
+    @ExportSymbol("The undefined constant.")
     public static final double UNDEFINED = Double.NaN;
 
     /** The false real constant: 0. */
-    @ExportSymbol
+    @ExportSymbol("The false constant.")
     public static final double FALSE = 0;
 
     /** The true real constant: 1.0. */
-    @ExportSymbol
+    @ExportSymbol("The true constant.")
     public static final double TRUE = 1.0;
 
     /**
@@ -75,7 +75,7 @@ public abstract class MathUtils {
      * @param x Real value
      * @return The absolute value.
      */
-    @ExportSymbol
+    @ExportSymbol("Returns the absolute value of a number.")
     public static double abs(double x) {
         return Math.abs(x);
     }
@@ -85,7 +85,7 @@ public abstract class MathUtils {
      * @param x Real value
      * @return The fractional part value.
      */
-    @ExportSymbol
+    @ExportSymbol("Returns the fractional part of a number.")
     public static double frac(double x) {
         return x - floor(x);
     }
@@ -95,7 +95,7 @@ public abstract class MathUtils {
      * @param x Real value
      * @return The rounded value.
      */
-    @ExportSymbol
+    @ExportSymbol("Returns a number rounded to the next lowest integer.")
     public static double floor(double x) {
         return Math.floor(x);
     }
@@ -106,7 +106,7 @@ public abstract class MathUtils {
      * @param x Real value
      * @return The rounded value.
      */
-    @ExportSymbol
+    @ExportSymbol("Returns the smallest integer greater than or equal to a number.")
     public static double ceil(double x) {
         return Math.ceil(x);
     }
@@ -116,17 +116,17 @@ public abstract class MathUtils {
      * @param x Real value
      * @return The rounded value.
      */
-    @ExportSymbol
+    @ExportSymbol("Returns a number rounded to the nearest integer.")
     public static double round(double x) {
         return Math.round(x);
     }
 
     /**
-     * Returns the real value of the integer part.
+     * Returns the integer part of a given number.
      * @param x Real value
      * @return The rounded value.
      */
-    @ExportSymbol
+    @ExportSymbol("Returns the integer part of a number.")
     public static double trunc(double x) {
         return x < 0 ? ceil(x) : floor(x);
     }
@@ -138,7 +138,7 @@ public abstract class MathUtils {
      * @return A negative, positive or zero real value
      * (-1.0, 1.0 or 0 respectively).
      */
-    @ExportSymbol
+    @ExportSymbol("Returns the sign value of a number.")
     public static double sign(double x) {
         return Math.signum(x);
     }
@@ -149,7 +149,7 @@ public abstract class MathUtils {
      * @param b Real value
      * @return The magnitude of the <i>a</i> with the sign of <i>b</i>.
      */
-    @ExportSymbol
+    @ExportSymbol("Returns a number with the magnitude of \"a\" and the sign of \"b\".")
     public static double copysign(double a, double b) {
         return Math.copySign(a, b);
     }
@@ -161,7 +161,7 @@ public abstract class MathUtils {
      * @param b Maximum real value
      * @return A real value between <i>a</i> and <i>b</i>.
      */
-    @ExportSymbol
+    @ExportSymbol("Clamps a number between \"a\" and \"b\".")
     public static double clamp(double x, double a, double b) {
         return max(a, min(b, x));
     }
@@ -175,7 +175,7 @@ public abstract class MathUtils {
      * @param b1 Maximum real value of the output range
      * @return A real value in the output range.
      */
-    @ExportSymbol
+    @ExportSymbol("Remaps a number from one range to another.")
     public static double remap(double x, double a0, double b0, double a1, double b1) {
         return a1 + (x - a0) * (b1 - a1) / (b0 - a0);
     }
@@ -186,7 +186,7 @@ public abstract class MathUtils {
      * @param b Exponent value
      * @return The exponentiation value.
      */
-    @ExportSymbol
+    @ExportSymbol("Returns the exponentiation value")
     public static double pow(double a, double b) {
         return Math.pow(a, b);
     }
@@ -196,7 +196,7 @@ public abstract class MathUtils {
      * @param x Real value
      * @return The square root value.
      */
-    @ExportSymbol
+    @ExportSymbol("Returns the square root of a number.")
     public static double sqrt(double x) {
         return Math.sqrt(x);
     }
@@ -206,7 +206,7 @@ public abstract class MathUtils {
      * @param x Real value
      * @return The cubic root value.
      */
-    @ExportSymbol
+    @ExportSymbol("Returns the cubic root of a number.")
     public static double cbrt(double x) {
         return Math.cbrt(x);
     }
@@ -217,7 +217,7 @@ public abstract class MathUtils {
      * @return The exponentiation value.
      * @see E
      */
-    @ExportSymbol
+    @ExportSymbol("Returns the Euler constant to the power of a number.")
     public static double exp(double x) {
         return Math.exp(x);
     }
@@ -228,7 +228,7 @@ public abstract class MathUtils {
      * @return The natural logarithm value.
      * @see E
      */
-    @ExportSymbol
+    @ExportSymbol("Returns the natural logarithm of a number.")
     public static double log(double x) {
         return Math.log(x);
     }
@@ -239,7 +239,7 @@ public abstract class MathUtils {
      * @param b Base value
      * @return The logarithm value.
      */
-    @ExportSymbol
+    @ExportSymbol("Returns the logarithm value.")
     public static double log(double a, double b) {
         return log(a) / log(b);
     }
@@ -250,7 +250,7 @@ public abstract class MathUtils {
      * @param b Real value
      * @return The remainder value.
      */
-    @ExportSymbol
+    @ExportSymbol("Returns the remainder of two numbers after division.")
     public static double mod(double a, double b) {
         return a % b;
     }
@@ -260,7 +260,7 @@ public abstract class MathUtils {
      * @param x Real value
      * @return The error function value.
      */
-    @ExportSymbol
+    @ExportSymbol("Returns the error function of a number.")
     public static double erf(double x) {
         double t = 1.0 / (1.0 + 0.5 * abs(x));
         double e = 1.0 - t * Math.exp(-x * x - 1.26551223
@@ -283,7 +283,7 @@ public abstract class MathUtils {
      * @param b Side value
      * @return THe hypotenuse value.
      */
-    @ExportSymbol
+    @ExportSymbol("Returns the hypotenuse value.")
     public static double hypot(double a, double b) {
         return Math.hypot(a, b);
     }
@@ -293,10 +293,10 @@ public abstract class MathUtils {
      * @param x Real value in the input range
      * @param a Minimum value of the input range
      * @param b Maximum value of the input range
-     * @return The linear interpolation between zero and one.
+     * @return The linear interpolation between <i>a</i> and <i>b</i>.
      * @see #smoothstep(double, double, double)
      */
-    @ExportSymbol
+    @ExportSymbol("Returns the linear interpolation between two numbers.")
     public static double lerp(double x, double a, double b) {
         return a + x * (b - a);
     }
@@ -306,10 +306,10 @@ public abstract class MathUtils {
      * @param x Real value in the input range
      * @param a Minimum value of the input range
      * @param b Maximum value of the input range
-     * @return The smooth interpolation between zero and one.
+     * @return The smooth interpolation between <i>a</i> and <i>b</i>.
      * @see #lerp(double, double, double)
      */
-    @ExportSymbol
+    @ExportSymbol("Returns the smooth interpolation between two numbers.")
     public static double smoothstep(double x, double a, double b) {
         double t = clamp((x - a) / (b - a), 0, 1.0);
         return t * t * (3.0 - (t * 2.0));
@@ -320,7 +320,7 @@ public abstract class MathUtils {
      * @param x Angle in radians
      * @return The sine value.
      */
-    @ExportSymbol
+    @ExportSymbol("Returns the sine of an angle in radians.")
     public static double sin(double x) {
         return Math.sin(x);
     }
@@ -330,7 +330,7 @@ public abstract class MathUtils {
      * @param x Angle in radians
      * @return The cosine value.
      */
-    @ExportSymbol
+    @ExportSymbol("Returns the cosine of an angle in radians.")
     public static double cos(double x) {
         return Math.cos(x);
     }
@@ -340,7 +340,7 @@ public abstract class MathUtils {
      * @param x Angle in radians
      * @return The tangent value.
      */
-    @ExportSymbol
+    @ExportSymbol("Returns the tangent of an angle in radians.")
     public static double tan(double x) {
         return Math.tan(x);
     }
@@ -350,7 +350,7 @@ public abstract class MathUtils {
      * @param x Real value
      * @return An angle in radians.
      */
-    @ExportSymbol
+    @ExportSymbol("Returns the arc sine of a number.")
     public static double asin(double x) {
         return Math.asin(x);
     }
@@ -360,7 +360,7 @@ public abstract class MathUtils {
      * @param x Real value
      * @return An angle in radians.
      */
-    @ExportSymbol
+    @ExportSymbol("Returns the arc cosine of a number.")
     public static double acos(double x) {
         return Math.acos(x);
     }
@@ -370,7 +370,7 @@ public abstract class MathUtils {
      * @param x Real value
      * @return An angle in radians.
      */
-    @ExportSymbol
+    @ExportSymbol("Returns the arc tangent of a number.")
     public static double atan(double x) {
         return Math.atan(x);
     }
@@ -382,7 +382,7 @@ public abstract class MathUtils {
      * @param b Y component
      * @return An angle in radians.
      */
-    @ExportSymbol
+    @ExportSymbol("Returns the arc tangent from rectangular coordinates.")
     public static double atan(double a, double b) {
         return Math.atan2(b, a);
     }
@@ -392,7 +392,7 @@ public abstract class MathUtils {
      * @param x Angle in radians
      * @return The hyperbolic sine value.
      */
-    @ExportSymbol
+    @ExportSymbol("Returns the hyperbolic sine of an angle in radians.")
     public static double sinh(double x) {
         return Math.sinh(x);
     }
@@ -402,7 +402,7 @@ public abstract class MathUtils {
      * @param x Angle in radians
      * @return The hyperbolic cosine value.
      */
-    @ExportSymbol
+    @ExportSymbol("Returns the hyperbolic cosine of an angle in radians.")
     public static double cosh(double x) {
         return Math.cosh(x);
     }
@@ -412,7 +412,7 @@ public abstract class MathUtils {
      * @param x Angle in radians
      * @return The hyperbolic tangent value.
      */
-    @ExportSymbol
+    @ExportSymbol("Returns the hyperbolic tangent of an angle in radians.")
     public static double tanh(double x) {
         return Math.tanh(x);
     }
@@ -422,7 +422,7 @@ public abstract class MathUtils {
      * @param x Angle in radians
      * @return The angle in degrees.
      */
-    @ExportSymbol
+    @ExportSymbol("Converts an angle measured in radians to degrees.")
     public static double degrees(double x) {
         return Math.toDegrees(x);
     }
@@ -432,7 +432,7 @@ public abstract class MathUtils {
      * @param x Angle in degrees
      * @return The angle in radians.
      */
-    @ExportSymbol
+    @ExportSymbol("Converts an angle measured in degrees to radians.")
     public static double radians(double x) {
         return Math.toRadians(x);
     }
@@ -443,7 +443,7 @@ public abstract class MathUtils {
      * @param x Real value
      * @return An boolean state.
      */
-    @ExportSymbol
+    @ExportSymbol("Converts a real value to boolean value.")
     public static boolean bool(double x) {
         return x != 0;
     }
@@ -463,7 +463,7 @@ public abstract class MathUtils {
      * @param b Real value
      * @return The minimum value.
      */
-    @ExportSymbol
+    @ExportSymbol("Returns the smaller of two numbers.")
     public static double min(double a, double b) {
         return Math.min(a, b);
     }
@@ -474,16 +474,16 @@ public abstract class MathUtils {
      * @param b Real value
      * @return The maximum value.
      */
-    @ExportSymbol
+    @ExportSymbol("Returns the greater of two numbers.")
     public static double max(double a, double b) {
         return Math.max(a, b);
     }
 
     /**
-     * Returns a pseudorandom real value.
+     * Returns a pseudorandom real value between zero and one (exclusive).
      * @return A pseudorandom real value.
      */
-    @ExportSymbol
+    @ExportSymbol("Returns a pseudorandom number between zero and one (exclusive).")
     public static double rand() {
         return random.nextDouble();
     }
@@ -492,7 +492,7 @@ public abstract class MathUtils {
      * Returns a pseudorandom positive integer value.
      * @return A pseudorandom positive integer value.
      */
-    @ExportSymbol
+    @ExportSymbol("Returns a pseudorandom positive integer number.")
     public static int seed() {
         return random.nextInt(Integer.MAX_VALUE);
     }
@@ -503,7 +503,7 @@ public abstract class MathUtils {
      * @param x Real value
      * @return The finite real value state.
      */
-    @ExportSymbol
+    @ExportSymbol("Returns whether the number is a finite value.")
     public static boolean isfinite(double x) {
         return Double.isFinite(x);
     }
@@ -515,7 +515,7 @@ public abstract class MathUtils {
      * @return The negative or positive infinity state.
      * @see INFINITY
      */
-    @ExportSymbol
+    @ExportSymbol("Returns whether the number is infinite.")
     public static boolean isinf(double x) {
         return Double.isInfinite(x);
     }
@@ -526,7 +526,7 @@ public abstract class MathUtils {
      * @return The undefined state.
      * @see UNDEFINED
      */
-    @ExportSymbol
+    @ExportSymbol("Returns whether the number is undefined.")
     public static boolean isnan(double x) {
         return Double.isNaN(x);
     }
@@ -536,7 +536,7 @@ public abstract class MathUtils {
      * @param x Real value
      * @return The even state.
      */
-    @ExportSymbol
+    @ExportSymbol("Returns whether the number is even.")
     public static boolean iseven(double x) {
         return x % 2 == 0;
     }
@@ -546,7 +546,7 @@ public abstract class MathUtils {
      * @param x Real value
      * @return The odd state.
      */
-    @ExportSymbol
+    @ExportSymbol("Returns whether the number is odd.")
     public static boolean isodd(double x) {
         return x % 2 != 0;
     }
@@ -557,7 +557,7 @@ public abstract class MathUtils {
      * @param b Real value
      * @return The equality state.
      */
-    @ExportSymbol
+    @ExportSymbol("Returns whether the numbers are equal.")
     public static boolean isequal(double a, double b) {
         return a == b;
     }
@@ -574,7 +574,7 @@ public abstract class MathUtils {
      * @param eps Tolerance value
      * @return The approximate root of the cubic equation.
      */
-    @ExportSymbol
+    @ExportSymbol("Computes the approximate root of a cubic equation.")
     public static double newton(double a, double b, double c, double d,
             double x0, double eps) {
         while (true) {

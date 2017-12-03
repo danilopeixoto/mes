@@ -86,7 +86,11 @@ public class SymbolImporter {
                         constant.setBooleanValue(bool);
                     }
                     
+                    ExportSymbol annotation = field.getAnnotation(ExportSymbol.class);
+                    
                     constant.setName(field.getName());
+                    constant.setDocumentation(annotation.value());
+                    
                     constants.add(constant);
                 }
 
@@ -105,11 +109,14 @@ public class SymbolImporter {
                         }
                     
                     Closure closure = new Closure(method);
+                    ExportSymbol annotation = method.getAnnotation(ExportSymbol.class);
                     
                     FunctionLiteralSymbol function = new FunctionLiteralSymbol();
+                    
                     function.setName(method.getName());
                     function.setArguments(arguments);
                     function.setClosure(closure);
+                    function.setDocumentation(annotation.value());
                     
                     functions.add(function);
                 }

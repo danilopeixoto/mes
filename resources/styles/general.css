@@ -69,6 +69,10 @@
     -fx-font: 13px "Source Code Pro";
 }
 
+.list-cell .description {
+    -fx-text-fill: grey;
+}
+
 .list-view, .list-view:focused {
     -fx-background-radius: 0;
     -fx-background-insets: 0;

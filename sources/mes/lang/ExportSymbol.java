@@ -46,4 +46,10 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Target(value = {FIELD, METHOD})
 @Documented
-public @interface ExportSymbol {}
+public @interface ExportSymbol {
+    /**
+     * Returns the documentation of the exported symbol.
+     * @return The documentation string.
+     */
+    public String value() default "";
+}

@@ -41,6 +41,8 @@ public class Token {
         Identifier,
         /** Number token. */
         Number,
+        /** Comment token. */
+        Comment,
         /** Positive or addition operator token. */
         Plus,
         /** Negative or subtraction operator token. */
@@ -117,6 +119,10 @@ public class Token {
 
     public static Token createNumber(String value, int position) {
         return new Token(TokenType.Number, value, position);
+    }
+    
+    public static Token createComment(String value, int position) {
+        return new Token(TokenType.Comment, value, position);
     }
     
     public static Token createOperator(TokenType type, OperatorData unaryOperatorData,
