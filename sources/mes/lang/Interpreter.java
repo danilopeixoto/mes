@@ -49,51 +49,49 @@ public class Interpreter {
         public AbstractSyntaxNode traverse(AbstractSyntaxNode node) {
             if (node == null)
                 return null;
-            
+
             Symbol root = (Symbol)node;
             Symbol left, right;
-            
+
             if (root.getType() == SymbolType.Assignment) {
                 left = (Symbol)root.getLeft();
-                
+
                 if (left.isIdentifierLiteral()) {
                     OperatorSymbol assignmentOperator = (OperatorSymbol)root;
                     IdentifierLiteralSymbol identifierSymbol = (IdentifierLiteralSymbol)left;
-                    
+
                     if (isDefaultSymbol(identifierSymbol))
                         throw new ExceptionContent(ExceptionMessage.InvalidSymbolRedefinition,
                                 identifierSymbol.getPosition());
-                    
+
                     right = (Symbol)root.getRight();
-                    
-                    identifierSymbol = (IdentifierLiteralSymbol)
-                            assignmentOperator.evaluate(left, right);
+
+                    identifierSymbol = (IdentifierLiteralSymbol)assignmentOperator.evaluate(left, right);
                     identifierSymbol.evaluate(symbolTable);
-                    
+
                     return identifierSymbol;
-                }
-                else
+                } else
                     throw new ExceptionContent(ExceptionMessage.IllegalExpressionAssignment,
-                        root.getPosition());
+                            root.getPosition());
             }
-            
+
             left = (Symbol)traverse(root.getLeft());
             right = (Symbol)traverse(root.getRight());
-            
+
             if (root.isNumberLiteral())
                 return root;
             else if (root.isIdentifierLiteral()) {
                 IdentifierLiteralSymbol identifierSymbol = (IdentifierLiteralSymbol)root;
                 identifierSymbol.evaluate(symbolTable);
-                
+
                 return identifierSymbol.getNumberLiteralSymbol();
             }
-            
+
             OperatorSymbol operatorSymbol = (OperatorSymbol)root;
             return operatorSymbol.evaluate(left, right);
         }
     }
-    
+
     private SymbolTable userSymbolTable;
     private SymbolTable symbolTable;
 
@@ -118,19 +116,19 @@ public class Interpreter {
         try {
             Lexer lexer = new Lexer(source);
             Parser parser = new Parser(lexer);
-            
+
             AbstractSyntaxTree abstractSyntaxTree = parser.getAbstractSyntaxTree();
             result = (LiteralSymbol)abstractSyntaxTree.traverse(new ExpressionEvaluation());
-            
+
             if (result == null)
                 result = new NumberLiteralSymbol();
-            
+
             exceptionContent = null;
-            
+
             if (!typeChecking && result.isIdentifierLiteral()) {
                 IdentifierLiteralSymbol identifierSymbol = (IdentifierLiteralSymbol)result;
                 identifierSymbol.setDocumentation(parser.getComment());
-                
+
                 updateUserSymbol(identifierSymbol);
             }
         } catch (Exception exception) {
@@ -181,24 +179,24 @@ public class Interpreter {
     private boolean isDefaultSymbol(IdentifierLiteralSymbol identifierSymbol) {
         if (!hasDefaultSymbols())
             return false;
-        
-        for (LiteralSymbol literalSymbol: defaultSymbols.getConstants())
+
+        for (LiteralSymbol literalSymbol : defaultSymbols.getConstants())
             if (literalSymbol.isIdentifierLiteral()
                     && identifierSymbol.equals(literalSymbol))
                 return true;
 
-        for (LiteralSymbol literalSymbol: defaultSymbols.getFunctions())
+        for (LiteralSymbol literalSymbol : defaultSymbols.getFunctions())
             if (literalSymbol.isIdentifierLiteral()
                     && identifierSymbol.equals(literalSymbol))
                 return true;
-        
+
         return false;
     }
 
     private void updateUserSymbol(IdentifierLiteralSymbol userSymbol) {
         userSymbolTable.remove(userSymbol);
         symbolTable.remove(userSymbol);
-        
+
         userSymbolTable.add(userSymbol);
         symbolTable.add(userSymbol);
     }

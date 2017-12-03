@@ -45,7 +45,7 @@ public class VariableLiteralSymbol extends IdentifierLiteralSymbol {
     public VariableLiteralSymbol(String name, int position) {
         this(name, 0, position);
     }
-    
+
     public VariableLiteralSymbol(String name, boolean booleanValue, int position) {
         super(name, MathUtils.number(booleanValue), SymbolType.Variable, position);
     }
@@ -53,36 +53,34 @@ public class VariableLiteralSymbol extends IdentifierLiteralSymbol {
     public VariableLiteralSymbol(String name, double doubleValue, int position) {
         super(name, doubleValue, SymbolType.Variable, position);
     }
-    
+
     @Override
     public void evaluate(SymbolTable globalSymbolTable) {
         if (closure.getType() == ClosureType.AbstractSyntaxTree) {
             AbstractSyntaxTree abstractSyntaxTree = closure.getAbstractSyntaxTree();
-            
+
             LiteralSymbol literalSymbol = (LiteralSymbol)abstractSyntaxTree.traverse(
                     new LiteralEvaluation(globalSymbolTable));
-            
+
             value = literalSymbol.getDoubleValue();
             closure.setEmpty();
-        }
-        else {
+        } else {
             if (!globalSymbolTable.contains(this))
                 throw new ExceptionContent(ExceptionMessage.UndefinedSymbol, position);
-            
-            for (IdentifierLiteralSymbol identifierSymbol: globalSymbolTable) {
+
+            for (IdentifierLiteralSymbol identifierSymbol : globalSymbolTable)
                 if (identifierSymbol.equals(this)) {
                     value = identifierSymbol.getDoubleValue();
                     return;
                 }
-            }
         }
     }
-    
+
     @Override
     public void precompile(SymbolTable globalSymbolTable) {
         if (!globalSymbolTable.contains(this))
             throw new ExceptionContent(ExceptionMessage.UndefinedSymbol, position);
-        
+
         closure.setEmpty();
     }
 

@@ -36,7 +36,8 @@ package mes.lang;
  * @see AbstractSyntaxTree
  */
 public class FunctionArgument extends AbstractSyntaxTree {
-    /** Initializes a null function argument. This is equivalent to an empty
+    /**
+     * Initializes a null function argument. This is equivalent to an empty
      * abstract syntax tree.
      * @see AbstractSyntaxTree
      */

@@ -38,7 +38,9 @@ import java.util.LinkedHashSet;
  * @see mes.ui.MainWindow
  */
 public class HistoryList extends LinkedHashSet<String> {
-    /** Initializes an empty history list. */
+    /**
+     * Initializes an empty history list.
+     */
     public HistoryList() {
         super();
     }

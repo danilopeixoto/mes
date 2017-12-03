@@ -38,35 +38,51 @@ import java.util.Random;
 public abstract class MathUtils {
     private static final Random random = new Random();
 
-    /** The Euler real constant: 2.7182818284590452354. */
+    /**
+     * The Euler real constant: 2.7182818284590452354.
+     */
     @ExportSymbol("The Euler constant.")
     public static final double E = Math.E;
 
-    /** The pi real constant: 3.14159265358979323846. */
+    /**
+     * The pi real constant: 3.14159265358979323846.
+     */
     @ExportSymbol("The pi constant.")
     public static final double PI = Math.PI;
 
-    /** The epsilon real value: 2.2204460492503131e-016. */
+    /**
+     * The epsilon real value: 2.2204460492503131e-016.
+     */
     @ExportSymbol("The epsilon number.")
     public static final double EPSILON = Math.ulp(1.0);
 
-    /** The largest real value: 1.7976931348623158e+308. */
+    /**
+     * The largest real value: 1.7976931348623158e+308.
+     */
     @ExportSymbol("The largest number.")
     public static final double LARGEST = Double.MAX_VALUE;
 
-    /** The infinity constant: Infinity. */
+    /**
+     * The infinity constant: Infinity.
+     */
     @ExportSymbol("The infinity constant.")
     public static final double INFINITY = Double.POSITIVE_INFINITY;
 
-    /** The undefined constant: NaN. */
+    /**
+     * The undefined constant: NaN.
+     */
     @ExportSymbol("The undefined constant.")
     public static final double UNDEFINED = Double.NaN;
 
-    /** The false real constant: 0. */
+    /**
+     * The false real constant: 0.
+     */
     @ExportSymbol("The false constant.")
     public static final double FALSE = 0;
 
-    /** The true real constant: 1.0. */
+    /**
+     * The true real constant: 1.0.
+     */
     @ExportSymbol("The true constant.")
     public static final double TRUE = 1.0;
 
@@ -135,15 +151,15 @@ public abstract class MathUtils {
      * Returns the sign of the given value, indicating whether the number is
      * negative, positive or zero.
      * @param x Real value
-     * @return A negative, positive or zero real value
-     * (-1.0, 1.0 or 0 respectively).
+     * @return A negative, positive or zero real value (-1.0, 1.0 or 0
+     * respectively).
      */
     @ExportSymbol("Returns the sign value of a number.")
     public static double sign(double x) {
         return Math.signum(x);
     }
 
-     /**
+    /**
      * Returns a value with the magnitude of <i>a</i> and the sign of <i>b</i>.
      * @param a Real value
      * @param b Real value
@@ -154,7 +170,7 @@ public abstract class MathUtils {
         return Math.copySign(a, b);
     }
 
-     /**
+    /**
      * Clamps the given number between <i>a</i> and <i>b</i> and returns value.
      * @param x Real value
      * @param a Minimum real value
@@ -179,9 +195,10 @@ public abstract class MathUtils {
     public static double remap(double x, double a0, double b0, double a1, double b1) {
         return a1 + (x - a0) * (b1 - a1) / (b0 - a0);
     }
-    
+
     /**
-     * Returns the exponentiation value to the base <i>a</i> and exponent <i>b</i>.
+     * Returns the exponentiation value to the base <i>a</i> and exponent
+     * <i>b</i>.
      * @param a Base value
      * @param b Exponent value
      * @return The exponentiation value.
@@ -234,7 +251,8 @@ public abstract class MathUtils {
     }
 
     /**
-     * Returns the logarithm value to the antilogarithm <i>a</i> and base <i>b</i>.
+     * Returns the logarithm value to the antilogarithm <i>a</i> and base
+     * <i>b</i>.
      * @param a Antilogarithm value
      * @param b Base value
      * @return The logarithm value.
@@ -243,7 +261,7 @@ public abstract class MathUtils {
     public static double log(double a, double b) {
         return log(a) / log(b);
     }
-    
+
     /**
      * Returns the remainder of two real values after division.
      * @param a Real value
@@ -376,8 +394,8 @@ public abstract class MathUtils {
     }
 
     /**
-     * Returns the arc tangent (angle in radians) of the rectangular
-     * coordinates (x, y).
+     * Returns the arc tangent (angle in radians) of the rectangular coordinates
+     * (x, y).
      * @param a X component
      * @param b Y component
      * @return An angle in radians.
@@ -456,7 +474,7 @@ public abstract class MathUtils {
     public static double number(boolean x) {
         return x ? 1.0 : 0;
     }
-    
+
     /**
      * Returns the smaller of two real values.
      * @param a Real value
@@ -550,7 +568,7 @@ public abstract class MathUtils {
     public static boolean isodd(double x) {
         return x % 2 != 0;
     }
-    
+
     /**
      * Returns true if the real values are equal and false otherwise.
      * @param a Real value
@@ -561,7 +579,7 @@ public abstract class MathUtils {
     public static boolean isequal(double a, double b) {
         return a == b;
     }
-    
+
     /**
      * Computes the approximate root of a cubic equation using Newton-Raphson
      * algorithm. If the algorithm converges this method returns the approximate
@@ -591,7 +609,7 @@ public abstract class MathUtils {
 
             x0 = x1;
         }
-        
+
         return x0;
     }
 }

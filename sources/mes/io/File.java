@@ -43,7 +43,9 @@ public class File {
     private boolean exceptions;
     private java.io.File file;
 
-    /** Initializes a null file object. */
+    /**
+     * Initializes a null file object.
+     */
     public File() {
         open((java.io.File)null);
     }
@@ -67,8 +69,9 @@ public class File {
     }
 
     /**
-     * Opens a file from a Java file object. If file doesn't exist a new one will
-     * be created. A null file object is assigned if any exception is thrown.
+     * Opens a file from a Java file object. If file doesn't exist a new one
+     * will be created. A null file object is assigned if any exception is
+     * thrown.
      * @param file A Java file object
      * @see java.io.File
      */
@@ -95,7 +98,9 @@ public class File {
         open(new java.io.File(filename));
     }
 
-    /** Closes the file object. */
+    /**
+     * Closes the file object.
+     */
     public void close() {
         file = null;
     }
@@ -119,7 +124,8 @@ public class File {
 
     /**
      * Tries read an object from file. If any exception is thrown this method
-     * returns null and a warning message is logged to application default logger.
+     * returns null and a warning message is logged to application default
+     * logger.
      * @return The object read from file.
      * @see Application#warningLog(String)
      */

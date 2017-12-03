@@ -35,7 +35,9 @@ package mes.lang;
  * @see BinaryOperatorSymbol
  */
 public class OrOperatorSymbol extends BinaryOperatorSymbol {
-    /** Initializes the <i>or</i> operator. */
+    /**
+     * Initializes the <i>or</i> operator.
+     */
     public OrOperatorSymbol() {
         this(0);
     }
@@ -51,13 +53,15 @@ public class OrOperatorSymbol extends BinaryOperatorSymbol {
         super(SymbolType.Or, position);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public LiteralSymbol evaluate(Symbol left, Symbol right) {
         LiteralSymbol leftOperand = (LiteralSymbol)left;
         LiteralSymbol rightOperand = (LiteralSymbol)right;
-        
-        return new NumberLiteralSymbol(leftOperand.getBooleanValue() ||
-                rightOperand.getBooleanValue(), position);
+
+        return new NumberLiteralSymbol(leftOperand.getBooleanValue()
+                || rightOperand.getBooleanValue(), position);
     }
 }

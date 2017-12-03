@@ -35,7 +35,9 @@ package mes.lang;
  * @see BinaryOperatorSymbol
  */
 public class SubtractionOperatorSymbol extends BinaryOperatorSymbol {
-    /** Initializes the subtraction operator. */
+    /**
+     * Initializes the subtraction operator.
+     */
     public SubtractionOperatorSymbol() {
         this(0);
     }
@@ -51,13 +53,15 @@ public class SubtractionOperatorSymbol extends BinaryOperatorSymbol {
         super(SymbolType.Subtraction, position);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public LiteralSymbol evaluate(Symbol left, Symbol right) {
         LiteralSymbol leftOperand = (LiteralSymbol)left;
         LiteralSymbol rightOperand = (LiteralSymbol)right;
-        
-        return new NumberLiteralSymbol(leftOperand.getDoubleValue() -
-                rightOperand.getDoubleValue(), position);
+
+        return new NumberLiteralSymbol(leftOperand.getDoubleValue()
+                - rightOperand.getDoubleValue(), position);
     }
 }

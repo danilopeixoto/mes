@@ -35,7 +35,9 @@ package mes.lang;
  * @see BinaryOperatorSymbol
  */
 public class AssignmentOperatorSymbol extends BinaryOperatorSymbol {
-    /** Initializes the assignment operator. */
+    /**
+     * Initializes the assignment operator.
+     */
     public AssignmentOperatorSymbol() {
         this(0);
     }
@@ -51,28 +53,29 @@ public class AssignmentOperatorSymbol extends BinaryOperatorSymbol {
         super(SymbolType.Assignment, position);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public LiteralSymbol evaluate(Symbol left, Symbol right) {
         AbstractSyntaxTree abstractSyntaxTree = new AbstractSyntaxTree(right);
         Closure closure = new Closure(abstractSyntaxTree);
-        
+
         IdentifierLiteralSymbol identifierSymbol;
-        
+
         if (left.getType() == SymbolType.Variable) {
             VariableLiteralSymbol variableSymbol = (VariableLiteralSymbol)left;
-            
+
             identifierSymbol = new VariableLiteralSymbol(
                     variableSymbol.getName(), position);
-        }
-        else {
+        } else {
             FunctionLiteralSymbol functionSymbol = (FunctionLiteralSymbol)left;
             FunctionArgumentList functionArguments = functionSymbol.getArguments();
-            
+
             identifierSymbol = new FunctionLiteralSymbol(
                     functionSymbol.getName(), functionArguments, position);
         }
-        
+
         identifierSymbol.setClosure(closure);
         return identifierSymbol;
     }

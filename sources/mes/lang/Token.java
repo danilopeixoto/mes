@@ -35,56 +35,101 @@ package mes.lang;
  * @see OperatorData
  */
 public class Token {
-    /** Supported token types. */
+    /**
+     * Supported token types.
+     */
     public enum TokenType {
-        /** Identifier token. */
+        /**
+         * Identifier token.
+         */
         Identifier,
-        /** Number token. */
+        /**
+         * Number token.
+         */
         Number,
-        /** Comment token. */
+        /**
+         * Comment token.
+         */
         Comment,
-        /** Positive or addition operator token. */
+        /**
+         * Positive or addition operator token.
+         */
         Plus,
-        /** Negative or subtraction operator token. */
+        /**
+         * Negative or subtraction operator token.
+         */
         Minus,
-        /** Multiplication operator token. */
+        /**
+         * Multiplication operator token.
+         */
         Multiplication,
-        /** Division operator token. */
+        /**
+         * Division operator token.
+         */
         Division,
-        /** Modulo operator token. */
+        /**
+         * Modulo operator token.
+         */
         Modulo,
-        /** Exponentiation operator token. */
+        /**
+         * Exponentiation operator token.
+         */
         Exponentiation,
-        /** Less equal operator token. */
+        /**
+         * Less equal operator token.
+         */
         LessEqual,
-        /** Less operator token. */
+        /**
+         * Less operator token.
+         */
         Less,
-        /** Greater equal operator token. */
+        /**
+         * Greater equal operator token.
+         */
         GreaterEqual,
-        /** Greater operator token. */
+        /**
+         * Greater operator token.
+         */
         Greater,
-        /** Equal operator token. */
+        /**
+         * Equal operator token.
+         */
         Equal,
-        /** Not equal operator token. */
+        /**
+         * Not equal operator token.
+         */
         NotEqual,
-        /** <i>Not</i> operator token. */
+        /** <i>Not</i> operator token.
+         */
         Not,
-        /** <i>And</i> operator token. */
+        /** <i>And</i> operator token.
+         */
         And,
-        /** <i>Or</i> operator token. */
+        /** <i>Or</i> operator token.
+         */
         Or,
-        /** Assignment operator token. */
+        /**
+         * Assignment operator token.
+         */
         Assignment,
-        /** Left parenthesis token. */
+        /**
+         * Left parenthesis token.
+         */
         LParenthesis,
-        /** Right parenthesis token. */
+        /**
+         * Right parenthesis token.
+         */
         RParenthesis,
-        /** Comma token. */
+        /**
+         * Comma token.
+         */
         Comma,
-        /** End of line token. */
+        /**
+         * End of line token.
+         */
         EOL
     }
-    
+
     private TokenType type;
     private String value;
     private OperatorData unaryOperatorData;
@@ -98,7 +143,7 @@ public class Token {
     private Token(TokenType type, String value, int position) {
         this(type, value, null, null, position);
     }
-    
+
     private Token(TokenType type, OperatorData unaryOperatorData,
             OperatorData binaryOperatorData, int position) {
         this(type, "", unaryOperatorData, binaryOperatorData, position);
@@ -120,11 +165,11 @@ public class Token {
     public static Token createNumber(String value, int position) {
         return new Token(TokenType.Number, value, position);
     }
-    
+
     public static Token createComment(String value, int position) {
         return new Token(TokenType.Comment, value, position);
     }
-    
+
     public static Token createOperator(TokenType type, OperatorData unaryOperatorData,
             OperatorData binaryOperatorData, int position) {
         return new Token(type, unaryOperatorData, binaryOperatorData, position);
@@ -141,11 +186,11 @@ public class Token {
     public String getValue() {
         return value;
     }
-    
+
     public OperatorData getUnaryOperatorData() {
         return unaryOperatorData;
     }
-    
+
     public OperatorData getBinaryOperatorData() {
         return binaryOperatorData;
     }

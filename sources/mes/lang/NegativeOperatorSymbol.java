@@ -35,7 +35,9 @@ package mes.lang;
  * @see UnaryOperatorSymbol
  */
 public class NegativeOperatorSymbol extends UnaryOperatorSymbol {
-    /** Initializes the negative operator. By default the position index is zero. */
+    /**
+     * Initializes the negative operator. By default the position index is zero.
+     */
     public NegativeOperatorSymbol() {
         this(0);
     }
@@ -49,7 +51,9 @@ public class NegativeOperatorSymbol extends UnaryOperatorSymbol {
         super(SymbolType.Negative, position);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public LiteralSymbol evaluate(Symbol left, Symbol right) {
         LiteralSymbol leftOperand = (LiteralSymbol)left;

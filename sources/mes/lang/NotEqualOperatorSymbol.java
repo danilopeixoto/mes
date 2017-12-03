@@ -35,7 +35,9 @@ package mes.lang;
  * @see BinaryOperatorSymbol
  */
 public class NotEqualOperatorSymbol extends BinaryOperatorSymbol {
-    /** Initializes the not equal operator. */
+    /**
+     * Initializes the not equal operator.
+     */
     public NotEqualOperatorSymbol() {
         this(0);
     }
@@ -50,14 +52,16 @@ public class NotEqualOperatorSymbol extends BinaryOperatorSymbol {
     public NotEqualOperatorSymbol(int position) {
         super(SymbolType.NotEqual, position);
     }
-    
-    /** {@inheritDoc} */
+
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public LiteralSymbol evaluate(Symbol left, Symbol right) {
         LiteralSymbol leftOperand = (LiteralSymbol)left;
         LiteralSymbol rightOperand = (LiteralSymbol)right;
-        
-        return new NumberLiteralSymbol(leftOperand.getDoubleValue() !=
-                rightOperand.getDoubleValue(), position);
+
+        return new NumberLiteralSymbol(leftOperand.getDoubleValue()
+                != rightOperand.getDoubleValue(), position);
     }
 }

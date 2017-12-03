@@ -37,7 +37,9 @@ import mes.lang.List;
  * @see List
  */
 public class CommandLineStream extends List<CommandLineData> {
-    /** Initializes an empty command line stream. */
+    /**
+     * Initializes an empty command line stream.
+     */
     public CommandLineStream() {
         super();
     }

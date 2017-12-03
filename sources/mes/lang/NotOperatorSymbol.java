@@ -35,7 +35,10 @@ package mes.lang;
  * @see UnaryOperatorSymbol
  */
 public class NotOperatorSymbol extends UnaryOperatorSymbol {
-    /** Initializes the <i>not</i> operator. By default the position index is zero. */
+    /**
+     * Initializes the <i>not</i> operator. By default the position index is
+     * zero.
+     */
     public NotOperatorSymbol() {
         this(0);
     }
@@ -49,7 +52,9 @@ public class NotOperatorSymbol extends UnaryOperatorSymbol {
         super(SymbolType.Not, position);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public LiteralSymbol evaluate(Symbol left, Symbol right) {
         LiteralSymbol leftOperand = (LiteralSymbol)left;

@@ -41,13 +41,13 @@ import mes.lang.Token.TokenType;
  */
 public class Parser {
     private String comment;
-    
+
     private TokenStream.Iterator currentTokenIterator;
     private AbstractSyntaxTree abstractSyntaxTree;
 
     /**
-     * Initializes the parser assembling an abstract syntax tree from the token
-     * stream returned by a lexer object.
+     * Initializes the parser by assembling an abstract syntax tree from the
+     * token stream returned by a lexer object.
      * @param lexer The lexer object
      * @throws ExceptionContent Invalid syntax thrown to {@link Interpreter}
      * @see Interpreter#run(String, boolean)
@@ -56,13 +56,13 @@ public class Parser {
      */
     public Parser(Lexer lexer) {
         comment = "";
-        
+
         TokenStream tokenStream = lexer.getTokenStream();
-        
+
         currentTokenIterator = tokenStream.iterator();
         abstractSyntaxTree = new AbstractSyntaxTree(parseStatement());
     }
-    
+
     /**
      * Returns the comment of the statement.
      * @return The comment string.
@@ -70,7 +70,7 @@ public class Parser {
     public String getComment() {
         return comment;
     }
-    
+
     /**
      * Returns an abstract syntax tree representing the token stream.
      * @return An abstract syntax tree.
@@ -82,19 +82,19 @@ public class Parser {
 
     private Symbol parseStatement() {
         Symbol statementSymbol = parseExpression();
-        
+
         if (expect(TokenType.Comment)) {
             Token currentToken = current();
             comment = currentToken.getValue();
-            
+
             next();
         }
-        
+
         if (expect(TokenType.EOL))
             next();
         else
             invalidExpression();
-        
+
         return statementSymbol;
     }
 

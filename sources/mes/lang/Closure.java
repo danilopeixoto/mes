@@ -42,26 +42,36 @@ import java.lang.reflect.Method;
  * @see Method
  */
 public class Closure implements Serializable {
-    /** Supported closure types. */
+    /**
+     * Supported closure types.
+     */
     public enum ClosureType {
-        /** Abstract syntax tree closure. */
+        /**
+         * Abstract syntax tree closure.
+         */
         AbstractSyntaxTree,
-        /** Method closure. */
+        /**
+         * Method closure.
+         */
         Method,
-        /** Empty closure. */
+        /**
+         * Empty closure.
+         */
         Empty
     }
-    
+
     private Object closureObject;
 
-    /** Initializes an empty closure. */
+    /**
+     * Initializes an empty closure.
+     */
     public Closure() {
         closureObject = null;
     }
 
     /**
-     * Initializes the closure instance as abstract syntax tree. If the
-     * abstract syntax tree is null an empty closure is created. 
+     * Initializes the closure instance as abstract syntax tree. If the abstract
+     * syntax tree is null an empty closure is created.
      * @param abstractSyntaxTree The abstract syntax tree to use as closure
      */
     public Closure(AbstractSyntaxTree abstractSyntaxTree) {
@@ -76,15 +86,17 @@ public class Closure implements Serializable {
     public Closure(Method method) {
         closureObject = method;
     }
-    
-    /** Sets the closure instance as empty. */
+
+    /**
+     * Sets the closure instance as empty.
+     */
     public void setEmpty() {
         closureObject = null;
     }
 
     /**
-     * Sets the closure instance as abstract syntax tree. If the abstract
-     * syntax tree is null an empty closure is defined.
+     * Sets the closure instance as abstract syntax tree. If the abstract syntax
+     * tree is null an empty closure is defined.
      * @param abstractSyntaxTree The abstract syntax tree to use as closure
      */
     public void setAbstractSyntaxTree(AbstractSyntaxTree abstractSyntaxTree) {
@@ -112,8 +124,8 @@ public class Closure implements Serializable {
     }
 
     /**
-     * Returns a method closure. The type of closure must be known to avoid
-     * type cast exception.
+     * Returns a method closure. The type of closure must be known to avoid type
+     * cast exception.
      * @return A method closure.
      * @see #setMethod(Method)
      * @see #getType()
@@ -121,7 +133,7 @@ public class Closure implements Serializable {
     public Method getMethod() {
         return (Method)closureObject;
     }
-    
+
     /**
      * Returns the closure type of this instance.
      * @return The closure type.
@@ -135,12 +147,12 @@ public class Closure implements Serializable {
 
         return ClosureType.Empty;
     }
-    
+
     private void readObject(ObjectInputStream inputStream)
             throws IOException, ClassNotFoundException {
         closureObject = inputStream.readObject();
     }
-    
+
     private void writeObject(ObjectOutputStream outputStream) throws IOException {
         if (closureObject instanceof Method)
             outputStream.writeObject(null);

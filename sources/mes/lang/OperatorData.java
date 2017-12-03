@@ -35,17 +35,23 @@ package mes.lang;
  * @see Token
  */
 public class OperatorData {
-    /** Operator associativity type. */
+    /**
+     * Operator associativity type.
+     */
     public enum Associativity {
-        /** Left associative. */
+        /**
+         * Left associative.
+         */
         Left,
-        /** Right associative. */
+        /**
+         * Right associative.
+         */
         Right
     }
-    
+
     private int precedence;
     private Associativity associativity;
-    
+
     /**
      * Initializes the operator data.
      * @param precedence The operator precedence

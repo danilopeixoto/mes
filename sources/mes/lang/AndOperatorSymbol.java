@@ -35,7 +35,9 @@ package mes.lang;
  * @see BinaryOperatorSymbol
  */
 public class AndOperatorSymbol extends BinaryOperatorSymbol {
-    /** Initializes the <i>and</i> operator. */
+    /**
+     * Initializes the <i>and</i> operator.
+     */
     public AndOperatorSymbol() {
         this(0);
     }
@@ -51,13 +53,15 @@ public class AndOperatorSymbol extends BinaryOperatorSymbol {
         super(SymbolType.And, position);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public LiteralSymbol evaluate(Symbol left, Symbol right) {
         LiteralSymbol leftOperand = (LiteralSymbol)left;
         LiteralSymbol rightOperand = (LiteralSymbol)right;
-        
-        return new NumberLiteralSymbol(leftOperand.getBooleanValue() &&
-                rightOperand.getBooleanValue(), position);
+
+        return new NumberLiteralSymbol(leftOperand.getBooleanValue()
+                && rightOperand.getBooleanValue(), position);
     }
 }

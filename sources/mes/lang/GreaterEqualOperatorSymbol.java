@@ -35,7 +35,9 @@ package mes.lang;
  * @see BinaryOperatorSymbol
  */
 public class GreaterEqualOperatorSymbol extends BinaryOperatorSymbol {
-    /** Initializes the greater equal operator. */
+    /**
+     * Initializes the greater equal operator.
+     */
     public GreaterEqualOperatorSymbol() {
         this(0);
     }
@@ -51,13 +53,15 @@ public class GreaterEqualOperatorSymbol extends BinaryOperatorSymbol {
         super(SymbolType.GreaterEqual, position);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public LiteralSymbol evaluate(Symbol left, Symbol right) {
         LiteralSymbol leftOperand = (LiteralSymbol)left;
         LiteralSymbol rightOperand = (LiteralSymbol)right;
-        
-        return new NumberLiteralSymbol(leftOperand.getDoubleValue() >=
-                rightOperand.getDoubleValue(), position);
+
+        return new NumberLiteralSymbol(leftOperand.getDoubleValue()
+                >= rightOperand.getDoubleValue(), position);
     }
 }

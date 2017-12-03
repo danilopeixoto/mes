@@ -46,26 +46,45 @@ import mes.io.Preferences;
  * @version 1.0.0
  */
 public class Application {
-    /** The application name. */
+    /**
+     * The application name.
+     */
     public static final String name = "MES";
-    /** The application full name. */
+    /**
+     * The application full name.
+     */
     public static final String fullName = "Mathematical Expression Solver";
-    /** The application version. */
+    /**
+     * The application version.
+     */
     public static final String version = "1.0.0";
-    /** The application license. */
+    /**
+     * The application license.
+     */
     public static final String license = "BSD-3-Clause license";
-    /** The application license link. */
-    public static final String licenseLink = "https://github.com/danilopeixoto/mes/blob/master/LICENSE";
-    /** The application copyright. */
+    /**
+     * The application license link.
+     */
+    public static final String licenseLink
+            = "https://github.com/danilopeixoto/mes/blob/master/LICENSE";
+    /**
+     * The application copyright.
+     */
     public static final String copyright = "Copyright © 2017, Danilo Ferreira,\n"
             + "João de Oliveira and Lucas Alves. All rights reserved.";
 
-    /** The MES document name. */
+    /**
+     * The MES document name.
+     */
     public static final String documentName = name + " document";
-    /** The MES document extension. */
+    /**
+     * The MES document extension.
+     */
     public static final String documentExtension = '.' + name.toLowerCase();
 
-    /** The application style sheet file. */
+    /**
+     * The application style sheet file.
+     */
     public static final String styleSheet = "styles/general.css";
 
     private static final File preferenceFile = new File(name.toLowerCase() + ".pref");
@@ -127,7 +146,9 @@ public class Application {
         logger.log(Level.WARNING, message);
     }
 
-    /** Forces the application to exit by closing log and preference files. */
+    /**
+     * Forces the application to exit by closing log and preference files.
+     */
     public static void exit() {
         preferenceFile.close();
 
@@ -136,7 +157,7 @@ public class Application {
         if (handlers != null)
             for (Handler handler : handlers)
                 handler.close();
-        
+
         Platform.exit();
     }
 

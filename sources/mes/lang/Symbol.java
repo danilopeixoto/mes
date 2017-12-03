@@ -34,49 +34,90 @@ package mes.lang;
  * @version 1.0.0
  */
 public abstract class Symbol extends AbstractSyntaxNode {
-    /** Supported symbol types. */
+    /**
+     * Supported symbol types.
+     */
     public enum SymbolType {
-        /** Number symbol. */
+        /**
+         * Number symbol.
+         */
         Number,
-        /** Variable symbol. */
+        /**
+         * Variable symbol.
+         */
         Variable,
-        /** Function symbol. */
+        /**
+         * Function symbol.
+         */
         Function,
-        /** Positive operator symbol. */
+        /**
+         * Positive operator symbol.
+         */
         Positive,
-        /** Negative operator symbol. */
+        /**
+         * Negative operator symbol.
+         */
         Negative,
-        /** Addition operator symbol. */
+        /**
+         * Addition operator symbol.
+         */
         Addition,
-        /** Subtraction operator symbol. */
+        /**
+         * Subtraction operator symbol.
+         */
         Subtraction,
-        /** Multiplication operator symbol. */
+        /**
+         * Multiplication operator symbol.
+         */
         Multiplication,
-        /** Division operator symbol. */
+        /**
+         * Division operator symbol.
+         */
         Division,
-        /** Modulo operator symbol. */
+        /**
+         * Modulo operator symbol.
+         */
         Modulo,
-        /** Exponentiation operator symbol. */
+        /**
+         * Exponentiation operator symbol.
+         */
         Exponentiation,
-        /** Less equal operator symbol. */
+        /**
+         * Less equal operator symbol.
+         */
         LessEqual,
-        /** Less operator symbol. */
+        /**
+         * Less operator symbol.
+         */
         Less,
-        /** Greater equal operator symbol. */
+        /**
+         * Greater equal operator symbol.
+         */
         GreaterEqual,
-        /** Greater operator symbol. */
+        /**
+         * Greater operator symbol.
+         */
         Greater,
-        /** Equal operator symbol. */
+        /**
+         * Equal operator symbol.
+         */
         Equal,
-        /** Not equal operator symbol. */
+        /**
+         * Not equal operator symbol.
+         */
         NotEqual,
-        /** <i>Not</i> operator symbol. */
+        /** <i>Not</i> operator symbol.
+         */
         Not,
-        /** <i>And</i> operator symbol. */
+        /** <i>And</i> operator symbol.
+         */
         And,
-        /** <i>Or</i> operator symbol. */
+        /** <i>Or</i> operator symbol.
+         */
         Or,
-        /** Assignment operator symbol. */
+        /**
+         * Assignment operator symbol.
+         */
         Assignment
     }
 
@@ -100,27 +141,27 @@ public abstract class Symbol extends AbstractSyntaxNode {
     public int getPosition() {
         return position;
     }
-    
+
     public boolean isLiteral() {
         return this instanceof LiteralSymbol;
     }
-    
+
     public boolean isNumberLiteral() {
         return this instanceof NumberLiteralSymbol;
     }
-    
+
     public boolean isIdentifierLiteral() {
         return this instanceof IdentifierLiteralSymbol;
     }
-    
+
     public boolean isOperator() {
         return this instanceof OperatorSymbol;
     }
-    
+
     public boolean isUnaryOperator() {
         return this instanceof UnaryOperatorSymbol;
     }
-    
+
     public boolean isBinaryOperator() {
         return this instanceof BinaryOperatorSymbol;
     }

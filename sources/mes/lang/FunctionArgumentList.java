@@ -35,7 +35,9 @@ package mes.lang;
  * @see List
  */
 public class FunctionArgumentList extends List<FunctionArgument> {
-    /** Initializes an empty function argument list. */
+    /**
+     * Initializes an empty function argument list.
+     */
     public FunctionArgumentList() {
         super();
     }

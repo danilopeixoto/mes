@@ -35,7 +35,9 @@ package mes.lang;
  * @see List
  */
 public class TokenStream extends List<Token> {
-    /** Initializes an empty token stream. */
+    /**
+     * Initializes an empty token stream.
+     */
     public TokenStream() {
         super();
     }

@@ -36,7 +36,8 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Indicates whether field or method should be exported to language specification.
+ * Indicates whether field or method should be exported to language
+ * specification.
  * @author Danilo Ferreira
  * @version 1.0.0
  * @see Retention

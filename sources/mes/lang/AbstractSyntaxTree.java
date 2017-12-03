@@ -39,7 +39,9 @@ import java.io.Serializable;
 public class AbstractSyntaxTree implements Serializable {
     private AbstractSyntaxNode root;
 
-    /** Initializes the abstract syntax tree with null root. */
+    /**
+     * Initializes the abstract syntax tree with null root.
+     */
     public AbstractSyntaxTree() {
         this(null);
     }
@@ -85,7 +87,9 @@ public class AbstractSyntaxTree implements Serializable {
         return root == null;
     }
 
-    /** Deletes all the nodes in the abstract syntax tree. */
+    /**
+     * Deletes all the nodes in the abstract syntax tree.
+     */
     public void clear() {
         root = null;
     }

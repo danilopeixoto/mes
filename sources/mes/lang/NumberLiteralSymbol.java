@@ -42,7 +42,7 @@ public class NumberLiteralSymbol extends LiteralSymbol {
     public NumberLiteralSymbol(boolean booleanValue, int position) {
         super(MathUtils.number(booleanValue), SymbolType.Number, position);
     }
-    
+
     public NumberLiteralSymbol(double doubleValue, int position) {
         super(doubleValue, SymbolType.Number, position);
     }

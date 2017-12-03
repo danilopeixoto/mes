@@ -37,7 +37,9 @@ import java.util.TreeSet;
  * @see TreeSet
  */
 public class SymbolTable extends TreeSet<IdentifierLiteralSymbol> {
-    /** Initializes an empty symbol table. */
+    /**
+     * Initializes an empty symbol table.
+     */
     public SymbolTable() {
         super();
     }

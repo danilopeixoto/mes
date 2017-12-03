@@ -35,7 +35,9 @@ package mes.lang;
  * @see BinaryOperatorSymbol
  */
 public class DivisionOperatorSymbol extends BinaryOperatorSymbol {
-    /** Initializes the division operator. */
+    /**
+     * Initializes the division operator.
+     */
     public DivisionOperatorSymbol() {
         this(0);
     }
@@ -51,13 +53,15 @@ public class DivisionOperatorSymbol extends BinaryOperatorSymbol {
         super(SymbolType.Division, position);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public LiteralSymbol evaluate(Symbol left, Symbol right) {
         LiteralSymbol leftOperand = (LiteralSymbol)left;
         LiteralSymbol rightOperand = (LiteralSymbol)right;
-        
-        return new NumberLiteralSymbol(leftOperand.getDoubleValue() /
-                rightOperand.getDoubleValue(), position);
+
+        return new NumberLiteralSymbol(leftOperand.getDoubleValue()
+                / rightOperand.getDoubleValue(), position);
     }
 }

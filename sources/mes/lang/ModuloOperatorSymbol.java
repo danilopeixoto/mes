@@ -35,7 +35,9 @@ package mes.lang;
  * @see BinaryOperatorSymbol
  */
 public class ModuloOperatorSymbol extends BinaryOperatorSymbol {
-    /** Initializes the modulo operator. */
+    /**
+     * Initializes the modulo operator.
+     */
     public ModuloOperatorSymbol() {
         this(0);
     }
@@ -51,13 +53,15 @@ public class ModuloOperatorSymbol extends BinaryOperatorSymbol {
         super(SymbolType.Modulo, position);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public LiteralSymbol evaluate(Symbol left, Symbol right) {
         LiteralSymbol leftOperand = (LiteralSymbol)left;
         LiteralSymbol rightOperand = (LiteralSymbol)right;
-        
-        return new NumberLiteralSymbol(leftOperand.getDoubleValue() %
-                rightOperand.getDoubleValue(), position);
+
+        return new NumberLiteralSymbol(leftOperand.getDoubleValue()
+                % rightOperand.getDoubleValue(), position);
     }
 }

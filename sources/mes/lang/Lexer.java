@@ -67,12 +67,10 @@ public class Lexer {
             } else if ((endIndex = isNumber(s)) != 0) {
                 tokenStream.add(Token.createNumber(s.substring(0, endIndex), i));
                 i += endIndex - 1;
-            }
-            else if (s.startsWith("//")) {
+            } else if (s.startsWith("//")) {
                 tokenStream.add(Token.createComment(s.substring(2).trim(), i));
                 break;
-            }
-            else if (s.startsWith("<="))
+            } else if (s.startsWith("<="))
                 tokenStream.add(Token.createOperator(TokenType.LessEqual,
                         null, new OperatorData(4, Associativity.Left), i++));
             else if (s.startsWith(">="))
@@ -94,8 +92,8 @@ public class Lexer {
                 switch (c) {
                     case '+':
                         tokenStream.add(Token.createOperator(TokenType.Plus,
-                                 new OperatorData(7, Associativity.Right),
-                                 new OperatorData(5, Associativity.Left), i));
+                                new OperatorData(7, Associativity.Right),
+                                new OperatorData(5, Associativity.Left), i));
                         break;
                     case '-':
                         tokenStream.add(Token.createOperator(TokenType.Minus,
@@ -147,7 +145,7 @@ public class Lexer {
                         throw new ExceptionContent(ExceptionMessage.UnknownToken, i);
                 }
         }
-        
+
         tokenStream.add(Token.createStructure(TokenType.EOL, source.length()));
     }
 
@@ -181,7 +179,7 @@ public class Lexer {
 
         if (!Character.isDigit(c))
             return i;
-        
+
         while (Character.isDigit(c))
             c = ++i < source.length() ? source.charAt(i) : '\0';
 
@@ -190,7 +188,7 @@ public class Lexer {
 
             if (!Character.isDigit(c))
                 return i - 1;
-            
+
             while (Character.isDigit(c))
                 c = ++i < source.length() ? source.charAt(i) : '\0';
         }
@@ -207,7 +205,7 @@ public class Lexer {
 
             if (!Character.isDigit(c))
                 return i - 1;
-            
+
             while (Character.isDigit(c))
                 c = ++i < source.length() ? source.charAt(i) : '\0';
         }

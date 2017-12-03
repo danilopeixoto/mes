@@ -35,7 +35,9 @@ package mes.lang;
  * @see BinaryOperatorSymbol
  */
 public class LessOperatorSymbol extends BinaryOperatorSymbol {
-    /** Initializes the less operator. */
+    /**
+     * Initializes the less operator.
+     */
     public LessOperatorSymbol() {
         this(0);
     }
@@ -51,13 +53,15 @@ public class LessOperatorSymbol extends BinaryOperatorSymbol {
         super(SymbolType.Less, position);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public LiteralSymbol evaluate(Symbol left, Symbol right) {
         LiteralSymbol leftOperand = (LiteralSymbol)left;
         LiteralSymbol rightOperand = (LiteralSymbol)right;
-        
-        return new NumberLiteralSymbol(leftOperand.getDoubleValue() <
-                rightOperand.getDoubleValue(), position);
+
+        return new NumberLiteralSymbol(leftOperand.getDoubleValue()
+                < rightOperand.getDoubleValue(), position);
     }
 }

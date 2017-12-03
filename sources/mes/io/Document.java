@@ -42,7 +42,8 @@ public class Document implements Serializable {
     private SymbolTable symbolTable;
 
     /**
-     * Initializes the document with an empty command line stream and symbol table.
+     * Initializes the document with an empty command line stream and symbol
+     * table.
      * @see CommandLineStream
      * @see SymbolTable
      */
@@ -71,7 +72,7 @@ public class Document implements Serializable {
     public void setCommandLineStream(CommandLineStream commandLineStream) {
         this.commandLineStream = commandLineStream;
     }
-    
+
     /**
      * Sets a non-null identifier symbol table.
      * @param symbolTable The identifier symbol table

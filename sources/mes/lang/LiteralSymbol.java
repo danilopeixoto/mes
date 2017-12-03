@@ -36,20 +36,20 @@ package mes.lang;
  */
 public abstract class LiteralSymbol extends Symbol {
     protected double value;
-    
+
     public LiteralSymbol(double doubleValue, SymbolType type, int position) {
         super(type, position);
         this.value = doubleValue;
     }
-    
+
     public void setBooleanValue(boolean booleanValue) {
         this.value = MathUtils.number(booleanValue);
     }
-    
+
     public void setDoubleValue(double doubleValue) {
         this.value = doubleValue;
     }
-    
+
     public boolean getBooleanValue() {
         return MathUtils.bool(value);
     }
@@ -57,10 +57,10 @@ public abstract class LiteralSymbol extends Symbol {
     public double getDoubleValue() {
         return value;
     }
-    
+
     public String getFormatedValue() {
         double abs = MathUtils.abs(value);
-        
+
         return String.format(abs == 0 || (abs >= 0.1 && abs < 10.0)
                 ? "%.5f" : "%1.5e", value);
     }

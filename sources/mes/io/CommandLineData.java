@@ -40,7 +40,9 @@ public class CommandLineData implements Serializable {
     private String text;
     private boolean error;
 
-    /** Initializes the default parameters. */
+    /**
+     * Initializes the default parameters.
+     */
     public CommandLineData() {
         this("", false);
     }

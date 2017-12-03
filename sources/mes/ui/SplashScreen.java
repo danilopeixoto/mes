@@ -53,7 +53,9 @@ public class SplashScreen extends Preloader {
 
     private Stage primaryStage;
 
-    /** Initializes the splash screen properties. */
+    /**
+     * Initializes the splash screen properties.
+     */
     public SplashScreen() {
         width = 600;
         height = 600;

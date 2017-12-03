@@ -43,10 +43,10 @@ public abstract class OperatorSymbol extends Symbol {
     public OperatorSymbol(SymbolType type, int position) {
         super(type, position);
     }
-    
+
     /**
-     * Computes the operator result. For unary operators the right operand
-     * must be a null object.
+     * Computes the operator result. For unary operators the right operand must
+     * be a null object.
      * @param left The left operand
      * @param right The right operand
      * @return A literal symbol as result.

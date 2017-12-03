@@ -1163,7 +1163,9 @@ public class MainWindow extends javafx.application.Application {
         }
     }
 
-    /** Initializes the main window properties. */
+    /**
+     * Initializes the main window properties.
+     */
     public MainWindow() {
         width = 600;
         height = 600;

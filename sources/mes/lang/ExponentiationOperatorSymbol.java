@@ -35,7 +35,9 @@ package mes.lang;
  * @see BinaryOperatorSymbol
  */
 public class ExponentiationOperatorSymbol extends BinaryOperatorSymbol {
-    /** Initializes the exponentiation operator. */
+    /**
+     * Initializes the exponentiation operator.
+     */
     public ExponentiationOperatorSymbol() {
         this(0);
     }
@@ -51,12 +53,14 @@ public class ExponentiationOperatorSymbol extends BinaryOperatorSymbol {
         super(SymbolType.Exponentiation, position);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public LiteralSymbol evaluate(Symbol left, Symbol right) {
         LiteralSymbol leftOperand = (LiteralSymbol)left;
         LiteralSymbol rightOperand = (LiteralSymbol)right;
-        
+
         return new NumberLiteralSymbol(MathUtils.pow(leftOperand.getDoubleValue(),
                 rightOperand.getDoubleValue()), position);
     }

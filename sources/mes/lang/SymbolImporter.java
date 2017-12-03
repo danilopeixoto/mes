@@ -33,8 +33,8 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
 
 /**
- * Class to import symbols from the native language into the MES
- * language specification.
+ * Class to import symbols from the native language into the MES language
+ * specification.
  * @author Danilo Ferreira
  * @version 1.0.0
  * @see Interpreter
@@ -77,7 +77,7 @@ public class SymbolImporter {
                 if (field.isAnnotationPresent(ExportSymbol.class)) {
                     VariableLiteralSymbol constant = new VariableLiteralSymbol();
                     Object value = field.get(null);
-                    
+
                     if (value instanceof Number) {
                         Number number = (Number)value;
                         constant.setDoubleValue(number.doubleValue());
@@ -85,12 +85,12 @@ public class SymbolImporter {
                         Boolean bool = (Boolean)value;
                         constant.setBooleanValue(bool);
                     }
-                    
+
                     ExportSymbol annotation = field.getAnnotation(ExportSymbol.class);
-                    
+
                     constant.setName(field.getName());
                     constant.setDocumentation(annotation.value());
-                    
+
                     constants.add(constant);
                 }
 
@@ -107,17 +107,17 @@ public class SymbolImporter {
 
                             arguments.add(new FunctionArgument(variableSymbol));
                         }
-                    
+
                     Closure closure = new Closure(method);
                     ExportSymbol annotation = method.getAnnotation(ExportSymbol.class);
-                    
+
                     FunctionLiteralSymbol function = new FunctionLiteralSymbol();
-                    
+
                     function.setName(method.getName());
                     function.setArguments(arguments);
                     function.setClosure(closure);
                     function.setDocumentation(annotation.value());
-                    
+
                     functions.add(function);
                 }
     }

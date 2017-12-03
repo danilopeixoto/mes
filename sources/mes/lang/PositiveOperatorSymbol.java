@@ -35,7 +35,9 @@ package mes.lang;
  * @see UnaryOperatorSymbol
  */
 public class PositiveOperatorSymbol extends UnaryOperatorSymbol {
-    /** Initializes the positive operator. By default the position index is zero. */
+    /**
+     * Initializes the positive operator. By default the position index is zero.
+     */
     public PositiveOperatorSymbol() {
         this(0);
     }
@@ -49,7 +51,9 @@ public class PositiveOperatorSymbol extends UnaryOperatorSymbol {
         super(SymbolType.Positive, position);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public LiteralSymbol evaluate(Symbol left, Symbol right) {
         LiteralSymbol leftOperand = (LiteralSymbol)left;

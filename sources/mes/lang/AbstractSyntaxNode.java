@@ -40,7 +40,9 @@ public abstract class AbstractSyntaxNode implements Serializable {
     protected AbstractSyntaxNode left;
     protected AbstractSyntaxNode right;
 
-    /** Initializes the children of node to null. */
+    /**
+     * Initializes the children of node to null.
+     */
     public AbstractSyntaxNode() {
         left = null;
         right = null;
