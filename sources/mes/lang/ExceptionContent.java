@@ -49,12 +49,10 @@ public class ExceptionContent extends RuntimeException {
                 "invalid redefinition of default symbol";
         public static final String IllegalExpressionAssignment =
                 "illegal expression assignment";
-        public static final String InvalidFunctionArgument =
-                "invalid function argument";
+        public static final String InvalidArgumentDefinition =
+                "invalid definition of function argument";
         public static final String InvalidArgumentRedefinition =
                 "invalid redefinition of function argument";
-        public static final String InvalidNumberArguments =
-                "invalid number of arguments";
         public static final String FunctionEvaluationFailed =
                 "cannot evaluate function";
         

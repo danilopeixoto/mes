@@ -59,7 +59,9 @@ public abstract class LiteralSymbol extends Symbol {
     }
     
     public String getFormatedValue() {
-        return String.format(value == 0 || (value >= 0.1 && value < 10)
+        double abs = MathUtils.abs(value);
+        
+        return String.format(abs == 0 || (abs >= 0.1 && abs < 10.0)
                 ? "%.5f" : "%1.5e", value);
     }
 }

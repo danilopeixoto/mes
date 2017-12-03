@@ -53,7 +53,7 @@ public class AdditionOperatorSymbol extends BinaryOperatorSymbol {
 
     /** {@inheritDoc} */
     @Override
-    public LiteralSymbol evaluate() {
+    public LiteralSymbol evaluate(Symbol left, Symbol right) {
         LiteralSymbol leftOperand = (LiteralSymbol)left;
         LiteralSymbol rightOperand = (LiteralSymbol)right;
         

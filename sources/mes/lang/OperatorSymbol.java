@@ -45,10 +45,13 @@ public abstract class OperatorSymbol extends Symbol {
     }
     
     /**
-     * Compute the operator result. The left and right children are
-     * used as operand.
+     * Computes the operator result. For unary operators the right operand
+     * must be a null object.
+     * @param left The left operand
+     * @param right The right operand
      * @return A literal symbol as result.
+     * @see Symbol
      * @see LiteralSymbol
      */
-    public abstract LiteralSymbol evaluate();
+    public abstract LiteralSymbol evaluate(Symbol left, Symbol right);
 }

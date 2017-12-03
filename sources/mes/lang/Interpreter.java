@@ -50,45 +50,47 @@ public class Interpreter {
             if (node == null)
                 return null;
             
-            Symbol nodeSymbol = (Symbol)node;
+            Symbol root = (Symbol)node;
+            Symbol left, right;
             
-            if (nodeSymbol.getType() == SymbolType.Assignment) {
-                Symbol leftSymbol = (Symbol)nodeSymbol.getLeft();
+            if (root.getType() == SymbolType.Assignment) {
+                left = (Symbol)root.getLeft();
                 
-                if (leftSymbol.isIdentifierLiteral()) {
-                    OperatorSymbol assignmentOperator = (OperatorSymbol)nodeSymbol;
-                    IdentifierLiteralSymbol identifierSymbol = (IdentifierLiteralSymbol)leftSymbol;
+                if (left.isIdentifierLiteral()) {
+                    OperatorSymbol assignmentOperator = (OperatorSymbol)root;
+                    IdentifierLiteralSymbol identifierSymbol = (IdentifierLiteralSymbol)left;
                     
                     if (isDefaultSymbol(identifierSymbol))
                         throw new ExceptionContent(ExceptionMessage.InvalidSymbolRedefinition,
                                 identifierSymbol.getPosition());
                     
-                    identifierSymbol = (IdentifierLiteralSymbol)assignmentOperator.evaluate();
+                    right = (Symbol)root.getRight();
+                    
+                    identifierSymbol = (IdentifierLiteralSymbol)
+                            assignmentOperator.evaluate(left, right);
                     identifierSymbol.evaluate(symbolTable);
                     
                     return identifierSymbol;
                 }
                 else
                     throw new ExceptionContent(ExceptionMessage.IllegalExpressionAssignment,
-                        nodeSymbol.getPosition());
+                        root.getPosition());
             }
             
-            nodeSymbol.setLeft(traverse(nodeSymbol.getLeft()));
-            nodeSymbol.setRight(traverse(nodeSymbol.getRight()));
+            left = (Symbol)traverse(root.getLeft());
+            right = (Symbol)traverse(root.getRight());
             
-            if (nodeSymbol.isNumberLiteral())
-                return nodeSymbol;
-            else if (nodeSymbol.isIdentifierLiteral()) {
-                IdentifierLiteralSymbol identifierSymbol =
-                        (IdentifierLiteralSymbol)nodeSymbol;
-                
+            if (root.isNumberLiteral())
+                return root;
+            else if (root.isIdentifierLiteral()) {
+                IdentifierLiteralSymbol identifierSymbol = (IdentifierLiteralSymbol)root;
                 identifierSymbol.evaluate(symbolTable);
                 
                 return identifierSymbol.getNumberLiteralSymbol();
             }
             
-            OperatorSymbol operatorSymbol = (OperatorSymbol)nodeSymbol;
-            return operatorSymbol.evaluate();
+            OperatorSymbol operatorSymbol = (OperatorSymbol)root;
+            return operatorSymbol.evaluate(left, right);
         }
     }
     

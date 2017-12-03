@@ -76,6 +76,11 @@ public class Closure implements Serializable {
     public Closure(Method method) {
         closureObject = method;
     }
+    
+    /** Sets the closure instance as empty. */
+    public void setEmpty() {
+        closureObject = null;
+    }
 
     /**
      * Sets the closure instance as abstract syntax tree. If the abstract

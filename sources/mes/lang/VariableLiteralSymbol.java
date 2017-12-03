@@ -63,6 +63,7 @@ public class VariableLiteralSymbol extends IdentifierLiteralSymbol {
                     new LiteralEvaluation(globalSymbolTable));
             
             value = literalSymbol.getDoubleValue();
+            closure.setEmpty();
         }
         else {
             if (!globalSymbolTable.contains(this))
@@ -75,6 +76,14 @@ public class VariableLiteralSymbol extends IdentifierLiteralSymbol {
                 }
             }
         }
+    }
+    
+    @Override
+    public void precompile(SymbolTable globalSymbolTable) {
+        if (!globalSymbolTable.contains(this))
+            throw new ExceptionContent(ExceptionMessage.UndefinedSymbol, position);
+        
+        closure.setEmpty();
     }
 
     @Override

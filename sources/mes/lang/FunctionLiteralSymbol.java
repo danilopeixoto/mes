@@ -41,11 +41,11 @@ import mes.lang.ExceptionContent.ExceptionMessage;
  * @see IdentifierLiteralSymbol
  */
 public class FunctionLiteralSymbol extends IdentifierLiteralSymbol {
-    private class ClosureEvaluation extends TraversalFunction {
-        public ClosureEvaluation(SymbolTable globalSymbolTable) {
+    private class ClosurePrecompiler extends TraversalFunction {
+        public ClosurePrecompiler(SymbolTable globalSymbolTable) {
             super(globalSymbolTable);
         }
-
+        
         @Override
         public AbstractSyntaxNode traverse(AbstractSyntaxNode node) {
             if (node == null)
@@ -61,7 +61,7 @@ public class FunctionLiteralSymbol extends IdentifierLiteralSymbol {
                         (IdentifierLiteralSymbol)nodeSymbol;
                 
                 SymbolTable globalSymbolTable = (SymbolTable)arguments[0];
-                identifierSymbol.evaluate(globalSymbolTable);
+                identifierSymbol.precompile(globalSymbolTable);
             }
             
             if (nodeSymbol.getType() == SymbolType.Assignment)
@@ -77,10 +77,15 @@ public class FunctionLiteralSymbol extends IdentifierLiteralSymbol {
     public FunctionLiteralSymbol() {
         this("", 0);
     }
-
+    
     public FunctionLiteralSymbol(String name, int position) {
+        this(name, new FunctionArgumentList(), position);
+    }
+    
+    public FunctionLiteralSymbol(String name,
+            FunctionArgumentList arguments, int position) {
         super(name, 0, SymbolType.Function, position);
-        arguments = new FunctionArgumentList();
+        this.arguments = arguments;
     }
 
     public void setArguments(FunctionArgumentList arguments) {
@@ -93,47 +98,45 @@ public class FunctionLiteralSymbol extends IdentifierLiteralSymbol {
     
     @Override
     public void evaluate(SymbolTable globalSymbolTable) {
-        if (closure.getType() == ClosureType.Empty){
+        if (closure.getType() == ClosureType.Empty) {
             if (!globalSymbolTable.contains(this))
                 throw new ExceptionContent(ExceptionMessage.UndefinedSymbol, position);
             
             FunctionArgumentList functionArgumentIdentifiers = null;
-
+            Closure functionClosure = null;
+            
             for (IdentifierLiteralSymbol identifierSymbol: globalSymbolTable) {
                 if (identifierSymbol.equals(this)) {
                     FunctionLiteralSymbol functionSymbol =
                             (FunctionLiteralSymbol)identifierSymbol;
                     
-                    closure = functionSymbol.getClosure();
                     functionArgumentIdentifiers = functionSymbol.getArguments();
+                    functionClosure = functionSymbol.getClosure();
                     
                     break;
                 }
             }
             
-            for (FunctionArgument argument: arguments) {
-                LiteralSymbol literalSymbol = (LiteralSymbol)argument.traverse(
-                        new LiteralEvaluation(globalSymbolTable));
+            SymbolTable functionArgumentSymbols = new SymbolTable();
+            
+            for (int i = 0; i < arguments.size(); i++) {
+                FunctionArgument argument = arguments.get(i);
+                FunctionArgument argumentIdentifier = functionArgumentIdentifiers.get(i);
                 
-                argument.setRoot(literalSymbol);
+                NumberLiteralSymbol numberSymbol = (NumberLiteralSymbol)argument.traverse(
+                        new LiteralEvaluation(globalSymbolTable));
+                VariableLiteralSymbol variableSymbol =
+                            (VariableLiteralSymbol)argumentIdentifier.getRoot();
+                
+                functionArgumentSymbols.add(new VariableLiteralSymbol(variableSymbol.getName(),
+                        numberSymbol.getDoubleValue(), numberSymbol.getPosition()));
             }
             
-            if (closure.getType() == ClosureType.AbstractSyntaxTree) {
-                for (int i = 0; i < arguments.size(); i++) {
-                    FunctionArgument argument = arguments.get(i);
-                    FunctionArgument argumentIdentifier = functionArgumentIdentifiers.get(i);
-                    
-                    NumberLiteralSymbol numberSymbol = (NumberLiteralSymbol)argument.getRoot();
-                    VariableLiteralSymbol variableSymbol =
-                            (VariableLiteralSymbol)argumentIdentifier.getRoot();
-                    
-                    argument.setRoot(new VariableLiteralSymbol(variableSymbol.getName(),
-                            numberSymbol.getDoubleValue(), numberSymbol.getPosition()));
-                }
+            if (functionClosure.getType() == ClosureType.AbstractSyntaxTree) {
+                AbstractSyntaxTree abstractSyntaxTree = functionClosure.getAbstractSyntaxTree();
+                SymbolTable localSymbolTable = computeLocalSymbolTable(
+                        globalSymbolTable, functionArgumentSymbols);
                 
-                AbstractSyntaxTree abstractSyntaxTree = closure.getAbstractSyntaxTree();
-                SymbolTable localSymbolTable = getLocalSymbolTable(globalSymbolTable);
-
                 LiteralSymbol literalSymbol = (LiteralSymbol)abstractSyntaxTree.traverse(
                         new LiteralEvaluation(localSymbolTable));
                 
@@ -141,9 +144,10 @@ public class FunctionLiteralSymbol extends IdentifierLiteralSymbol {
             }
             else {
                 try {
-                    Stream<Number> parameters = arguments.stream().map(this::mapArguments);
-                    Method method = closure.getMethod();
+                    Stream<Number> parameters =
+                            functionArgumentSymbols.stream().map(this::mapArguments);
                     
+                    Method method = functionClosure.getMethod();
                     Object output = method.invoke(null, parameters.toArray());
 
                     if (output instanceof Number) {
@@ -162,13 +166,34 @@ public class FunctionLiteralSymbol extends IdentifierLiteralSymbol {
         else {
             ensurePrototype();
             
+            SymbolTable functionArgumentSymbols = new SymbolTable();
             AbstractSyntaxTree abstractSyntaxTree = closure.getAbstractSyntaxTree();
-            SymbolTable localSymbolTable = getLocalSymbolTable(globalSymbolTable);
             
-            abstractSyntaxTree.traverse(new ClosureEvaluation(localSymbolTable));
+            for (FunctionArgument argument: arguments) {
+                VariableLiteralSymbol identifierSymbol =
+                        (VariableLiteralSymbol)argument.getRoot();
+                
+                functionArgumentSymbols.add(identifierSymbol);
+            }
+            
+            SymbolTable localSymbolTable = computeLocalSymbolTable(globalSymbolTable,
+                    functionArgumentSymbols);
+            
+            abstractSyntaxTree.traverse(new ClosurePrecompiler(localSymbolTable));
         }
     }
-
+    
+    @Override
+    public void precompile(SymbolTable globalSymbolTable) {
+        if (!globalSymbolTable.contains(this))
+            throw new ExceptionContent(ExceptionMessage.UndefinedSymbol, position);
+        
+        for (FunctionArgument argument: arguments)
+            argument.traverse(new ClosurePrecompiler(globalSymbolTable));
+        
+        closure.setEmpty();
+    }
+    
     @Override
     public String getPrototype() {
         StringBuilder stringBuilder = new StringBuilder();
@@ -211,24 +236,22 @@ public class FunctionLiteralSymbol extends IdentifierLiteralSymbol {
                             argumentSymbol.getPosition());
             }
             
-            throw new ExceptionContent(ExceptionMessage.InvalidFunctionArgument,
+            throw new ExceptionContent(ExceptionMessage.InvalidArgumentDefinition,
                             argumentSymbol.getPosition());
         }
     }
     
-    private SymbolTable getLocalSymbolTable(SymbolTable globalSymbolTable) {
+    private SymbolTable computeLocalSymbolTable(SymbolTable globalSymbolTable,
+            SymbolTable functionArgumentSymbols) {
         SymbolTable localSymbolTable = new SymbolTable();
         
-        for (FunctionArgument argument: arguments)
-            localSymbolTable.add((IdentifierLiteralSymbol)argument.getRoot());
-        
+        localSymbolTable.addAll(functionArgumentSymbols);
         localSymbolTable.addAll(globalSymbolTable);
         
         return localSymbolTable;
     }
 
-    private Number mapArguments(FunctionArgument argument) {
-        LiteralSymbol literalSymbol = (LiteralSymbol)argument.getRoot();
-        return literalSymbol.getDoubleValue();
+    private Number mapArguments(IdentifierLiteralSymbol argumentSymbol) {
+        return argumentSymbol.getDoubleValue();
     }
 }

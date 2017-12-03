@@ -50,29 +50,27 @@ public abstract class IdentifierLiteralSymbol extends LiteralSymbol
             if (node == null)
                 return null;
             
-            Symbol nodeSymbol = (Symbol)node;
+            Symbol root = (Symbol)node;
             
-            nodeSymbol.setLeft(traverse(nodeSymbol.getLeft()));
-            nodeSymbol.setRight(traverse(nodeSymbol.getRight()));
+            LiteralSymbol left = (LiteralSymbol)traverse(root.getLeft());
+            LiteralSymbol right = (LiteralSymbol)traverse(root.getRight());
             
-            if (nodeSymbol.isIdentifierLiteral()) {
-                IdentifierLiteralSymbol identifierSymbol =
-                        (IdentifierLiteralSymbol)nodeSymbol;
+            if (root.isIdentifierLiteral()) {
+                IdentifierLiteralSymbol identifierSymbol = (IdentifierLiteralSymbol)root;
                 
                 SymbolTable globalSymbolTable = (SymbolTable)arguments[0];
                 identifierSymbol.evaluate(globalSymbolTable);
                 
                 return identifierSymbol.getNumberLiteralSymbol();
             }
-            else if (nodeSymbol.getType() == SymbolType.Number) {
-                return nodeSymbol;
-            }
-            else if (nodeSymbol.getType() == SymbolType.Assignment)
+            else if (root.getType() == SymbolType.Number)
+                return root;
+            else if (root.getType() == SymbolType.Assignment)
                 throw new ExceptionContent(ExceptionMessage.IllegalExpressionAssignment,
-                        nodeSymbol.getPosition());
+                        root.getPosition());
             
-            OperatorSymbol operatorSymbol = (OperatorSymbol)nodeSymbol;
-            return operatorSymbol.evaluate();
+            OperatorSymbol operatorSymbol = (OperatorSymbol)root;
+            return operatorSymbol.evaluate(left, right);
         }
     }
     
@@ -108,6 +106,8 @@ public abstract class IdentifierLiteralSymbol extends LiteralSymbol
     }
     
     public abstract void evaluate(SymbolTable globalSymbolTable);
+    
+    public abstract void precompile(SymbolTable globalSymbolTable);
 
     public abstract String getPrototype();
     

@@ -219,9 +219,9 @@ public class Parser {
                     next();
                     return literalSymbol;
                 } else
-                    expectedElement("a left parenthesis \")\" after literal or expression");
+                    expectedElement("a right parenthesis \")\" after literal or expression");
             else
-                expectedElement("a literal or expression after right parenthesis \"(\"");
+                expectedElement("a literal or expression after left parenthesis \"(\"");
         }
 
         return null;
@@ -245,7 +245,7 @@ public class Parser {
                     identifierSymbol = functionSymbol;
                     next();
                 } else
-                    expectedElement("a left parenthesis \")\" after function arguments");
+                    expectedElement("a right parenthesis \")\" after function arguments");
             } else
                 identifierSymbol = new VariableLiteralSymbol(
                         identifierToken.getValue(), identifierToken.getPosition());

@@ -53,13 +53,27 @@ public class AssignmentOperatorSymbol extends BinaryOperatorSymbol {
 
     /** {@inheritDoc} */
     @Override
-    public LiteralSymbol evaluate() {
+    public LiteralSymbol evaluate(Symbol left, Symbol right) {
         AbstractSyntaxTree abstractSyntaxTree = new AbstractSyntaxTree(right);
+        Closure closure = new Closure(abstractSyntaxTree);
         
-        IdentifierLiteralSymbol identifierSymbol = (IdentifierLiteralSymbol)left;
-        identifierSymbol.setClosure(new Closure(abstractSyntaxTree));
-        identifierSymbol.setPosition(position);
+        IdentifierLiteralSymbol identifierSymbol;
         
+        if (left.getType() == SymbolType.Variable) {
+            VariableLiteralSymbol variableSymbol = (VariableLiteralSymbol)left;
+            
+            identifierSymbol = new VariableLiteralSymbol(
+                    variableSymbol.getName(), position);
+        }
+        else {
+            FunctionLiteralSymbol functionSymbol = (FunctionLiteralSymbol)left;
+            FunctionArgumentList functionArguments = functionSymbol.getArguments();
+            
+            identifierSymbol = new FunctionLiteralSymbol(
+                    functionSymbol.getName(), functionArguments, position);
+        }
+        
+        identifierSymbol.setClosure(closure);
         return identifierSymbol;
     }
 }

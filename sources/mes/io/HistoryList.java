@@ -28,16 +28,16 @@
 
 package mes.io;
 
-import java.util.TreeSet;
+import java.util.LinkedHashSet;
 
 /**
- * History list implementation for {@link mes.ui.Application}.
+ * History list implementation for application.
  * @author Danilo Ferreira
  * @version 1.0.0
- * @see TreeSet
+ * @see LinkedHashSet
  * @see mes.ui.MainWindow
  */
-public class HistoryList extends TreeSet<String> {
+public class HistoryList extends LinkedHashSet<String> {
     /** Initializes an empty history list. */
     public HistoryList() {
         super();

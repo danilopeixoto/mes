@@ -1661,14 +1661,14 @@ public class MainWindow extends javafx.application.Application {
             keyEvent.consume();
         } else if (code == KeyCode.ENTER) {
             if (currentCommandLine.lengthProperty().get() != 0) {
+                currentCommandLine.setEditable(false);
+                
                 String commandText = currentCommandLine.getText();
                 String formatedCommandText = commandText.trim();
                 
-                if (!history.contains(formatedCommandText))
-                    history.add(formatedCommandText);
+                history.remove(formatedCommandText);
+                history.add(formatedCommandText);
                 
-                currentCommandLine.setEditable(false);
-
                 Statement statement = interpreter.run(commandText);
                 CommandLine commandLine;
 
@@ -1901,10 +1901,10 @@ public class MainWindow extends javafx.application.Application {
             HistoryList historyList = preferences.getHistoryList();
             history.setAll(historyList);
         }
-
+        
         enableTypeCheckingProperty.addListener(this::updateTypeCheckingListener);
         stage.show();
-
+        
         centerWindowOnScreen();
         notifyPreloader(new ProgressNotification(100.0));
     }

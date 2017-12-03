@@ -51,8 +51,8 @@ public class NegativeOperatorSymbol extends UnaryOperatorSymbol {
 
     /** {@inheritDoc} */
     @Override
-    public LiteralSymbol evaluate() {
-        LiteralSymbol inputOperand = (LiteralSymbol)left;
-        return new NumberLiteralSymbol(-inputOperand.getDoubleValue(), position);
+    public LiteralSymbol evaluate(Symbol left, Symbol right) {
+        LiteralSymbol leftOperand = (LiteralSymbol)left;
+        return new NumberLiteralSymbol(-leftOperand.getDoubleValue(), position);
     }
 }
