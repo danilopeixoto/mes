@@ -60,7 +60,7 @@ public class SplashScreen extends Preloader {
         width = 600;
         height = 600;
 
-        icon = "images/icon_96.png";
+        icon = "graphics/application/icon_96.png";
     }
 
     private void centerWindowOnScreen() {

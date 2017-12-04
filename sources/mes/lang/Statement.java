@@ -35,15 +35,16 @@ package mes.lang;
  * @see Interpreter#run(String, boolean)
  */
 public class Statement {
-    private LiteralSymbol result;
+    private IdentifierLiteralSymbol result;
     private ExceptionContent exception;
 
-    public Statement(LiteralSymbol result, ExceptionContent exception) {
+    public Statement(IdentifierLiteralSymbol result,
+            ExceptionContent exception) {
         this.result = result;
         this.exception = exception;
     }
 
-    public LiteralSymbol getResult() {
+    public IdentifierLiteralSymbol getResult() {
         return result;
     }
 

@@ -123,7 +123,7 @@
 }
 
 .command-line:filled {
-    -fx-background-image: url("../images/ellipsis.png");
+    -fx-background-image: url("../graphics/ellipsis.png");
     -fx-background-repeat: no-repeat;
     -fx-background-position: right center;
     -fx-padding: 4px 25px 4px 4px;

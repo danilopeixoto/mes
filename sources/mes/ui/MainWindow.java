@@ -49,6 +49,7 @@ import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.collections.ObservableSet;
 import javafx.css.PseudoClass;
 import javafx.event.ActionEvent;
 import javafx.event.Event;
@@ -109,7 +110,6 @@ import mes.lang.ExceptionContent;
 import mes.lang.FunctionLiteralSymbol;
 import mes.lang.IdentifierLiteralSymbol;
 import mes.lang.Interpreter;
-import mes.lang.LiteralSymbol;
 import mes.lang.MathUtils;
 import mes.lang.Statement;
 import mes.lang.Symbol.SymbolType;
@@ -146,7 +146,7 @@ public class MainWindow extends javafx.application.Application {
     private SimpleBooleanProperty fileWasSavedProperty;
 
     private ObservableList<CommandLine> commandLines;
-    private ObservableList<IdentifierLiteralSymbol> definitions;
+    private ObservableSet<IdentifierLiteralSymbol> definitions;
     private ObservableList<String> history;
 
     private SimpleDoubleProperty scrollPositionProperty;
@@ -1172,19 +1172,20 @@ public class MainWindow extends javafx.application.Application {
         minimumWidth = 250;
         minimumHeight = 250;
 
-        icons = new String[5];
-        icons[0] = "images/icon_16.png";
-        icons[1] = "images/icon_32.png";
-        icons[2] = "images/icon_48.png";
-        icons[3] = "images/icon_96.png";
-        icons[4] = "images/icon_256.png";
+        icons = new String[6];
+        icons[0] = "graphics/application/icon_16.png";
+        icons[1] = "graphics/application/icon_32.png";
+        icons[2] = "graphics/application/icon_48.png";
+        icons[3] = "graphics/application/icon_96.png";
+        icons[4] = "graphics/application/icon_128.png";
+        icons[5] = "graphics/application/icon_256.png";
 
-        confirmationIcon = "images/confirmation.png";
-        errorIcon = "images/error.png";
-        exceptionIcon = "images/exception.png";
-        informationIcon = "images/information.png";
-        variableIcon = "images/variable.png";
-        functionIcon = "images/function.png";
+        confirmationIcon = "graphics/confirmation.png";
+        errorIcon = "graphics/error.png";
+        exceptionIcon = "graphics/exception.png";
+        informationIcon = "graphics/information.png";
+        variableIcon = "graphics/variable.png";
+        functionIcon = "graphics/function.png";
 
         autocompleteSeparators = " ,()";
 
@@ -1198,7 +1199,7 @@ public class MainWindow extends javafx.application.Application {
         file = new File();
         fileWasSavedProperty = new SimpleBooleanProperty(false);
 
-        definitions = FXCollections.observableArrayList();
+        definitions = FXCollections.observableSet();
         history = FXCollections.observableArrayList();
 
         scrollPositionProperty = new SimpleDoubleProperty(0);
@@ -1253,9 +1254,10 @@ public class MainWindow extends javafx.application.Application {
             }
 
             SymbolTable userSymbolTable = document.getSymbolTable();
-
             interpreter.setUserSymbolTable(userSymbolTable);
-            definitions.setAll(userSymbolTable);
+            
+            definitions.clear();
+            definitions.addAll(userSymbolTable);
 
             fileWasSavedProperty.set(true);
         } else {
@@ -1709,19 +1711,10 @@ public class MainWindow extends javafx.application.Application {
                     ExceptionContent exception = statement.getException();
                     commandLine = createCommandLine(true, exception.getMessage());
                 } else {
-                    LiteralSymbol result = statement.getResult();
-                    String output;
-
-                    if (result.isNumberLiteral())
-                        output = result.getFormatedValue();
-                    else {
-                        IdentifierLiteralSymbol identifierResult = (IdentifierLiteralSymbol)result;
-                        output = identifierResult.getPrototype();
-
-                        definitions.add(identifierResult);
-                    }
-
-                    commandLine = createCommandLine(false, ">> " + output);
+                    IdentifierLiteralSymbol result = statement.getResult();
+                    definitions.add(result);
+                    
+                    commandLine = createCommandLine(false, ">> " + result.getPrototype());
                 }
 
                 commandLine.setEditable(false);
@@ -1899,7 +1892,7 @@ public class MainWindow extends javafx.application.Application {
 
         robot = FXRobotFactory.createRobot(scene);
 
-        stage.setTitle(Application.name);
+        stage.setTitle(Application.fullName);
         stage.setMinWidth(minimumWidth);
         stage.setMinHeight(minimumHeight);
         stage.setScene(scene);
