@@ -42,6 +42,7 @@ import javafx.application.Preloader.ProgressNotification;
 import javafx.beans.binding.Binding;
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.IntegerBinding;
+import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.ReadOnlyDoubleProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleDoubleProperty;
@@ -49,6 +50,9 @@ import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.collections.ObservableSet;
+import javafx.concurrent.Service;
+import javafx.concurrent.Task;
 import javafx.css.PseudoClass;
 import javafx.event.ActionEvent;
 import javafx.event.Event;
@@ -71,6 +75,7 @@ import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
+import javafx.scene.control.ProgressBar;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.SeparatorMenuItem;
 import javafx.scene.control.TextField;
@@ -91,6 +96,7 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
 import javafx.stage.FileChooser;
@@ -98,6 +104,7 @@ import javafx.stage.Modality;
 import javafx.stage.Popup;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 import javafx.stage.Window;
 import mes.io.CommandLineData;
 import mes.io.CommandLineStream;
@@ -109,7 +116,6 @@ import mes.lang.ExceptionContent;
 import mes.lang.FunctionLiteralSymbol;
 import mes.lang.IdentifierLiteralSymbol;
 import mes.lang.Interpreter;
-import mes.lang.LiteralSymbol;
 import mes.lang.MathUtils;
 import mes.lang.Statement;
 import mes.lang.Symbol.SymbolType;
@@ -122,6 +128,8 @@ import mes.lang.SymbolTable;
  * @see javafx.application.Application
  */
 public class MainWindow extends javafx.application.Application {
+    private static MainWindow instance = null;
+
     private final int width;
     private final int height;
     private final int minimumWidth;
@@ -143,10 +151,10 @@ public class MainWindow extends javafx.application.Application {
     FXRobot robot;
 
     private File file;
-    private SimpleBooleanProperty fileWasSavedProperty;
+    private SimpleBooleanProperty saveStatusProperty;
 
     private ObservableList<CommandLine> commandLines;
-    private ObservableList<IdentifierLiteralSymbol> definitions;
+    private ObservableSet<IdentifierLiteralSymbol> definitions;
     private ObservableList<String> history;
 
     private SimpleDoubleProperty scrollPositionProperty;
@@ -264,7 +272,7 @@ public class MainWindow extends javafx.application.Application {
             else {
                 setContextMenu(customContextMenu);
 
-                typeCheckPopup.hide();
+                Platform.runLater(() -> typeCheckPopup.hide());
                 pseudoClassStateChanged(TYPECHECK_PSEUDO_CLASS, false);
             }
         }
@@ -299,7 +307,7 @@ public class MainWindow extends javafx.application.Application {
         private void textListener(ObservableValue<? extends String> observable,
                 String previousValue, String currentValue) {
             if (!currentValue.equals(previousValue))
-                fileWasSavedProperty.set(false);
+                saveStatusProperty.set(false);
 
             typeCheckPopup.hide();
 
@@ -400,8 +408,8 @@ public class MainWindow extends javafx.application.Application {
             HBox rootLayout = new HBox();
             rootLayout.setSpacing(10.0);
             rootLayout.setAlignment(Pos.CENTER_LEFT);
-            rootLayout.getChildren().addAll(imageView, errorMessageLabel);
             rootLayout.getStyleClass().setAll("type-check-popup");
+            rootLayout.getChildren().addAll(imageView, errorMessageLabel);
 
             setAutoFix(true);
             setAutoHide(true);
@@ -580,8 +588,8 @@ public class MainWindow extends javafx.application.Application {
             listView.prefWidthProperty().bind(commandLine.widthProperty());
 
             rootLayout = new VBox();
-            rootLayout.getChildren().add(listView);
             rootLayout.getStyleClass().setAll("auto-complete-popup");
+            rootLayout.getChildren().add(listView);
 
             setAutoFix(false);
             setAutoHide(true);
@@ -795,7 +803,7 @@ public class MainWindow extends javafx.application.Application {
 
             MenuItem saveMenuItem = new MenuItem("Save");
             saveMenuItem.setOnAction(MainWindow.this::saveAction);
-            saveMenuItem.disableProperty().bind(fileWasSavedProperty);
+            saveMenuItem.disableProperty().bind(saveStatusProperty);
             saveMenuItem.setAccelerator(Shortcut.saveFile);
 
             MenuItem saveAsMenuItem = new MenuItem("Save As...");
@@ -936,9 +944,9 @@ public class MainWindow extends javafx.application.Application {
             informationLayout.getChildren().addAll(lineLabel, columnLabel);
 
             setSpacing(10.0);
-            HBox.setHgrow(messageLayout, Priority.ALWAYS);
-            getChildren().addAll(messageLayout, informationLayout);
+            setHgrow(messageLayout, Priority.ALWAYS);
             getStyleClass().setAll("status-bar");
+            getChildren().addAll(messageLayout, informationLayout);
         }
 
         public SimpleBooleanProperty messageVisibleProperty() {
@@ -1005,8 +1013,63 @@ public class MainWindow extends javafx.application.Application {
         }
     }
 
-    private class FileSaveDialog extends Dialog {
-        public FileSaveDialog() {
+    private class ProgressDialog extends Dialog {
+        private ProgressBar progressBar;
+
+        public ProgressDialog() {
+            super(Alert.AlertType.NONE);
+
+            progressBar = new ProgressBar();
+            progressBar.prefWidthProperty().bind(primaryStage.widthProperty().multiply(0.8));
+
+            VBox boxLayout = new VBox();
+            boxLayout.getChildren().add(progressBar);
+
+            DialogPane dialogPanel = getDialogPane();
+            dialogPanel.setStyle("-fx-background-color: transparent;");
+            dialogPanel.setContent(boxLayout);
+
+            Scene scene = dialogPanel.getScene();
+            scene.setFill(Color.TRANSPARENT);
+
+            Stage stage = (Stage)scene.getWindow();
+            stage.initStyle(StageStyle.TRANSPARENT);
+
+            setResult(ButtonType.CLOSE);
+        }
+
+        public void setProgress(double progress) {
+            progressBar.setProgress(progress);
+        }
+
+        public double getProgress() {
+            return progressBar.getProgress();
+        }
+
+        public DoubleProperty progressProperty() {
+            return progressBar.progressProperty();
+        }
+
+        public void bindService(Service service) {
+            VBox rootLayout = (VBox)primaryStage.getScene().getRoot();
+            ScrollPane scrollPanel = (ScrollPane)rootLayout.getChildren().get(1);
+
+            progressProperty().bind(service.progressProperty());
+
+            service.setOnScheduled(event -> {
+                scrollPanel.setVisible(false);
+                show();
+            });
+
+            service.setOnSucceeded(event -> {
+                scrollPanel.setVisible(true);
+                hide();
+            });
+        }
+    }
+
+    private class SaveFileDialog extends Dialog {
+        public SaveFileDialog() {
             super(AlertType.CONFIRMATION);
 
             setTitle("Save");
@@ -1163,28 +1226,87 @@ public class MainWindow extends javafx.application.Application {
         }
     }
 
+    private class DocumentLoadingService extends Service {
+        private class DocumentLoadingTask extends Task<Void> {
+            public DocumentLoadingTask() {
+                super();
+            }
+
+            @Override
+            public Void call() throws Exception {
+                ObservableList<CommandLine> commandLines = FXCollections.observableArrayList();
+
+                CommandLineStream commandLineStream = document.getCommandLineStream();
+                int commandLineDataCount = commandLineStream.size();
+
+                for (int i = 0; i < commandLineDataCount; i++) {
+                    CommandLineData commandLineData = commandLineStream.get(i);
+
+                    CommandLine commandLine = new CommandLine(
+                            commandLineData.getText(), commandLineData.isError());
+                    commandLine.setEditable(i == commandLineDataCount - 1);
+
+                    commandLines.add(commandLine);
+                    updateProgress(i, commandLineDataCount);
+                }
+
+                SymbolTable userSymbolTable = document.getSymbolTable();
+                interpreter.setUserSymbolTable(userSymbolTable);
+
+                definitions.clear();
+                definitions.addAll(userSymbolTable);
+
+                Platform.runLater(() -> {
+                    MainWindow.this.commandLines.setAll(commandLines);
+                    saveStatusProperty.set(true);
+                });
+
+                return null;
+            }
+        }
+
+        private Document document;
+
+        public DocumentLoadingService(Document document) {
+            super();
+            this.document = document;
+        }
+
+        public Document getDocument() {
+            return document;
+        }
+
+        @Override
+        protected Task createTask() {
+            return new DocumentLoadingTask();
+        }
+    }
+
     /**
      * Initializes the main window properties.
      */
     public MainWindow() {
+        instance = this;
+
         width = 600;
         height = 600;
         minimumWidth = 250;
         minimumHeight = 250;
 
-        icons = new String[5];
-        icons[0] = "images/icon_16.png";
-        icons[1] = "images/icon_32.png";
-        icons[2] = "images/icon_48.png";
-        icons[3] = "images/icon_96.png";
-        icons[4] = "images/icon_256.png";
+        icons = new String[6];
+        icons[0] = "graphics/application/icon_16.png";
+        icons[1] = "graphics/application/icon_32.png";
+        icons[2] = "graphics/application/icon_48.png";
+        icons[3] = "graphics/application/icon_96.png";
+        icons[4] = "graphics/application/icon_128.png";
+        icons[5] = "graphics/application/icon_256.png";
 
-        confirmationIcon = "images/confirmation.png";
-        errorIcon = "images/error.png";
-        exceptionIcon = "images/exception.png";
-        informationIcon = "images/information.png";
-        variableIcon = "images/variable.png";
-        functionIcon = "images/function.png";
+        confirmationIcon = "graphics/confirmation.png";
+        errorIcon = "graphics/error.png";
+        exceptionIcon = "graphics/exception.png";
+        informationIcon = "graphics/information.png";
+        variableIcon = "graphics/variable.png";
+        functionIcon = "graphics/function.png";
 
         autocompleteSeparators = " ,()";
 
@@ -1196,9 +1318,9 @@ public class MainWindow extends javafx.application.Application {
             Application.informationLog("cannot import default symbols.");
 
         file = new File();
-        fileWasSavedProperty = new SimpleBooleanProperty(false);
+        saveStatusProperty = new SimpleBooleanProperty(false);
 
-        definitions = FXCollections.observableArrayList();
+        definitions = FXCollections.observableSet();
         history = FXCollections.observableArrayList();
 
         scrollPositionProperty = new SimpleDoubleProperty(0);
@@ -1211,6 +1333,15 @@ public class MainWindow extends javafx.application.Application {
 
         lineNumberProperty = new SimpleIntegerProperty(1);
         columnNumberProperty = new SimpleIntegerProperty(1);
+    }
+
+    /**
+     * Returns the last instance of this class. If no instance was created this
+     * method returns a null object.
+     * @return The last {@link MainWindow} instance.
+     */
+    public static MainWindow getInstance() {
+        return instance;
     }
 
     private void statusBarVisibleListener(ObservableValue<? extends Boolean> observable,
@@ -1239,28 +1370,18 @@ public class MainWindow extends javafx.application.Application {
         Document document = (Document)file.read();
 
         if (document != null) {
-            commandLines.clear();
+            DocumentLoadingService documentLoadingService
+                    = new DocumentLoadingService(document);
 
-            CommandLineStream commandLineStream = document.getCommandLineStream();
-            int commandLineDataCount = commandLineStream.size();
+            ProgressDialog progressDialog = new ProgressDialog();
+            progressDialog.bindService(documentLoadingService);
 
-            for (int i = 0; i < commandLineDataCount; i++) {
-                CommandLineData commandLineData = commandLineStream.get(i);
-                CommandLine commandLine = createCommandLine(commandLineData.isError(),
-                        commandLineData.getText());
-
-                commandLine.setEditable(i == commandLineDataCount - 1);
-            }
-
-            SymbolTable userSymbolTable = document.getSymbolTable();
-
-            interpreter.setUserSymbolTable(userSymbolTable);
-            definitions.setAll(userSymbolTable);
-
-            fileWasSavedProperty.set(true);
+            documentLoadingService.start();
         } else {
             clearCommandLines();
             file.close();
+
+            saveStatusProperty.set(false);
 
             FileErrorDialog fileFormatErrorDialog = new FileErrorDialog(
                     "The file is corrupted or in an unsupported format.");
@@ -1269,6 +1390,8 @@ public class MainWindow extends javafx.application.Application {
     }
 
     private void writeFile() {
+        saveStatusProperty.set(true);
+
         Stream<CommandLineData> stream = commandLines.stream().map(commandLine
                 -> new CommandLineData(commandLine.getText(), commandLine.isError()));
 
@@ -1276,7 +1399,6 @@ public class MainWindow extends javafx.application.Application {
                 CommandLineStream::new)), interpreter.getUserSymbolTable());
 
         file.write(document);
-        fileWasSavedProperty.set(true);
     }
 
     private boolean requestOpen() {
@@ -1301,9 +1423,7 @@ public class MainWindow extends javafx.application.Application {
             return false;
         }
 
-        file.close();
-        file = temporaryFile;
-
+        file.copyFrom(temporaryFile);
         readFile();
 
         return true;
@@ -1317,6 +1437,7 @@ public class MainWindow extends javafx.application.Application {
 
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Save As");
+        fileChooser.setInitialFileName(Application.defaultDocumentTitle);
         fileChooser.getExtensionFilters().add(extensionFilter);
 
         File temporaryFile = new File(fileChooser.showSaveDialog(primaryStage));
@@ -1331,9 +1452,7 @@ public class MainWindow extends javafx.application.Application {
             return false;
         }
 
-        file.close();
-        file = temporaryFile;
-
+        file.copyFrom(temporaryFile);
         writeFile();
 
         return true;
@@ -1363,12 +1482,14 @@ public class MainWindow extends javafx.application.Application {
     }
 
     private void newAction(ActionEvent actionEvent) {
-        if (fileWasSavedProperty.get()) {
+        if (saveStatusProperty.get()) {
             clearCommandLines();
             file.close();
+
+            saveStatusProperty.set(false);
         } else {
-            FileSaveDialog fileSaveDialog = new FileSaveDialog();
-            Optional<ButtonType> option = fileSaveDialog.showAndWait();
+            SaveFileDialog saveFileDialog = new SaveFileDialog();
+            Optional<ButtonType> option = saveFileDialog.showAndWait();
 
             if (option.isPresent()) {
                 if (option.get() == SAVE_BUTTON)
@@ -1390,11 +1511,11 @@ public class MainWindow extends javafx.application.Application {
     }
 
     private void openAction(ActionEvent actionEvent) {
-        if (fileWasSavedProperty.get())
+        if (saveStatusProperty.get())
             requestOpen();
         else {
-            FileSaveDialog fileSaveDialog = new FileSaveDialog();
-            Optional<ButtonType> option = fileSaveDialog.showAndWait();
+            SaveFileDialog saveFileDialog = new SaveFileDialog();
+            Optional<ButtonType> option = saveFileDialog.showAndWait();
 
             if (option.isPresent()) {
                 if (option.get() == SAVE_BUTTON)
@@ -1414,12 +1535,14 @@ public class MainWindow extends javafx.application.Application {
     }
 
     private void closeAction(ActionEvent actionEvent) {
-        if (fileWasSavedProperty.get()) {
+        if (saveStatusProperty.get()) {
             clearCommandLines();
             file.close();
+
+            saveStatusProperty.set(false);
         } else {
-            FileSaveDialog fileSaveDialog = new FileSaveDialog();
-            Optional<ButtonType> option = fileSaveDialog.showAndWait();
+            SaveFileDialog saveFileDialog = new SaveFileDialog();
+            Optional<ButtonType> option = saveFileDialog.showAndWait();
 
             if (option.isPresent()) {
                 if (option.get() == SAVE_BUTTON)
@@ -1455,9 +1578,9 @@ public class MainWindow extends javafx.application.Application {
     }
 
     private void exitAction(Event event) {
-        if (!fileWasSavedProperty.get()) {
-            FileSaveDialog fileSaveDialog = new FileSaveDialog();
-            Optional<ButtonType> option = fileSaveDialog.showAndWait();
+        if (!saveStatusProperty.get()) {
+            SaveFileDialog saveFileDialog = new SaveFileDialog();
+            Optional<ButtonType> option = saveFileDialog.showAndWait();
 
             if (option.isPresent())
                 if (option.get() == SAVE_BUTTON) {
@@ -1709,19 +1832,10 @@ public class MainWindow extends javafx.application.Application {
                     ExceptionContent exception = statement.getException();
                     commandLine = createCommandLine(true, exception.getMessage());
                 } else {
-                    LiteralSymbol result = statement.getResult();
-                    String output;
+                    IdentifierLiteralSymbol result = statement.getResult();
+                    definitions.add(result);
 
-                    if (result.isNumberLiteral())
-                        output = result.getFormatedValue();
-                    else {
-                        IdentifierLiteralSymbol identifierResult = (IdentifierLiteralSymbol)result;
-                        output = identifierResult.getPrototype();
-
-                        definitions.add(identifierResult);
-                    }
-
-                    commandLine = createCommandLine(false, ">> " + output);
+                    commandLine = createCommandLine(false, ">> " + result.getPrototype());
                 }
 
                 commandLine.setEditable(false);
@@ -1770,7 +1884,7 @@ public class MainWindow extends javafx.application.Application {
             CommandLine commandLine = (CommandLine)primaryStage.getScene().getFocusOwner();
 
             lineNumberProperty.set(commandLines.indexOf(commandLine) + 1);
-            fileWasSavedProperty.set(false);
+            saveStatusProperty.set(false);
         }
     }
 
@@ -1793,14 +1907,12 @@ public class MainWindow extends javafx.application.Application {
 
     private void openFile(File newFile) {
         if (newFile.isOpen())
-            if (fileWasSavedProperty.get()) {
-                file.close();
-                file = newFile;
-
+            if (saveStatusProperty.get()) {
+                file.copyFrom(newFile);
                 readFile();
             } else {
-                FileSaveDialog fileSaveDialog = new FileSaveDialog();
-                Optional<ButtonType> option = fileSaveDialog.showAndWait();
+                SaveFileDialog saveFileDialog = new SaveFileDialog();
+                Optional<ButtonType> option = saveFileDialog.showAndWait();
 
                 if (option.isPresent()) {
                     if (option.get() == SAVE_BUTTON)
@@ -1810,9 +1922,7 @@ public class MainWindow extends javafx.application.Application {
                             return;
 
                     if (option.get() != CANCEL_BUTTON) {
-                        file.close();
-                        file = newFile;
-
+                        file.copyFrom(newFile);
                         readFile();
                     }
                 }
@@ -1853,6 +1963,33 @@ public class MainWindow extends javafx.application.Application {
         Platform.runLater(() -> openFile(temporaryFile));
 
         dragEvent.consume();
+    }
+
+    private String computeCurrentTitle() {
+        StringBuilder stringBuilder = new StringBuilder();
+
+        if (!saveStatusProperty.get())
+            stringBuilder.append('*');
+
+        String filename = file.getFilename();
+
+        if (filename.isEmpty())
+            stringBuilder.append(Application.defaultDocumentTitle);
+        else
+            stringBuilder.append(filename.substring(0, filename.lastIndexOf('.')));
+
+        stringBuilder.append(" - " + Application.fullName);
+
+        return stringBuilder.toString();
+    }
+
+    /**
+     * Opens a file from a valid filename.
+     * @param filename A valid filename
+     */
+    public void openFileOnStartup(String filename) {
+        File temporaryFile = new File(filename);
+        openFile(temporaryFile);
     }
 
     /**
@@ -1899,7 +2036,10 @@ public class MainWindow extends javafx.application.Application {
 
         robot = FXRobotFactory.createRobot(scene);
 
-        stage.setTitle(Application.name);
+        Binding titleBinding = Bindings.createStringBinding(
+                () -> computeCurrentTitle(), file.filenameProperty(), saveStatusProperty);
+
+        stage.titleProperty().bind(titleBinding);
         stage.setMinWidth(minimumWidth);
         stage.setMinHeight(minimumHeight);
         stage.setScene(scene);
@@ -1918,10 +2058,15 @@ public class MainWindow extends javafx.application.Application {
         createCommandLine(false);
 
         Parameters parameters = getParameters();
+        List<String> arguments = parameters.getRaw();
 
-        if (!parameters.getRaw().isEmpty()) {
-            File temporaryFile = new File(parameters.getRaw().get(0));
-            openFile(temporaryFile);
+        if (!arguments.isEmpty()) {
+            String filename = arguments.get(arguments.size() - 1);
+
+            saveStatusProperty.set(true);
+            openFileOnStartup(filename);
+
+            saveStatusProperty.set(file.isOpen());
         }
 
         Preferences preferences = Application.loadPreferences();

@@ -28,6 +28,7 @@
 
 package mes.ui;
 
+import com.install4j.api.launcher.StartupNotification;
 import com.sun.javafx.application.LauncherImpl;
 import java.util.Date;
 import java.util.logging.FileHandler;
@@ -36,9 +37,12 @@ import java.util.logging.Handler;
 import java.util.logging.Level;
 import java.util.logging.LogRecord;
 import java.util.logging.Logger;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import javafx.application.Platform;
 import mes.io.File;
 import mes.io.Preferences;
+import mes.lang.List;
 
 /**
  * Main application class that defines useful objects and constants.
@@ -81,6 +85,11 @@ public class Application {
      * The MES document extension.
      */
     public static final String documentExtension = '.' + name.toLowerCase();
+    
+    /**
+     * The default filename to save document.
+     */
+    public static final String defaultDocumentTitle = "Untitled";
 
     /**
      * The application style sheet file.
@@ -89,6 +98,32 @@ public class Application {
 
     private static final File preferenceFile = new File(name.toLowerCase() + ".pref");
     private static final Logger logger = Logger.getLogger(name);
+
+    private static class StartupNotificationListener
+            implements StartupNotification.Listener {
+        public StartupNotificationListener() {}
+
+        @Override
+        public void startupPerformed(String parameters) {
+            MainWindow mainWindow = MainWindow.getInstance();
+
+            if (mainWindow == null)
+                return;
+
+            List<String> arguments = new List<>();
+            
+            Pattern pattern = Pattern.compile("\"(.*?)\"");
+            Matcher matcher = pattern.matcher(parameters);
+
+            while (matcher.find())
+                arguments.add(matcher.group(1));
+
+            if (!arguments.isEmpty()) {
+                String filename = arguments.get(arguments.size() - 1);
+                Platform.runLater(() -> mainWindow.openFileOnStartup(filename));
+            }
+        }
+    }
 
     private static class LogFormatter extends Formatter {
         public LogFormatter() {
@@ -167,6 +202,8 @@ public class Application {
      * @param arguments The application arguments
      */
     public static void main(String[] arguments) {
+        StartupNotification.registerStartupListener(new StartupNotificationListener());
+
         try {
             LogFormatter formatter = new LogFormatter();
 

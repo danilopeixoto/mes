@@ -110,7 +110,7 @@ public class Interpreter {
     }
 
     public Statement run(String source, boolean typeChecking) {
-        LiteralSymbol result;
+        IdentifierLiteralSymbol result;
         ExceptionContent exceptionContent;
 
         try {
@@ -118,18 +118,21 @@ public class Interpreter {
             Parser parser = new Parser(lexer);
 
             AbstractSyntaxTree abstractSyntaxTree = parser.getAbstractSyntaxTree();
-            result = (LiteralSymbol)abstractSyntaxTree.traverse(new ExpressionEvaluation());
-
-            if (result == null)
-                result = new NumberLiteralSymbol();
-
+            LiteralSymbol literalSymbol =
+                    (LiteralSymbol)abstractSyntaxTree.traverse(new ExpressionEvaluation());
+            
+            if (literalSymbol == null)
+                result = new VariableLiteralSymbol("ANS", 0, 0);
+            else if (literalSymbol.isNumberLiteral())
+                result = new VariableLiteralSymbol("ANS", literalSymbol.getDoubleValue(), 0);
+            else
+                result = (IdentifierLiteralSymbol)literalSymbol;
+            
             exceptionContent = null;
-
-            if (!typeChecking && result.isIdentifierLiteral()) {
-                IdentifierLiteralSymbol identifierSymbol = (IdentifierLiteralSymbol)result;
-                identifierSymbol.setDocumentation(parser.getComment());
-
-                updateUserSymbol(identifierSymbol);
+            
+            if (!typeChecking) {
+                result.setDocumentation(parser.getComment());
+                updateUserSymbol(result);
             }
         } catch (Exception exception) {
             result = null;

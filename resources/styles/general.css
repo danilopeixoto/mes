@@ -123,7 +123,7 @@
 }
 
 .command-line:filled {
-    -fx-background-image: url("../images/ellipsis.png");
+    -fx-background-image: url("../graphics/ellipsis.png");
     -fx-background-repeat: no-repeat;
     -fx-background-position: right center;
     -fx-padding: 4px 25px 4px 4px;
@@ -181,6 +181,24 @@
 .button:pressed {
     -fx-background-color: #b1d7ff;
     -fx-border-color: #8bc0f8;
+}
+
+.progress-bar {
+    -fx-background-color: lightgrey;
+    -fx-background-radius: 4px;
+}
+
+.progress-bar .track {
+    -fx-background-color: white;
+    -fx-background-radius: 4px;
+    -fx-background-insets: 1px;
+}
+
+.progress-bar .bar {
+    -fx-background-color: #25204f;
+    -fx-background-radius: 4px;
+    -fx-background-insets: 0;
+    -fx-padding: 3px;
 }
 
 .menu-bar {

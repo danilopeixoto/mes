@@ -40,12 +40,14 @@ import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 
 /**
- * Application splash screen (preloader).
+ * Application splash screen.
  * @author Danilo Ferreira
  * @version 1.0.0
  * @see Preloader
  */
 public class SplashScreen extends Preloader {
+    private static SplashScreen instance = null;
+
     private final int width;
     private final int height;
 
@@ -57,10 +59,21 @@ public class SplashScreen extends Preloader {
      * Initializes the splash screen properties.
      */
     public SplashScreen() {
+        instance = this;
+
         width = 600;
         height = 600;
 
-        icon = "images/icon_96.png";
+        icon = "graphics/application/icon_96.png";
+    }
+
+    /**
+     * Returns the last instance of this class. If no instance was created this
+     * method returns a null object.
+     * @return The last {@link SplashScreen} instance.
+     */
+    public static SplashScreen getInstance() {
+        return instance;
     }
 
     private void centerWindowOnScreen() {

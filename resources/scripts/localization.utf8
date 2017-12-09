@@ -1,0 +1,8 @@
+SetupAppTitle=Setup
+UninstallAppTitle=Uninstaller
+
+SetupWindowTitle=${compiler:setupDescription}
+UninstallAppFullTitle=${compiler:uninstallerDescription}
+
+WelcomeLabel1=Welcome to the ${compiler:setupDescription}
+FinishedHeadingLabel=Completing the ${compiler:setupDescription}

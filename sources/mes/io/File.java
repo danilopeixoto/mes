@@ -32,6 +32,7 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import javafx.beans.property.SimpleStringProperty;
 import mes.ui.Application;
 
 /**
@@ -41,15 +42,17 @@ import mes.ui.Application;
  */
 public class File {
     private boolean exceptions;
+    
+    private SimpleStringProperty filename;
     private java.io.File file;
 
     /**
      * Initializes a null file object.
      */
     public File() {
-        open((java.io.File)null);
+        this((java.io.File)null);
     }
-
+    
     /**
      * Initializes the file from a Java file object.
      * @param file A Java file object
@@ -77,15 +80,21 @@ public class File {
      */
     public void open(java.io.File file) {
         exceptions = false;
+        filename = new SimpleStringProperty("");
+
         this.file = file;
 
-        if (file != null && !file.exists())
-            try {
-                file.createNewFile();
-            } catch (Exception exception) {
-                exceptions = true;
-                file = null;
-            }
+        if (file != null)
+            if (file.exists())
+                filename.set(file.getName());
+            else
+                try {
+                    file.createNewFile();
+                    filename.set(file.getName());
+                } catch (Exception exception) {
+                    exceptions = true;
+                    file = null;
+                }
     }
 
     /**
@@ -102,6 +111,7 @@ public class File {
      * Closes the file object.
      */
     public void close() {
+        filename.set("");
         file = null;
     }
 
@@ -121,11 +131,28 @@ public class File {
     public boolean hasExceptions() {
         return exceptions;
     }
+    
+    /**
+     * Returns a string containing the filename.
+     * @return The filename.
+     * @see #filenameProperty()
+     */
+    public String getFilename() {
+        return filename.get();
+    }
+    
+    /**
+     * Returns a string property containing the filename.
+     * @return The filename.
+     * @see SimpleStringProperty
+     */
+    public SimpleStringProperty filenameProperty() {
+        return filename;
+    }
 
     /**
-     * Tries read an object from file. If any exception is thrown this method
-     * returns null and a warning message is logged to application default
-     * logger.
+     * Reads an object from file. If any exception is thrown this method returns
+     * null and a warning message is logged to application default logger.
      * @return The object read from file.
      * @see Application#warningLog(String)
      */
@@ -148,8 +175,8 @@ public class File {
     }
 
     /**
-     * Tries write an object to file. If any exception is thrown a warning
-     * message is logged to application default logger.
+     * Writes an object to file. If any exception is thrown a warning message is
+     * logged to application default logger.
      * @param object The object to write to file
      * @see Application#warningLog(String)
      */
@@ -165,5 +192,15 @@ public class File {
         } catch (Exception exception) {
             Application.warningLog("cannot write data to file.");
         }
+    }
+    
+    /**
+     * Initializes the file by copying the contents from another file object.
+     * @param other Another file object
+     */
+    public void copyFrom(File other) {
+        exceptions = other.hasExceptions();
+        filename.set(other.getFilename());
+        file = other.file;
     }
 }

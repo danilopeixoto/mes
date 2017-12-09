@@ -100,13 +100,13 @@ sup {
 
 .clear {
     clear: both;
-    height: 0px;
+    height: 0;
     overflow: hidden;
 }
 
 .aboutLanguage {
     float: right;
-    padding: 0px 21px;
+    padding: 0 21px;
     font-size: 12px;
     text-align: right;
     z-index: 200;
@@ -186,7 +186,7 @@ sup {
     clear: left;
     float: left;
     text-transform: uppercase;
-    padding: 0px 5px 5px;
+    padding: 0 5px 5px;
 }
 
 ul.navList, ul.subNavList {
@@ -297,7 +297,7 @@ ul.blockList ul.blockList li.blockList h3 {
 }
 
 ul.blockList li.blockList h2 {
-    padding: 0px 0 20px 0;
+    padding: 0 0 20px 0;
 }
 
 .contentContainer, .sourceContainer, .classUseContainer, .serializedFormContainer, .constantValuesContainer {
@@ -335,7 +335,7 @@ ul.blockList li.blockList h2 {
 }
 
 .contentContainer .description dl dd, .contentContainer .details dl dd, .serializedFormContainer dl dd {
-    margin: 5px 0 10px 0px;
+    margin: 5px 0 10px 0;
     font-size: 13px;
     font-family: "Source Code Pro", monospace;
 }
@@ -386,7 +386,7 @@ ul.blockList li.blockList, ul.blockListLast li.blockList {
 }
 
 ul.blockList ul.blockList li.blockList, ul.blockList ul.blockListLast li.blockList {
-    padding: 0px 20px 5px 10px;
+    padding: 0 20px 5px 10px;
     border: 1px solid #f3efff;
     border-radius: 4px;
 }
@@ -423,7 +423,7 @@ table tr td dl, table tr td dl dt, table tr td dl dd {
 }
 
 .overviewSummary, .memberSummary  {
-    padding: 0px;
+    padding: 0;
 }
 
 .overviewSummary caption, .memberSummary caption, .typeSummary caption, 
@@ -435,10 +435,10 @@ table tr td dl, table tr td dl dt, table tr td dl dd {
     font-weight: bold;
     clear: none;
     overflow: hidden;
-    padding: 0px;
+    padding: 0;
     padding-top: 10px;
     padding-left: 1px;
-    margin: 0px;
+    margin: 0;
     white-space: pre;
 }
 
@@ -466,7 +466,7 @@ table tr td dl, table tr td dl dt, table tr td dl dd {
     color: white;
     border: none;
     height: 16px;
-    border-radius: 4px 4px 0px 0px;
+    border-radius: 4px 4px 0 0;
 }
 
 .memberSummary caption span.activeTableTab span {
@@ -480,7 +480,7 @@ table tr td dl, table tr td dl dt, table tr td dl dd {
     background-color: #676291;
     color: white;
     height: 16px;
-    border-radius: 4px 4px 0px 0px;
+    border-radius: 4px 4px 0 0;
 }
 
 .memberSummary caption span.tableTab span {
@@ -496,9 +496,9 @@ table tr td dl, table tr td dl dt, table tr td dl dd {
 }
 
 .memberSummary caption span.tableTab, .memberSummary caption span.activeTableTab {
-    padding-top: 0px;
-    padding-left: 0px;
-    padding-right: 0px;
+    padding-top: 0;
+    padding-left: 0;
+    padding-right: 0;
     background-image: none;
     float: none;
     display: inline;
@@ -512,7 +512,7 @@ table tr td dl, table tr td dl dt, table tr td dl dd {
     float: left;
     background-color: #676291;
     color: white;
-    border-radius: 4px 4px 0px 0px;
+    border-radius: 4px 4px 0 0;
 }
 
 .memberSummary .activeTableTab .tabEnd {
@@ -523,7 +523,7 @@ table tr td dl, table tr td dl dt, table tr td dl dd {
     float: left;
     background-color: #676291;
     color: white;
-    border-radius: 4px 4px 0px 0px;
+    border-radius: 4px 4px 0 0;
 }
 
 .memberSummary .tableTab .tabEnd {
@@ -538,13 +538,13 @@ table tr td dl, table tr td dl dt, table tr td dl dd {
 .overviewSummary td, .memberSummary td, .typeSummary td, 
 .useSummary td, .constantsSummary td, .deprecatedSummary td {
     text-align: left;
-    padding: 0px 0px 12px 10px;
+    padding: 0 0 12px 10px;
 }
 
 th.colOne, th.colFirst, th.colLast, .useSummary th, .constantsSummary th, 
 td.colOne, td.colFirst, td.colLast, .useSummary td, .constantsSummary td{
     vertical-align: top;
-    padding-right: 0px;
+    padding-right: 0;
     padding-top: 8px;
     padding-bottom: 3px;
 }
@@ -620,7 +620,7 @@ div.block {
 }
 
 td.colLast div {
-    padding-top: 0px;
+    padding-top: 0;
 }
 
 td.colLast a {
@@ -640,7 +640,7 @@ h1.hidden {
 
 .block {
     display: block;
-    margin: 3px 10px 2px 0px;
+    margin: 3px 10px 2px 0;
     color: black;
 }
 
@@ -661,5 +661,5 @@ div.block div.block span.interfaceName {
 }
 
 div.contentContainer ul.blockList li.blockList h2{
-    padding-bottom: 0px;
+    padding-bottom: 0;
 }

@@ -31,7 +31,7 @@ package mes.io;
 import java.io.Serializable;
 
 /**
- * UI Command Line data and property representation to save in document.
+ * Command line data and properties to save in document.
  * @author Danilo Ferreira
  * @version 1.0.0
  * @see Document
@@ -50,7 +50,7 @@ public class CommandLineData implements Serializable {
     /**
      * Initializes parameters.
      * @param text The command line text content
-     * @param error The flag to indicate the command line error representation
+     * @param error A boolean parameter to indicate an error content
      */
     public CommandLineData(String text, boolean error) {
         this.text = text;
@@ -66,8 +66,8 @@ public class CommandLineData implements Serializable {
     }
 
     /**
-     * Sets the command line error representation flag.
-     * @param error The flag to indicate the command line error representation
+     * Sets whether the command line is an error content.
+     * @param error A boolean parameter to indicate an error content
      */
     public void setError(boolean error) {
         this.error = error;
@@ -83,8 +83,8 @@ public class CommandLineData implements Serializable {
     }
 
     /**
-     * Returns the command line error representation flag.
-     * @return The error flag.
+     * Returns whether the command line is an error content.
+     * @return A boolean parameter to indicate an error content.
      * @see #setError(boolean)
      */
     public boolean isError() {
