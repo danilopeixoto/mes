@@ -184,7 +184,7 @@ public abstract class MathUtils {
 
     /**
      * Remaps the given value from one range to another.
-     * @param x Real value
+     * @param x Real value in the input range
      * @param a0 Minimum real value of the input range
      * @param b0 Maximum real value of the input range
      * @param a1 Minimum real value of the output range
@@ -194,6 +194,19 @@ public abstract class MathUtils {
     @ExportSymbol("Remaps a number from one range to another.")
     public static double remap(double x, double a0, double b0, double a1, double b1) {
         return a1 + (x - a0) * (b1 - a1) / (b0 - a0);
+    }
+
+    /**
+     * Returns the linear interpolation between two real values.
+     * @param x Real value in the range
+     * @param a Minimum value of the range
+     * @param b Maximum value of the range
+     * @return The linear interpolation between <i>a</i> and <i>b</i>.
+     * @see #smoothstep(double, double, double)
+     */
+    @ExportSymbol("Returns the linear interpolation between two numbers.")
+    public static double lerp(double x, double a, double b) {
+        return a + x * (b - a);
     }
 
     /**
@@ -299,7 +312,7 @@ public abstract class MathUtils {
      * Returns the hypotenuse value.
      * @param a Side value
      * @param b Side value
-     * @return THe hypotenuse value.
+     * @return The hypotenuse value.
      */
     @ExportSymbol("Returns the hypotenuse value.")
     public static double hypot(double a, double b) {
@@ -307,28 +320,46 @@ public abstract class MathUtils {
     }
 
     /**
-     * Returns the linear interpolation between two real values.
-     * @param x Real value in the input range
-     * @param a Minimum value of the input range
-     * @param b Maximum value of the input range
-     * @return The linear interpolation between <i>a</i> and <i>b</i>.
-     * @see #smoothstep(double, double, double)
+     * Returns one if the given number is greater than or equal to <i>a</i> and
+     * zero otherwise.
+     * @param x Real value
+     * @param a Reference value
+     * @return A real value between zero and one.
      */
-    @ExportSymbol("Returns the linear interpolation between two numbers.")
-    public static double lerp(double x, double a, double b) {
-        return a + x * (b - a);
+    @ExportSymbol("Returns one if \"x\" is greater than or equal to \"a\" and zero otherwise.")
+    public static double step(double x, double a) {
+        return number(x >= a);
     }
 
     /**
-     * Returns the smooth interpolation between two real values.
-     * @param x Real value in the input range
-     * @param a Minimum value of the input range
-     * @param b Maximum value of the input range
-     * @return The smooth interpolation between <i>a</i> and <i>b</i>.
-     * @see #lerp(double, double, double)
+     * Returns the linear interpolation between zero and one relative to a given
+     * range.
+     * @param x Real value in the range
+     * @param a Minimum real value of the range
+     * @param b Maximum real value of the range
+     * @return The linear interpolation between zero and one.
      */
-    @ExportSymbol("Returns the smooth interpolation between two numbers.")
+    @ExportSymbol("Returns the linear interpolation between zero and one relative to a range.")
+    public static double linearstep(double x, double a, double b) {
+        if (a == b)
+            return step(x, a);
+
+        return (x - a) / (b - a);
+    }
+
+    /**
+     * Returns the smooth interpolation between zero and one relative to a given
+     * range.
+     * @param x Real value in the range
+     * @param a Minimum real value of the range
+     * @param b Maximum real value of the range
+     * @return The smooth interpolation between zero and one.
+     */
+    @ExportSymbol("Returns the smooth interpolation between zero and one relative to a range.")
     public static double smoothstep(double x, double a, double b) {
+        if (a == b)
+            return step(x, a);
+
         double t = clamp((x - a) / (b - a), 0, 1.0);
         return t * t * (3.0 - (t * 2.0));
     }
@@ -581,6 +612,19 @@ public abstract class MathUtils {
     }
 
     /**
+     * Returns true if the number is within a given range (inclusive) and false
+     * otherwise.
+     * @param x Real value
+     * @param a Minimum value of the range
+     * @param b Maximum value of the range
+     * @return The state of the value relative to the range.
+     */
+    @ExportSymbol("Returns whether the number is within a given range (inclusive).")
+    public static boolean inrange(double x, double a, double b) {
+        return x >= a && x <= b;
+    }
+
+    /**
      * Computes the approximate root of a cubic equation using Newton-Raphson
      * algorithm. If the algorithm converges this method returns the approximate
      * root when the maximum number of iterations or tolerance is reached.
@@ -599,18 +643,18 @@ public abstract class MathUtils {
         for (int i = 0; i < maxi.intValue(); i++) {
             double y = x0 * (x0 * (x0 * a + b) + c) + d;
             double dy = x0 * (3.0 * x0 * a + 2.0 * b) + c;
-            
+
             if (dy < EPSILON)
                 break;
-            
+
             double x1 = x0 - y / dy;
-            
+
             if (abs(x1 - x0) <= eps)
                 break;
-            
+
             x0 = x1;
         }
-        
+
         return x0;
     }
 }

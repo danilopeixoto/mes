@@ -29,7 +29,7 @@
 package mes.lang;
 
 /**
- * Positive operator abstraction.
+ * Positive operator representation.
  * @author Danilo Ferreira
  * @version 1.0.0
  * @see UnaryOperatorSymbol
@@ -55,8 +55,8 @@ public class PositiveOperatorSymbol extends UnaryOperatorSymbol {
      * {@inheritDoc}
      */
     @Override
-    public LiteralSymbol evaluate(Symbol left, Symbol right) {
-        LiteralSymbol leftOperand = (LiteralSymbol)left;
-        return new NumberLiteralSymbol(leftOperand.getDoubleValue(), position);
+    public LiteralSymbol evaluate(Symbol[] symbols) {
+        LiteralSymbol inputOperand = (LiteralSymbol)symbols[0];
+        return new NumberLiteralSymbol(inputOperand.getDoubleValue(), position);
     }
 }

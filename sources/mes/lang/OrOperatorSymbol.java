@@ -29,7 +29,7 @@
 package mes.lang;
 
 /**
- * <i>Or</i> operator abstraction.
+ * <i>Or</i> operator representation.
  * @author Danilo Ferreira
  * @version 1.0.0
  * @see BinaryOperatorSymbol
@@ -44,7 +44,7 @@ public class OrOperatorSymbol extends BinaryOperatorSymbol {
 
     /**
      * Initializes the <i>or</i> operator. By default the <i>or</i> operator is
-     * left associative with precedence 1.
+     * left associative with precedence 2.
      * @param position The symbol position at the source code
      * @see Lexer#Lexer(String)
      * @see OperatorData
@@ -57,9 +57,9 @@ public class OrOperatorSymbol extends BinaryOperatorSymbol {
      * {@inheritDoc}
      */
     @Override
-    public LiteralSymbol evaluate(Symbol left, Symbol right) {
-        LiteralSymbol leftOperand = (LiteralSymbol)left;
-        LiteralSymbol rightOperand = (LiteralSymbol)right;
+    public LiteralSymbol evaluate(Symbol[] symbols) {
+        LiteralSymbol leftOperand = (LiteralSymbol)symbols[0];
+        LiteralSymbol rightOperand = (LiteralSymbol)symbols[1];
 
         return new NumberLiteralSymbol(leftOperand.getBooleanValue()
                 || rightOperand.getBooleanValue(), position);

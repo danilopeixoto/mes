@@ -72,65 +72,73 @@ public class Lexer {
                 break;
             } else if (s.startsWith("<="))
                 tokenStream.add(Token.createOperator(TokenType.LessEqual,
-                        null, new OperatorData(4, Associativity.Left), i++));
+                        null, new OperatorData(4, Associativity.Left), null, i++));
             else if (s.startsWith(">="))
                 tokenStream.add(Token.createOperator(TokenType.GreaterEqual,
-                        null, new OperatorData(4, Associativity.Left), i++));
+                        null, new OperatorData(4, Associativity.Left), null, i++));
             else if (s.startsWith("=="))
                 tokenStream.add(Token.createOperator(TokenType.Equal,
-                        null, new OperatorData(3, Associativity.Left), i++));
+                        null, new OperatorData(3, Associativity.Left), null, i++));
             else if (s.startsWith("!="))
                 tokenStream.add(Token.createOperator(TokenType.NotEqual,
-                        null, new OperatorData(3, Associativity.Left), i++));
+                        null, new OperatorData(3, Associativity.Left), null, i++));
             else if (s.startsWith("&&"))
                 tokenStream.add(Token.createOperator(TokenType.And,
-                        null, new OperatorData(2, Associativity.Left), i++));
+                        null, new OperatorData(2, Associativity.Left), null, i++));
             else if (s.startsWith("||"))
                 tokenStream.add(Token.createOperator(TokenType.Or,
-                        null, new OperatorData(1, Associativity.Left), i++));
+                        null, new OperatorData(1, Associativity.Left), null, i++));
             else
                 switch (c) {
                     case '+':
                         tokenStream.add(Token.createOperator(TokenType.Plus,
                                 new OperatorData(7, Associativity.Right),
-                                new OperatorData(5, Associativity.Left), i));
+                                new OperatorData(5, Associativity.Left), null, i));
                         break;
                     case '-':
                         tokenStream.add(Token.createOperator(TokenType.Minus,
                                 new OperatorData(7, Associativity.Right),
-                                new OperatorData(5, Associativity.Left), i));
+                                new OperatorData(5, Associativity.Left), null, i));
                         break;
                     case '*':
                         tokenStream.add(Token.createOperator(TokenType.Multiplication,
-                                null, new OperatorData(6, Associativity.Left), i));
+                                null, new OperatorData(6, Associativity.Left), null, i));
                         break;
                     case '/':
                         tokenStream.add(Token.createOperator(TokenType.Division,
-                                null, new OperatorData(6, Associativity.Left), i));
+                                null, new OperatorData(6, Associativity.Left), null, i));
                         break;
                     case '%':
                         tokenStream.add(Token.createOperator(TokenType.Modulo,
-                                null, new OperatorData(6, Associativity.Left), i));
+                                null, new OperatorData(6, Associativity.Left), null, i));
                         break;
                     case '^':
                         tokenStream.add(Token.createOperator(TokenType.Exponentiation,
-                                null, new OperatorData(8, Associativity.Right), i));
+                                null, new OperatorData(8, Associativity.Right), null, i));
                         break;
                     case '<':
                         tokenStream.add(Token.createOperator(TokenType.Less,
-                                null, new OperatorData(4, Associativity.Left), i));
+                                null, new OperatorData(4, Associativity.Left), null, i));
                         break;
                     case '>':
                         tokenStream.add(Token.createOperator(TokenType.Greater,
-                                null, new OperatorData(4, Associativity.Left), i));
+                                null, new OperatorData(4, Associativity.Left), null, i));
                         break;
                     case '!':
                         tokenStream.add(Token.createOperator(TokenType.Not,
-                                new OperatorData(7, Associativity.Right), null, i));
+                                new OperatorData(7, Associativity.Right), null, null, i));
+                        break;
+                    case '?':
+                        tokenStream.add(Token.createOperator(TokenType.Condition,
+                                null, null, new OperatorData(1, Associativity.Right), i));
+                        break;
+                    case ':':
+                        tokenStream.add(Token.createOperator(TokenType.Otherwise,
+                                null, null, null, i));
                         break;
                     case '=':
                         tokenStream.add(Token.createOperator(TokenType.Assignment,
-                                null, new OperatorData(0, Associativity.Right), i));
+                                null, new OperatorData(0, Associativity.Right), null, i));
                         break;
                     case ',':
                         tokenStream.add(Token.createStructure(TokenType.Comma, i));

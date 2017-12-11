@@ -51,22 +51,23 @@ public class Interpreter {
                 return null;
 
             Symbol root = (Symbol)node;
-            Symbol left, right;
+            Symbol[] symbols = new Symbol[root.getChildCount()];
 
             if (root.getType() == SymbolType.Assignment) {
-                left = (Symbol)root.getLeft();
+                symbols[0] = (Symbol)root.getFirst();
 
-                if (left.isIdentifierLiteral()) {
+                if (symbols[0].isIdentifierLiteral()) {
                     OperatorSymbol assignmentOperator = (OperatorSymbol)root;
-                    IdentifierLiteralSymbol identifierSymbol = (IdentifierLiteralSymbol)left;
+                    IdentifierLiteralSymbol identifierSymbol = (IdentifierLiteralSymbol)symbols[0];
 
                     if (isDefaultSymbol(identifierSymbol))
                         throw new ExceptionContent(ExceptionMessage.InvalidSymbolRedefinition,
                                 identifierSymbol.getPosition());
 
-                    right = (Symbol)root.getRight();
+                    symbols[1] = (Symbol)root.getSecond();
 
-                    identifierSymbol = (IdentifierLiteralSymbol)assignmentOperator.evaluate(left, right);
+                    identifierSymbol
+                            = (IdentifierLiteralSymbol)assignmentOperator.evaluate(symbols);
                     identifierSymbol.evaluate(symbolTable);
 
                     return identifierSymbol;
@@ -75,8 +76,8 @@ public class Interpreter {
                             root.getPosition());
             }
 
-            left = (Symbol)traverse(root.getLeft());
-            right = (Symbol)traverse(root.getRight());
+            for (int i = 0; i < symbols.length; i++)
+                symbols[i] = (Symbol)traverse(root.getChild(i));
 
             if (root.isNumberLiteral())
                 return root;
@@ -88,7 +89,7 @@ public class Interpreter {
             }
 
             OperatorSymbol operatorSymbol = (OperatorSymbol)root;
-            return operatorSymbol.evaluate(left, right);
+            return operatorSymbol.evaluate(symbols);
         }
     }
 
@@ -118,18 +119,18 @@ public class Interpreter {
             Parser parser = new Parser(lexer);
 
             AbstractSyntaxTree abstractSyntaxTree = parser.getAbstractSyntaxTree();
-            LiteralSymbol literalSymbol =
-                    (LiteralSymbol)abstractSyntaxTree.traverse(new ExpressionEvaluation());
-            
+            LiteralSymbol literalSymbol
+                    = (LiteralSymbol)abstractSyntaxTree.traverse(new ExpressionEvaluation());
+
             if (literalSymbol == null)
                 result = new VariableLiteralSymbol("ANS", 0, 0);
             else if (literalSymbol.isNumberLiteral())
                 result = new VariableLiteralSymbol("ANS", literalSymbol.getDoubleValue(), 0);
             else
                 result = (IdentifierLiteralSymbol)literalSymbol;
-            
+
             exceptionContent = null;
-            
+
             if (!typeChecking) {
                 result.setDocumentation(parser.getComment());
                 updateUserSymbol(result);

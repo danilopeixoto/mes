@@ -29,7 +29,7 @@
 package mes.lang;
 
 /**
- * Equal operator abstraction.
+ * Equal operator representation.
  * @author Danilo Ferreira, João de Oliveira and Lucas Alves
  * @version 1.0.0
  * @see BinaryOperatorSymbol
@@ -44,7 +44,7 @@ public class EqualOperatorSymbol extends BinaryOperatorSymbol {
 
     /**
      * Initializes the equal operator. By default the equal operator is left
-     * associative with precedence 3.
+     * associative with precedence 4.
      * @param position The symbol position at the source code
      * @see Lexer#Lexer(String)
      * @see OperatorData
@@ -57,9 +57,9 @@ public class EqualOperatorSymbol extends BinaryOperatorSymbol {
      * {@inheritDoc}
      */
     @Override
-    public LiteralSymbol evaluate(Symbol left, Symbol right) {
-        LiteralSymbol leftOperand = (LiteralSymbol)left;
-        LiteralSymbol rightOperand = (LiteralSymbol)right;
+    public LiteralSymbol evaluate(Symbol[] symbols) {
+        LiteralSymbol leftOperand = (LiteralSymbol)symbols[0];
+        LiteralSymbol rightOperand = (LiteralSymbol)symbols[1];
 
         return new NumberLiteralSymbol(leftOperand.getDoubleValue()
                 == rightOperand.getDoubleValue(), position);

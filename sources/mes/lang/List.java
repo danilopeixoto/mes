@@ -170,11 +170,14 @@ public class List<E> extends ArrayList<E> {
     }
 
     /**
-     * Initializes the list with initial size.
+     * Initializes the list with an initial size.
      * @param size The list size
      */
     public List(int size) {
         super(size);
+        
+        for (int i = 0; i < size; i++)
+            add(null);
     }
 
     /**

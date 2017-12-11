@@ -116,6 +116,10 @@ public abstract class Symbol extends AbstractSyntaxNode {
          */
         Or,
         /**
+         * Conditional operator symbol.
+         */
+        Conditional,
+        /**
          * Assignment operator symbol.
          */
         Assignment
@@ -128,6 +132,8 @@ public abstract class Symbol extends AbstractSyntaxNode {
         super();
         this.type = type;
         this.position = position;
+
+        children = new List<>(3);
     }
 
     public void setPosition(int position) {
@@ -140,6 +146,30 @@ public abstract class Symbol extends AbstractSyntaxNode {
 
     public int getPosition() {
         return position;
+    }
+
+    public void setFirst(Symbol first) {
+        children.set(0, first);
+    }
+
+    public void setSecond(Symbol second) {
+        children.set(1, second);
+    }
+
+    public void setThird(Symbol third) {
+        children.set(2, third);
+    }
+
+    public Symbol getFirst() {
+        return (Symbol)children.get(0);
+    }
+
+    public Symbol getSecond() {
+        return (Symbol)children.get(1);
+    }
+
+    public Symbol getThird() {
+        return (Symbol)children.get(2);
     }
 
     public boolean isLiteral() {
@@ -164,5 +194,9 @@ public abstract class Symbol extends AbstractSyntaxNode {
 
     public boolean isBinaryOperator() {
         return this instanceof BinaryOperatorSymbol;
+    }
+
+    public boolean isTernaryOperator() {
+        return this instanceof TernaryOperatorSymbol;
     }
 }

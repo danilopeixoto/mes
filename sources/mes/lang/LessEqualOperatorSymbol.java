@@ -29,7 +29,7 @@
 package mes.lang;
 
 /**
- * Less equal operator abstraction.
+ * Less equal operator representation.
  * @author Danilo Ferreira
  * @version 1.0.0
  * @see BinaryOperatorSymbol
@@ -44,7 +44,7 @@ public class LessEqualOperatorSymbol extends BinaryOperatorSymbol {
 
     /**
      * Initializes the less equal operator. By default the less equal operator
-     * is left associative with precedence 4.
+     * is left associative with precedence 5.
      * @param position The symbol position at the source code
      * @see Lexer#Lexer(String)
      * @see OperatorData
@@ -57,9 +57,9 @@ public class LessEqualOperatorSymbol extends BinaryOperatorSymbol {
      * {@inheritDoc}
      */
     @Override
-    public LiteralSymbol evaluate(Symbol left, Symbol right) {
-        LiteralSymbol leftOperand = (LiteralSymbol)left;
-        LiteralSymbol rightOperand = (LiteralSymbol)right;
+    public LiteralSymbol evaluate(Symbol[] symbols) {
+        LiteralSymbol leftOperand = (LiteralSymbol)symbols[0];
+        LiteralSymbol rightOperand = (LiteralSymbol)symbols[1];
 
         return new NumberLiteralSymbol(leftOperand.getDoubleValue()
                 <= rightOperand.getDoubleValue(), position);

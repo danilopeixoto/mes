@@ -51,22 +51,22 @@ public class FunctionLiteralSymbol extends IdentifierLiteralSymbol {
             if (node == null)
                 return null;
 
-            Symbol nodeSymbol = (Symbol)node;
+            Symbol root = (Symbol)node;
 
-            traverse(nodeSymbol.getLeft());
-            traverse(nodeSymbol.getRight());
+            for (AbstractSyntaxNode child : root.getChildren())
+                traverse(child);
 
-            if (nodeSymbol.isIdentifierLiteral()) {
+            if (root.isIdentifierLiteral()) {
                 IdentifierLiteralSymbol identifierSymbol
-                        = (IdentifierLiteralSymbol)nodeSymbol;
+                        = (IdentifierLiteralSymbol)root;
 
                 SymbolTable globalSymbolTable = (SymbolTable)arguments[0];
                 identifierSymbol.precompile(globalSymbolTable);
             }
 
-            if (nodeSymbol.getType() == SymbolType.Assignment)
+            if (root.getType() == SymbolType.Assignment)
                 throw new ExceptionContent(ExceptionMessage.IllegalExpressionAssignment,
-                        nodeSymbol.getPosition());
+                        root.getPosition());
 
             return null;
         }

@@ -29,28 +29,28 @@
 package mes.lang;
 
 /**
- * Multiplication operator representation.
+ * Conditional operator representation.
  * @author Danilo Ferreira
  * @version 1.0.0
- * @see BinaryOperatorSymbol
+ * @see TernaryOperatorSymbol
  */
-public class MultiplicationOperatorSymbol extends BinaryOperatorSymbol {
+public class ConditionalOperatorSymbol extends TernaryOperatorSymbol {
     /**
-     * Initializes the multiplication operator.
+     * Initializes the conditional operator.
      */
-    public MultiplicationOperatorSymbol() {
+    public ConditionalOperatorSymbol() {
         this(0);
     }
 
     /**
-     * Initializes the multiplication operator. By default the multiplication
-     * operator is left associative with precedence 7.
+     * Initializes the conditional operator. By default the conditional operator
+     * is right associative with precedence 1.
      * @param position The symbol position at the source code
      * @see Lexer#Lexer(String)
      * @see OperatorData
      */
-    public MultiplicationOperatorSymbol(int position) {
-        super(SymbolType.Multiplication, position);
+    public ConditionalOperatorSymbol(int position) {
+        super(SymbolType.Conditional, position);
     }
 
     /**
@@ -58,10 +58,11 @@ public class MultiplicationOperatorSymbol extends BinaryOperatorSymbol {
      */
     @Override
     public LiteralSymbol evaluate(Symbol[] symbols) {
-        LiteralSymbol leftOperand = (LiteralSymbol)symbols[0];
-        LiteralSymbol rightOperand = (LiteralSymbol)symbols[1];
+        LiteralSymbol conditionOperand = (LiteralSymbol)symbols[0];
+        LiteralSymbol leftOperand = (LiteralSymbol)symbols[1];
+        LiteralSymbol rightOperand = (LiteralSymbol)symbols[2];
 
-        return new NumberLiteralSymbol(leftOperand.getDoubleValue()
-                * rightOperand.getDoubleValue(), position);
+        return new NumberLiteralSymbol(conditionOperand.getBooleanValue()
+                ? leftOperand.getDoubleValue() : rightOperand.getDoubleValue(), position);
     }
 }

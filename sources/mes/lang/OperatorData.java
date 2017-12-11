@@ -29,7 +29,7 @@
 package mes.lang;
 
 /**
- * Represents the properties of a unary or binary operator.
+ * Represents the properties of a unary, binary or ternary operator.
  * @author Danilo Ferreira
  * @version 1.0.0
  * @see Token

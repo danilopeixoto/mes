@@ -29,7 +29,7 @@
 package mes.lang;
 
 /**
- * Assignment operator abstraction.
+ * Assignment operator representation.
  * @author Danilo Ferreira
  * @version 1.0.0
  * @see BinaryOperatorSymbol
@@ -57,19 +57,19 @@ public class AssignmentOperatorSymbol extends BinaryOperatorSymbol {
      * {@inheritDoc}
      */
     @Override
-    public LiteralSymbol evaluate(Symbol left, Symbol right) {
-        AbstractSyntaxTree abstractSyntaxTree = new AbstractSyntaxTree(right);
+    public LiteralSymbol evaluate(Symbol[] symbols) {
+        AbstractSyntaxTree abstractSyntaxTree = new AbstractSyntaxTree(symbols[1]);
         Closure closure = new Closure(abstractSyntaxTree);
 
         IdentifierLiteralSymbol identifierSymbol;
 
-        if (left.getType() == SymbolType.Variable) {
-            VariableLiteralSymbol variableSymbol = (VariableLiteralSymbol)left;
+        if (symbols[0].getType() == SymbolType.Variable) {
+            VariableLiteralSymbol variableSymbol = (VariableLiteralSymbol)symbols[0];
 
             identifierSymbol = new VariableLiteralSymbol(
                     variableSymbol.getName(), position);
         } else {
-            FunctionLiteralSymbol functionSymbol = (FunctionLiteralSymbol)left;
+            FunctionLiteralSymbol functionSymbol = (FunctionLiteralSymbol)symbols[0];
             FunctionArgumentList functionArguments = functionSymbol.getArguments();
 
             identifierSymbol = new FunctionLiteralSymbol(

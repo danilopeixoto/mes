@@ -85,7 +85,7 @@ public class Application {
      * The MES document extension.
      */
     public static final String documentExtension = '.' + name.toLowerCase();
-    
+
     /**
      * The default filename to save document.
      */
@@ -101,7 +101,8 @@ public class Application {
 
     private static class StartupNotificationListener
             implements StartupNotification.Listener {
-        public StartupNotificationListener() {}
+        public StartupNotificationListener() {
+        }
 
         @Override
         public void startupPerformed(String parameters) {
@@ -111,7 +112,7 @@ public class Application {
                 return;
 
             List<String> arguments = new List<>();
-            
+
             Pattern pattern = Pattern.compile("\"(.*?)\"");
             Matcher matcher = pattern.matcher(parameters);
 

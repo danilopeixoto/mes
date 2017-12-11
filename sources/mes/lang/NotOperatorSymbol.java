@@ -29,7 +29,7 @@
 package mes.lang;
 
 /**
- * Not operator abstraction.
+ * Not operator representation.
  * @author Danilo Ferreira
  * @version 1.0.0
  * @see UnaryOperatorSymbol
@@ -56,8 +56,8 @@ public class NotOperatorSymbol extends UnaryOperatorSymbol {
      * {@inheritDoc}
      */
     @Override
-    public LiteralSymbol evaluate(Symbol left, Symbol right) {
-        LiteralSymbol leftOperand = (LiteralSymbol)left;
-        return new NumberLiteralSymbol(!leftOperand.getBooleanValue(), position);
+    public LiteralSymbol evaluate(Symbol[] symbols) {
+        LiteralSymbol inputOperand = (LiteralSymbol)symbols[0];
+        return new NumberLiteralSymbol(!inputOperand.getBooleanValue(), position);
     }
 }

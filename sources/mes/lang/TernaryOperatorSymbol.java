@@ -29,39 +29,18 @@
 package mes.lang;
 
 /**
- * Multiplication operator representation.
+ * Ternary operator abstraction.
  * @author Danilo Ferreira
  * @version 1.0.0
- * @see BinaryOperatorSymbol
+ * @see OperatorSymbol
  */
-public class MultiplicationOperatorSymbol extends BinaryOperatorSymbol {
+public abstract class TernaryOperatorSymbol extends OperatorSymbol {
     /**
-     * Initializes the multiplication operator.
-     */
-    public MultiplicationOperatorSymbol() {
-        this(0);
-    }
-
-    /**
-     * Initializes the multiplication operator. By default the multiplication
-     * operator is left associative with precedence 7.
+     * Initializes a ternary operator.
+     * @param type The symbol type
      * @param position The symbol position at the source code
-     * @see Lexer#Lexer(String)
-     * @see OperatorData
      */
-    public MultiplicationOperatorSymbol(int position) {
-        super(SymbolType.Multiplication, position);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public LiteralSymbol evaluate(Symbol[] symbols) {
-        LiteralSymbol leftOperand = (LiteralSymbol)symbols[0];
-        LiteralSymbol rightOperand = (LiteralSymbol)symbols[1];
-
-        return new NumberLiteralSymbol(leftOperand.getDoubleValue()
-                * rightOperand.getDoubleValue(), position);
+    public TernaryOperatorSymbol(SymbolType type, int position) {
+        super(type, position);
     }
 }

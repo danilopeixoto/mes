@@ -42,7 +42,7 @@ import mes.ui.Application;
  */
 public class File {
     private boolean exceptions;
-    
+
     private SimpleStringProperty filename;
     private java.io.File file;
 
@@ -52,7 +52,7 @@ public class File {
     public File() {
         this((java.io.File)null);
     }
-    
+
     /**
      * Initializes the file from a Java file object.
      * @param file A Java file object
@@ -131,7 +131,7 @@ public class File {
     public boolean hasExceptions() {
         return exceptions;
     }
-    
+
     /**
      * Returns a string containing the filename.
      * @return The filename.
@@ -140,7 +140,7 @@ public class File {
     public String getFilename() {
         return filename.get();
     }
-    
+
     /**
      * Returns a string property containing the filename.
      * @return The filename.
@@ -193,7 +193,7 @@ public class File {
             Application.warningLog("cannot write data to file.");
         }
     }
-    
+
     /**
      * Initializes the file by copying the contents from another file object.
      * @param other Another file object

@@ -40,7 +40,7 @@ public class AbstractSyntaxTree implements Serializable {
     private AbstractSyntaxNode root;
 
     /**
-     * Initializes the abstract syntax tree with null root.
+     * Initializes the abstract syntax tree with a null root.
      */
     public AbstractSyntaxTree() {
         this(null);
@@ -72,14 +72,6 @@ public class AbstractSyntaxTree implements Serializable {
     }
 
     /**
-     * Returns the number of nodes in the abstract syntax tree.
-     * @return The node count.
-     */
-    public int getNodeCount() {
-        return computeNodeCount(root);
-    }
-
-    /**
      * Returns true if the abstract syntax tree is empty and false otherwise.
      * @return The empty state.
      */
@@ -102,12 +94,5 @@ public class AbstractSyntaxTree implements Serializable {
      */
     public AbstractSyntaxNode traverse(TraversalFunction traversalFunction) {
         return traversalFunction.traverse(root);
-    }
-
-    private int computeNodeCount(AbstractSyntaxNode node) {
-        if (node == null)
-            return 0;
-
-        return 1 + computeNodeCount(node.getLeft()) + computeNodeCount(node.getRight());
     }
 }

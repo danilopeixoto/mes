@@ -43,7 +43,7 @@ public class FunctionArgumentList extends List<FunctionArgument> {
     }
 
     /**
-     * Initializes the function argument list with initial size.
+     * Initializes the function argument list with an initial size.
      * @param size The function argument list size
      */
     public FunctionArgumentList(int size) {

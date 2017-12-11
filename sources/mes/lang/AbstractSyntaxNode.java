@@ -37,49 +37,57 @@ import java.io.Serializable;
  * @see AbstractSyntaxTree
  */
 public abstract class AbstractSyntaxNode implements Serializable {
-    protected AbstractSyntaxNode left;
-    protected AbstractSyntaxNode right;
+    protected List<AbstractSyntaxNode> children;
 
     /**
-     * Initializes the children of node to null.
+     * Initializes the node with no child.
      */
     public AbstractSyntaxNode() {
-        left = null;
-        right = null;
+        children = new List<>();
     }
 
     /**
-     * Set the left child of node.
-     * @param left The left child node
+     * Sets the child node by index.
+     * @param index The node index
+     * @param child The child node
      */
-    public void setLeft(AbstractSyntaxNode left) {
-        this.left = left;
+    public void setChild(int index, AbstractSyntaxNode child) {
+        children.set(index, child);
     }
 
     /**
-     * Set the right child of node.
-     * @param right The right child node
+     * Sets all the children of node.
+     * @param children The node children
      */
-    public void setRight(AbstractSyntaxNode right) {
-        this.right = right;
+    public void setChildren(List<AbstractSyntaxNode> children) {
+        this.children = children;
     }
 
     /**
-     * Returns the left child of node.
-     * @return The left child node.
-     * @see #setLeft(AbstractSyntaxNode)
+     * Returns the child node at index.
+     * @param index The node index
+     * @return The child node.
+     * @see #setChild(int, AbstractSyntaxNode)
      */
-    public AbstractSyntaxNode getLeft() {
-        return left;
+    public AbstractSyntaxNode getChild(int index) {
+        return children.get(index);
     }
 
     /**
-     * Returns the right child of node.
-     * @return The right child node.
-     * @see #setRight(AbstractSyntaxNode)
+     * Returns all the children of node.
+     * @return The node children.
+     * @see #setChildren(List)
      */
-    public AbstractSyntaxNode getRight() {
-        return right;
+    public List<AbstractSyntaxNode> getChildren() {
+        return children;
+    }
+
+    /**
+     * Returns the child count of node.
+     * @return The child count.
+     */
+    public int getChildCount() {
+        return children.size();
     }
 
     /**
@@ -87,14 +95,10 @@ public abstract class AbstractSyntaxNode implements Serializable {
      * @return The leaf state.
      */
     public boolean isLeaf() {
-        return left == null && right == null;
-    }
+        for (AbstractSyntaxNode node : children)
+            if (node != null)
+                return false;
 
-    /**
-     * Returns true if all children are non-null and false otherwise.
-     * @return The binary root state.
-     */
-    public boolean isBinaryRoot() {
-        return left != null && right != null;
+        return true;
     }
 }

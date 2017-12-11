@@ -64,7 +64,7 @@ public abstract class TraversalFunction {
 
     /**
      * This method defines an {@link AbstractSyntaxTree} traversal.
-     * @param node The current node being traversed
+     * @param node The current node being traversed by method
      * @return The output node.
      * @see AbstractSyntaxTree#traverse(TraversalFunction)
      * @see AbstractSyntaxNode

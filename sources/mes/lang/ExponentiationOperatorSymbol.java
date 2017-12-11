@@ -29,7 +29,7 @@
 package mes.lang;
 
 /**
- * Exponentiation operator abstraction.
+ * Exponentiation operator representation.
  * @author Danilo Ferreira
  * @version 1.0.0
  * @see BinaryOperatorSymbol
@@ -44,7 +44,7 @@ public class ExponentiationOperatorSymbol extends BinaryOperatorSymbol {
 
     /**
      * Initializes the exponentiation operator. By default the exponentiation
-     * operator is right associative with precedence 8.
+     * operator is right associative with precedence 9.
      * @param position The symbol position at the source code
      * @see Lexer#Lexer(String)
      * @see OperatorData
@@ -57,9 +57,9 @@ public class ExponentiationOperatorSymbol extends BinaryOperatorSymbol {
      * {@inheritDoc}
      */
     @Override
-    public LiteralSymbol evaluate(Symbol left, Symbol right) {
-        LiteralSymbol leftOperand = (LiteralSymbol)left;
-        LiteralSymbol rightOperand = (LiteralSymbol)right;
+    public LiteralSymbol evaluate(Symbol[] symbols) {
+        LiteralSymbol leftOperand = (LiteralSymbol)symbols[0];
+        LiteralSymbol rightOperand = (LiteralSymbol)symbols[1];
 
         return new NumberLiteralSymbol(MathUtils.pow(leftOperand.getDoubleValue(),
                 rightOperand.getDoubleValue()), position);

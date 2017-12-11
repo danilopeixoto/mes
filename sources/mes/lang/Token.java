@@ -109,6 +109,14 @@ public class Token {
          */
         Or,
         /**
+         * Condition (condition operator) token.
+         */
+        Condition,
+        /**
+         * Otherwise (condition operator) token.
+         */
+        Otherwise,
+        /**
          * Assignment operator token.
          */
         Assignment,
@@ -134,6 +142,7 @@ public class Token {
     private String value;
     private OperatorData unaryOperatorData;
     private OperatorData binaryOperatorData;
+    private OperatorData ternaryOperatorData;
     private int position;
 
     private Token(TokenType type, int position) {
@@ -141,20 +150,24 @@ public class Token {
     }
 
     private Token(TokenType type, String value, int position) {
-        this(type, value, null, null, position);
+        this(type, value, null, null, null, position);
     }
 
     private Token(TokenType type, OperatorData unaryOperatorData,
-            OperatorData binaryOperatorData, int position) {
-        this(type, "", unaryOperatorData, binaryOperatorData, position);
+            OperatorData binaryOperatorData, OperatorData ternaryOperatorData,
+            int position) {
+        this(type, "", unaryOperatorData, binaryOperatorData, ternaryOperatorData,
+                position);
     }
 
     private Token(TokenType type, String value, OperatorData unaryOperatorData,
-            OperatorData binaryOperatorData, int position) {
+            OperatorData binaryOperatorData, OperatorData ternaryOperatorData,
+            int position) {
         this.type = type;
         this.value = value;
         this.unaryOperatorData = unaryOperatorData;
         this.binaryOperatorData = binaryOperatorData;
+        this.ternaryOperatorData = ternaryOperatorData;
         this.position = position;
     }
 
@@ -170,9 +183,11 @@ public class Token {
         return new Token(TokenType.Comment, value, position);
     }
 
-    public static Token createOperator(TokenType type, OperatorData unaryOperatorData,
-            OperatorData binaryOperatorData, int position) {
-        return new Token(type, unaryOperatorData, binaryOperatorData, position);
+    public static Token createOperator(TokenType type,
+            OperatorData unaryOperatorData, OperatorData binaryOperatorData,
+            OperatorData ternaryOperatorData, int position) {
+        return new Token(type, unaryOperatorData, binaryOperatorData,
+                ternaryOperatorData, position);
     }
 
     public static Token createStructure(TokenType type, int position) {
@@ -195,6 +210,10 @@ public class Token {
         return binaryOperatorData;
     }
 
+    public OperatorData getTernaryOperatorData() {
+        return ternaryOperatorData;
+    }
+
     public int getPosition() {
         return position;
     }
@@ -208,7 +227,7 @@ public class Token {
     }
 
     public boolean isOperator() {
-        return isUnaryOperator() || isBinaryOperator();
+        return isUnaryOperator() || isBinaryOperator() || isTernaryOperator();
     }
 
     public boolean isUnaryOperator() {
@@ -217,6 +236,10 @@ public class Token {
 
     public boolean isBinaryOperator() {
         return binaryOperatorData != null;
+    }
+
+    public boolean isTernaryOperator() {
+        return ternaryOperatorData != null;
     }
 
     public boolean isLanguageStructure() {

@@ -51,9 +51,10 @@ public abstract class IdentifierLiteralSymbol extends LiteralSymbol
                 return null;
 
             Symbol root = (Symbol)node;
+            LiteralSymbol[] literalSymbols = new LiteralSymbol[root.getChildCount()];
 
-            LiteralSymbol left = (LiteralSymbol)traverse(root.getLeft());
-            LiteralSymbol right = (LiteralSymbol)traverse(root.getRight());
+            for (int i = 0; i < literalSymbols.length; i++)
+                literalSymbols[i] = (LiteralSymbol)traverse(root.getChild(i));
 
             if (root.isIdentifierLiteral()) {
                 IdentifierLiteralSymbol identifierSymbol = (IdentifierLiteralSymbol)root;
@@ -69,7 +70,7 @@ public abstract class IdentifierLiteralSymbol extends LiteralSymbol
                         root.getPosition());
 
             OperatorSymbol operatorSymbol = (OperatorSymbol)root;
-            return operatorSymbol.evaluate(left, right);
+            return operatorSymbol.evaluate(literalSymbols);
         }
     }
 

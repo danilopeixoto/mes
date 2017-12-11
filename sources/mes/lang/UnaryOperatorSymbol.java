@@ -37,7 +37,7 @@ package mes.lang;
 public abstract class UnaryOperatorSymbol extends OperatorSymbol {
     /**
      * Initializes a unary operator. By default the unary operators are right
-     * associative with precedence 7.
+     * associative with precedence 8.
      * @param type The symbol type
      * @param position The symbol position at the source code
      * @see Lexer#Lexer(String)

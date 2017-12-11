@@ -103,6 +103,49 @@ public class Parser {
     }
 
     private Symbol parseExpression(int minimumPrecendence) {
+        Symbol expressionSymbol = parseBasicOperator(minimumPrecendence);
+
+        if (expressionSymbol == null)
+            return null;
+
+        if (!expect(TokenType.Condition))
+            return expressionSymbol;
+
+        Token currentToken = current();
+
+        OperatorData ternaryOperatorData = currentToken.getTernaryOperatorData();
+        int precedence = ternaryOperatorData.getPrecedence();
+
+        if (precedence < minimumPrecendence)
+            return expressionSymbol;
+
+        Symbol conditionalOperator = new ConditionalOperatorSymbol(
+                currentToken.getPosition());
+        conditionalOperator.setFirst(expressionSymbol);
+
+        next();
+
+        Symbol leftSymbol = parseExpression();
+        conditionalOperator.setSecond(leftSymbol);
+
+        if (leftSymbol == null)
+            expectedElement("a literal or expression in conditional operator");
+
+        if (expect(TokenType.Otherwise))
+            next();
+        else
+            expectedElement("the otherwise token \":\" in conditional operator");
+
+        Symbol rightSymbol = parseExpression();
+        conditionalOperator.setThird(rightSymbol);
+
+        if (rightSymbol == null)
+            expectedElement("a literal or expression in conditional operator");
+
+        return conditionalOperator;
+    }
+
+    private Symbol parseBasicOperator(int minimumPrecendence) {
         Symbol expressionSymbol = parseLiteral();
         Token currentToken = current();
 
@@ -120,12 +163,12 @@ public class Parser {
                 precedence++;
 
             Symbol binaryOperator = parseBinaryOperator();
-            binaryOperator.setLeft(expressionSymbol);
+            binaryOperator.setFirst(expressionSymbol);
 
             expressionSymbol = parseExpression(precedence);
 
             if (expressionSymbol != null) {
-                binaryOperator.setRight(expressionSymbol);
+                binaryOperator.setSecond(expressionSymbol);
 
                 expressionSymbol = binaryOperator;
                 currentToken = current();
@@ -225,7 +268,7 @@ public class Parser {
             literalSymbol = parseExpression(unaryOperatorData.getPrecedence());
 
             if (literalSymbol != null) {
-                unaryOperator.setLeft(literalSymbol);
+                unaryOperator.setFirst(literalSymbol);
                 return unaryOperator;
             } else
                 expectedElement("a literal or expression after unary operator");
